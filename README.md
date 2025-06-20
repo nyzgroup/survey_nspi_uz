@@ -29,8 +29,8 @@ Ushbu loyiha talabalar uchun tashqi **HEMIS API** orqali autentifikatsiya qilish
 So'rovnoma sahifasi foydalanuvchi uchun maksimal darajada qulay qilib ishlangan. Progress "Stepper" yordamida ko'rsatiladi va to'liq interaktiv.
 
 
-![So'rovnoma sahifasi](![image]![alt text]({7DE6C285-24F7-46AB-95C0-FA69E1DB4080}.png)
-)
+![Uploading {8EBFA98E-9F78-4121-A7FE-772EE9BF980A}.png…]()
+
 =======
 
 
