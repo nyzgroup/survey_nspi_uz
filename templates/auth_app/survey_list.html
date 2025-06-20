@@ -1,0 +1,81 @@
+{% extends 'auth_app/base.html' %}
+
+{% block page_title %}Aktiv So'rovnomalar{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+        <div>
+            <h1 class="text-3xl font-bold font-serif text-slate-900">Aktiv So'rovnomalar</h1>
+            <p class="text-slate-500 mt-1">Ishtirok etishingiz mumkin bo'lgan barcha so'rovnomalar.</p>
+        </div>
+    </div>
+    
+    {% if not surveys_with_status %}
+    <div class="bg-white rounded-2xl shadow-soft border border-slate-100 p-8 text-center animate-fade-in-up">
+        <ion-icon name="file-tray-outline" class="text-5xl text-primary-400 mb-4"></ion-icon>
+        <h3 class="text-xl font-semibold text-slate-800 mb-2">Hozirda aktiv so'rovnomalar mavjud emas</h3>
+        <p class="text-slate-600 max-w-md mx-auto">Yangi so'rovnomalar paydo bo'lganda ular shu yerda ko'rinadi.</p>
+    </div>
+    {% else %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for item in surveys_with_status %}
+            {% with survey=item.survey has_responded=item.has_responded %}
+                <div class="survey-card bg-white flex flex-col {% if has_responded %}border-green-200{% endif %}">
+                    <div class="p-6 flex-grow">
+                        <div class="flex justify-between items-start mb-4">
+                            {% if has_responded %}
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    <ion-icon name="checkmark-circle-outline" class="mr-1.5"></ion-icon>Ishtirok etilgan
+                                </span>
+                            {% else %}
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-primary-100 text-primary-800">
+                                    <ion-icon name="time-outline" class="mr-1.5"></ion-icon>Aktiv
+                                </span>
+                            {% endif %}
+                            <span class="text-xs text-slate-500">{{ survey.total_responses }} ta javob</span>
+                        </div>
+                        <h2 class="text-xl font-bold text-slate-900 mb-2">{{ survey.title }}</h2>
+                        <p class="text-sm text-slate-600 line-clamp-2">{{ survey.description }}</p>
+                    </div>
+
+                    <div class="bg-slate-50 px-6 py-4 border-t border-slate-100 flex items-center justify-between gap-4">
+                        {% if not has_responded %}
+                            <a href="{% url 'survey_detail' survey.pk %}" class="flex items-center text-primary-600 font-semibold group">
+                                <span class="text-sm">Ishtirok etish</span>
+                                <ion-icon name="arrow-forward-outline" class="ml-2 transition-transform group-hover:translate-x-1"></ion-icon>
+                            </a>
+                        {% else %}
+                            <div class="flex items-center text-slate-500">
+                                <ion-icon name="lock-closed-outline" class="mr-2"></ion-icon>
+                                <span class="text-sm font-medium">Yakunlangan</span>
+                            </div>
+                        {% endif %}
+                        
+                        {% if user.is_staff %}
+                        <a href="{% url 'survey_statistics' survey.pk %}" class="inline-flex items-center text-xs font-medium text-slate-500 hover:text-primary-600 transition-colors">
+                            <ion-icon name="stats-chart-outline" class="mr-1.5 text-base"></ion-icon>
+                            Statistika
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endwith %}
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+{% endblock content %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.survey-card').forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = `opacity 0.5s ${index * 0.1}s ease, transform 0.5s ${index * 0.1}s ease`;
+            setTimeout(() => { card.style.opacity = '1'; card.style.transform = 'translateY(0)'; }, 50);
+        });
+    });
+</script>
+{% endblock extra_js %}

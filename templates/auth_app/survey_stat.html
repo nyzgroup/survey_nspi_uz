@@ -1,0 +1,99 @@
+{% extends 'auth_app/base.html' %}
+
+{% block page_title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+    <div class="mb-8">
+        <a href="{% url 'survey_list' %}" class="inline-flex items-center text-sm font-medium text-slate-600 hover:text-primary-600 transition-colors group">
+            <ion-icon name="arrow-back-outline" class="mr-2 text-lg group-hover:-translate-x-1 transition-transform"></ion-icon>
+            Barcha so'rovnomalarga qaytish
+        </a>
+        <h1 class="text-3xl font-bold font-serif text-slate-900 mt-2">{{ survey.title }}</h1>
+        <p class="text-slate-500 mt-1">So'rovnoma bo'yicha to'liq statistik ma'lumotlar</p>
+    </div>
+
+    <div id="stats-loader" class="animate-pulse">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="h-28 bg-slate-200 rounded-xl"></div><div class="h-28 bg-slate-200 rounded-xl"></div>
+            <div class="h-28 bg-slate-200 rounded-xl"></div><div class="h-28 bg-slate-200 rounded-xl"></div>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="bg-slate-200 h-80 rounded-xl"></div><div class="bg-slate-200 h-80 rounded-xl"></div>
+        </div>
+    </div>
+    
+    <div id="stats-container" class="hidden space-y-8">
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" id="summary-cards"></div>
+
+        <h2 class="text-2xl font-bold text-slate-800 border-b pb-2">Demografik ma'lumotlar</h2>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="bg-white p-6 rounded-xl shadow-soft"><h3 class="text-lg font-semibold text-slate-800 mb-4">Fakultetlar kesimida</h3><div id="facultyChart" class="min-h-[300px]"></div></div>
+            <div class="bg-white p-6 rounded-xl shadow-soft"><h3 class="text-lg font-semibold text-slate-800 mb-4">Kurslar kesimida</h3><div id="levelChart" class="min-h-[300px]"></div></div>
+            <div class="bg-white p-6 rounded-xl shadow-soft"><h3 class="text-lg font-semibold text-slate-800 mb-4">Jinslar kesimida</h3><div id="genderChart" class="min-h-[300px]"></div></div>
+            <div class="bg-white p-6 rounded-xl shadow-soft"><h3 class="text-lg font-semibold text-slate-800 mb-4">Ta'lim shakli</h3><div id="educationFormChart" class="min-h-[300px]"></div></div>
+            <div class="bg-white p-6 rounded-xl shadow-soft"><h3 class="text-lg font-semibold text-slate-800 mb-4">To'lov shakli</h3><div id="paymentFormChart" class="min-h-[300px]"></div></div>
+            <div class="bg-white p-6 rounded-xl shadow-soft"><h3 class="text-lg font-semibold text-slate-800 mb-4">Ijtimoiy holati</h3><div id="socialCategoryChart" class="min-h-[300px]"></div></div>
+        </div>
+
+        <h2 class="text-2xl font-bold text-slate-800 border-b pb-2 pt-4">Savollar bo'yicha tahlil</h2>
+        <div id="questions-stats-container" class="space-y-6"></div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        const statsContainer = document.getElementById('stats-container');
+        const loader = document.getElementById('stats-loader');
+        const apiUrl = `{% url 'survey_statistics_api' survey.pk %}`;
+
+        const CHART_COLORS = ['#0ea5e9', '#0284c7', '#38bdf8', '#7dd3fc', '#0369a1', '#075985', '#0c4a6e'];
+
+        const isDataEmpty = (dataObj) => !dataObj || Object.keys(dataObj).length === 0;
+
+        async function fetchData() {
+            try {
+                const response = await fetch(apiUrl);
+                if (!response.ok) throw new Error(`Server xatosi: ${response.statusText}`);
+                const data = await response.json();
+                renderStatistics(data);
+                loader.classList.add('hidden');
+                statsContainer.classList.remove('hidden');
+            } catch (error) {
+                loader.innerHTML = `<div class="bg-red-50 text-red-700 p-4 rounded-lg">Xatolik: Statistikani yuklab bo'lmadi. ${error.message}</div>`;
+            }
+        }
+
+        function renderStatistics(data) {
+            renderSummaryCards(data);
+
+            createDonutChart('facultyChart', 'Fakultetlar', data.demographics.by_faculty);
+            createBarChart('levelChart', 'Kurslar', data.demographics.by_level);
+            createPieChart('genderChart', 'Jinslar', data.demographics.by_gender);
+            createPieChart('educationFormChart', "Ta'lim shakli", data.demographics.by_education_form);
+            createDonutChart('paymentFormChart', "To'lov shakli", data.demographics.by_payment_form);
+            createBarChart('socialCategoryChart', "Ijtimoiy holati", data.demographics.by_social_category);
+
+            const questionsContainer = document.getElementById('questions-stats-container');
+            data.questions_statistics.forEach((q, index) => {
+                let contentHtml = '';
+                if (q.question_type === 'single_choice' || q.question_type === 'multiple_choice') {
+                    contentHtml = `<div id="questionChart-${q.id}" class="min-h-[200px] -ml-4"></div>`;
+                } else if (q.question_type === 'text') {
+                    contentHtml = `<ul class="mt-4 space-y-2 max-h-60 overflow-y-auto custom-scrollbar pr-2">${(q.text_answers || []).map(ans => `<li class="bg-slate-50 p-3 rounded-lg text-sm text-slate-700">${ans}</li>`).join('') || '<li class="text-slate-400">Matnli javoblar mavjud emas.</li>'}</ul>`;
+                }
+                
+                questionsContainer.innerHTML += `<div class="bg-white p-6 rounded-xl shadow-soft"><h4 class="font-semibold text-slate-800">${index + 1}. ${q.text}</h4>${contentHtml}</div>`;
+            });
+        }
+
+        fetchData();
+    });
+</script>
+{% endblock extra_js %}
