@@ -11,7 +11,11 @@ def custom_login_required_with_token_refresh(view_func):
         student_db_id_in_session = request.session.get('student_db_id')
         api_token_in_session = request.session.get('api_token')
 
-        if not api_token_in_session or not student_db_id_in_session:
+        # Fallback: Agar user Student modelidan bo'lsa va login bo'lgan bo'lsa
+        if not (api_token_in_session and student_db_id_in_session):
+            if getattr(request.user, 'is_authenticated', False) and request.user.__class__.__name__ == 'Student':
+                request.current_student = request.user
+                return view_func(request, *args, **kwargs)
             messages.warning(request, "Iltimos, davom etish uchun tizimga kiring.")
             login_url_name = reverse('login')
             current_path = request.get_full_path()

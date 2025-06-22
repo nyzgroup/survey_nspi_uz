@@ -334,6 +334,21 @@
                         <ion-icon name="list-outline" class="text-xl"></ion-icon>
                         <span class="ml-1.5">So'rovnomalar</span>
                     </a>
+                    <a href="{% url 'responsible_list' %}" class="nav-link-desktop {% if request.resolver_match.url_name == 'responsible_list' %}nav-link-active{% endif %}">
+                        <ion-icon name="people-outline" class="text-xl"></ion-icon>
+                        <span class="ml-1.5">Mas'ul shaxslar</span>
+                    </a>
+                    <a href="{% url 'message_list' %}" class="nav-link-desktop relative {% if request.resolver_match.url_name == 'message_list' %}nav-link-active{% endif %}">
+                        <ion-icon name="mail-outline" class="text-xl"></ion-icon>
+                        <span class="ml-1.5">Murojaatlarim</span>
+                        {% if request.session.unread_message_count and request.session.unread_message_count > 0 %}
+                        <span class="absolute -top-1 -right-2 inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold leading-none text-white bg-red-600 rounded-full">{{ request.session.unread_message_count }}</span>
+                        {% endif %}
+                    </a>
+                    <a href="{% url 'message_create' %}" class="nav-link-desktop">
+                        <ion-icon name="add-circle-outline" class="text-xl"></ion-icon>
+                        <span class="ml-1.5">Yangi murojaat</span>
+                    </a>
                     {% endif %}
                 </div>
                 
@@ -418,6 +433,15 @@
                 </a>
                 <a href="{% url 'survey_list' %}" class="nav-link-mobile {% if request.resolver_match.url_name == 'survey_list' %}nav-link-mobile-active{% endif %}">
                     So'rovnomalar
+                </a>
+                <a href="{% url 'responsible_list' %}" class="nav-link-mobile {% if request.resolver_match.url_name == 'responsible_list' %}nav-link-mobile-active{% endif %}">
+                    Mas'ul shaxslar
+                </a>
+                <a href="{% url 'message_list' %}" class="nav-link-mobile {% if request.resolver_match.url_name == 'message_list' %}nav-link-mobile-active{% endif %}">
+                    Murojaatlarim
+                </a>
+                <a href="{% url 'message_create' %}" class="nav-link-mobile">
+                    Yangi murojaat
                 </a>
                 {% endif %}
             </div>

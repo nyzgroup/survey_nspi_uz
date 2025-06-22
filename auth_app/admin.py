@@ -8,7 +8,7 @@ import logging
 import os
 from .models import (
     Student, Survey, SurveyFile, Question, Choice, SurveyResponse, Answer,
-    ResponsiblePerson, MessageToResponsible, MessageAttachment
+    ResponsiblePerson, MessageToResponsible, MessageAttachment, MessageReply
 )
 logger = logging.getLogger(__name__)
 @admin.register(Student)
@@ -398,148 +398,38 @@ class SurveyResponseAdmin(admin.ModelAdmin):
 
 @admin.register(ResponsiblePerson)
 class ResponsiblePersonAdmin(admin.ModelAdmin):
-    list_per_page = 20
-    list_max_show_all = 1000
-    list_display = ('full_name', 'position', 'email', 'phone_number', 'is_active', 'received_messages_count')
-    list_filter = ('is_active', 'position')
-    search_fields = ('first_name', 'last_name', 'patronymic', 'position', 'email')
-    fieldsets = (
-        (None, {
-            'fields': (('first_name', 'last_name', 'patronymic'), 'position', 'is_active')
-        }),
-        ('Aloqa Ma\'lumotlari', {
-            'fields': ('email', 'phone_number', 'office_location'),
-            'classes': ('collapse',)
-        }),
-        ('Mas\'uliyat Sohalari', {
-            'fields': ('responsibilities_short',),
-            'classes': ('collapse',)
-        }),
-    )
-
-    @admin.display(description='Kelgan xabarlar')
-    def received_messages_count(self, obj):
-        count = obj.received_messages_from_students.count()
-        if count > 0:
-            url = (
-                reverse("admin:auth_app_messagetoresponsible_changelist")
-                + f"?responsible_person__id__exact={obj.pk}"
-            )
-            return format_html('<a href="{}">{} ta</a>', url, count)
-        return "0 ta"
-    received_messages_count.admin_order_field = 'messages_count' # get_queryset da annotate qilish kerak
-
-    def get_queryset(self, request):
-        qs = super().get_queryset(request)
-        qs = qs.annotate(messages_count=Count('received_messages_from_students', distinct=True))
-        return qs
-
+    list_display = ("full_name", "position", "is_active", "phone_number", "email")
+    search_fields = ("first_name", "last_name", "position", "email")
+    list_filter = ("is_active",)
+    readonly_fields = ("created_at", "updated_at")
 
 class MessageAttachmentInline(admin.TabularInline):
     model = MessageAttachment
     extra = 0
-    fields = ('file_link', 'original_filename', 'file_size_display', 'uploaded_at_formatted')
-    readonly_fields = ('file_link', 'original_filename', 'file_size_display', 'uploaded_at_formatted')
-    verbose_name = "Biriktirma"
-    verbose_name_plural = "Biriktirmalar"
-    
-    @admin.display(description='Fayl')
-    def file_link(self, obj):
-        if obj.file:
-            return format_html('<a href="{}" target="_blank">{}</a>', obj.file.url, obj.original_filename or "Fayl")
-        return "-"
-        
-    @admin.display(description='Hajmi (KB)')
-    def file_size_display(self, obj):
-        return obj.file_size_kb
-        
-    @admin.display(description='Yuklangan vaqti')
-    def uploaded_at_formatted(self, obj):
-        return obj.uploaded_at.strftime('%Y-%m-%d %H:%M') if obj.uploaded_at else '-'
+    readonly_fields = ("original_filename", "uploaded_at", "file_type", "file_size_kb")
 
-    def has_add_permission(self, request, obj=None): return False
-    def has_change_permission(self, request, obj=None): return False
-    def has_delete_permission(self, request, obj=None): return False
-
+class MessageReplyInline(admin.TabularInline):
+    model = MessageReply
+    extra = 0
+    readonly_fields = ("content", "created_at", "replied_by", "unique_code", "qr_code_image")
 
 @admin.register(MessageToResponsible)
 class MessageToResponsibleAdmin(admin.ModelAdmin):
-    list_display = ('subject_short', 'student_link', 'responsible_person_link', 'status', 'created_at_formatted', 'responded_at_formatted', 'has_attachments')
-    list_filter = ('status', 'responsible_person', 'created_at')
-    search_fields = ('subject', 'content', 'student__username', 'student__first_name', 'student__last_name', 'responsible_person__first_name', 'responsible_person__last_name')
-    list_editable = ('status',)
-    readonly_fields = ('student', 'responsible_person', 'subject', 'content', 'created_at', 'updated_at', 'responded_by_display', 'responded_at')
-    inlines = [MessageAttachmentInline]
+    list_display = ("subject", "student", "responsible_person", "status", "created_at", "unique_code")
+    list_filter = ("status", "created_at", "responsible_person")
+    search_fields = ("subject", "content", "student__username", "responsible_person__last_name")
+    inlines = [MessageAttachmentInline, MessageReplyInline]
+    readonly_fields = ("unique_code", "qr_code_image", "created_at", "updated_at", "responded_at")
+    autocomplete_fields = ("student", "responsible_person", "responded_by")
 
-    fieldsets = (
-        ('Xabar Ma\'lumotlari', {
-            'fields': ('student', 'responsible_person', 'subject', 'status', 'created_at', 'updated_at')
-        }),
-        ('Xabar Mazmuni', { # Content ni alohida fieldsetga olish mumkin
-            'fields': ('content',),
-            'classes': ('wide',),
-        }),
-        ('Javob Berish (Mas\'ul shaxs tomonidan)', {
-            'fields': ('response_content', 'responded_by_display', 'responded_at'),
-            'classes': ('wide',),
-        }),
-    )
-    
-    def save_model(self, request, obj, form, change):
-        if 'response_content' in form.changed_data :
-            current_response_content = form.cleaned_data.get('response_content')
-            if current_response_content and (not obj.responded_by or obj.response_content != current_response_content):
-                obj.responded_by = request.user
-                obj.responded_at = timezone.now()
-            elif not current_response_content: # Agar javob o'zgartirilsa
-                obj.responded_by = None
-                obj.responded_at = None
+@admin.register(MessageAttachment)
+class MessageAttachmentAdmin(admin.ModelAdmin):
+    list_display = ("message", "original_filename", "file_type", "file_size_kb", "uploaded_at")
+    readonly_fields = ("original_filename", "uploaded_at", "file_type", "file_size_kb")
+    search_fields = ("original_filename",)
 
-            if current_response_content and obj.status not in ['answered', 'closed']:
-                 obj.status = 'answered'
-            elif not current_response_content and obj.status == 'answered': # Agar javob o'chirilsa va status 'answered' bo'lsa
-                 obj.status = 'seen' # Yoki 'new' ga qaytarish logikaga qarab
-        super().save_model(request, obj, form, change)
-
-    @admin.display(description='Mavzu (qisqa)')
-    def subject_short(self, obj):
-        return obj.subject[:50] + '...' if len(obj.subject) > 50 else obj.subject
-
-    @admin.display(description='Talaba')
-    def student_link(self, obj):
-        if obj.student:
-            url = reverse("admin:auth_app_student_change", args=[obj.student.pk])
-            return format_html('<a href="{}">{}</a>', url, obj.student.short_name_api or obj.student.username)
-        return "Noma'lum talaba"
-
-    @admin.display(description='Mas\'ul shaxs')
-    def responsible_person_link(self, obj):
-        if obj.responsible_person:
-            url = reverse("admin:auth_app_responsibleperson_change", args=[obj.responsible_person.pk])
-            return format_html('<a href="{}">{}</a>', url, str(obj.responsible_person))
-        return "Noma'lum mas'ul"
-
-    @admin.display(description='Yuborilgan vaqti')
-    def created_at_formatted(self, obj):
-        return obj.created_at.strftime('%Y-%m-%d %H:%M')
-
-    @admin.display(description='Javob berilgan vaqti')
-    def responded_at_formatted(self, obj):
-        return obj.responded_at.strftime('%Y-%m-%d %H:%M') if obj.responded_at else '-'
-
-    @admin.display(description='Javob bergan shaxs')
-    def responded_by_display(self, obj):
-        return obj.responded_by.username if obj.responded_by else '-'
-    
-    @admin.display(description='Biriktirmalar', boolean=True)
-    def has_attachments(self, obj):
-        return obj.attachments.exists()
-    has_attachments.admin_order_field = 'attachments_count' # get_queryset da annotate qilish kerak
-
-    def get_queryset(self, request):
-        qs = super().get_queryset(request)
-        qs = qs.annotate(attachments_count=Count('attachments', distinct=True))
-        return qs
-    
-    def has_add_permission(self, request): # Xabarlar talabalar tomonidan yuboriladi
-        return False
+@admin.register(MessageReply)
+class MessageReplyAdmin(admin.ModelAdmin):
+    list_display = ("message", "replied_by", "created_at", "unique_code")
+    readonly_fields = ("unique_code", "qr_code_image", "created_at")
+    search_fields = ("content", "unique_code")

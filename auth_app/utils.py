@@ -130,3 +130,13 @@ def _handle_api_token_refresh(request):
         logger.critical(f"Unexpected error during token refresh: {e}", exc_info=True)
         request.session.flush()
         return False
+import qrcode
+from io import BytesIO
+from django.core.files.base import ContentFile
+
+def generate_qr_code_image(data, prefix=""):
+    qr = qrcode.make(data)
+    buffer = BytesIO()
+    qr.save(buffer, format="PNG")
+    filename = f"{prefix}{data}_qr.png"
+    return ContentFile(buffer.getvalue(), name=filename)

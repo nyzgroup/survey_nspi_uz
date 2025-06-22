@@ -4,6 +4,9 @@ from django.utils import timezone
 from django.conf import settings # Foydalanuvchi modelini olish uchun (agar Student o'rniga standart User ishlatilsa)
 import os # Fayl nomini tozalash uchun
 from uuid import uuid4 # Unikal fayl nomlari uchun
+import qrcode
+from io import BytesIO
+from django.core.files.base import ContentFile
 
 # --- Mavjud Student modeli (o'zgarishsiz qoldiriladi) ---
 class Student(models.Model):
@@ -345,10 +348,10 @@ class ResponsiblePerson(models.Model):
     patronymic = models.CharField(max_length=100, blank=True, null=True, verbose_name="Otasining ismi (ixtiyoriy)")
     position = models.CharField(max_length=255, verbose_name="Lavozimi",
                                 help_text="Masalan, Dekan muovini, Tyutor, Kafedra mudiri")
-    
-    # Qo'shimcha aloqa ma'lumotlari (ixtiyoriy)
-    email = models.EmailField(blank=True, null=True, verbose_name="Elektron pochta")
+    image_url = models.URLField(max_length=500, blank=True, null=True, verbose_name="Surat (URL)")
     phone_number = models.CharField(max_length=30, blank=True, null=True, verbose_name="Telefon raqami")
+    telegram_username = models.CharField(max_length=100, blank=True, null=True, verbose_name="Telegram username")
+    email = models.EmailField(blank=True, null=True, verbose_name="Elektron pochta")
     office_location = models.CharField(max_length=255, blank=True, null=True, verbose_name="Xonasi / Joylashuvi")
     
     # Mas'ul shaxsga murojaat qilish mumkin bo'lgan sohalar yoki qisqa tavsif
@@ -439,11 +442,36 @@ class MessageToResponsible(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Yuborilgan vaqti")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="Oxirgi yangilanish") # Holat o'zgarganda
 
-    # Talabaning xabarni ko'rganligini belgilash uchun (agar kerak bo'lsa)
-    # is_read_by_student = models.BooleanField(default=False, verbose_name="Talaba tomonidan o'qildimi?")
+    unique_code = models.CharField(max_length=6, unique=True, editable=False, verbose_name="Murojaat ID (6 xonali)")
+    qr_code_image = models.ImageField(upload_to='message_qrcodes/', blank=True, null=True, verbose_name="QR kod rasmi")
+
+    def save(self, *args, **kwargs):
+        if not self.unique_code:
+            import random
+            for _ in range(10):
+                code = ''.join([str(random.randint(0, 9)) for _ in range(6)])
+                if not MessageToResponsible.objects.filter(unique_code=code).exists():
+                    self.unique_code = code
+                    break
+            else:
+                raise Exception("Unique 6-digit code generation failed after 10 attempts.")
+        super().save(*args, **kwargs)
+        if self.unique_code and not self.qr_code_image:
+            qr = qrcode.make(self.unique_code)
+            buffer = BytesIO()
+            qr.save(buffer, format='PNG')
+            file_name = f"message_{self.pk}_qr.png"
+            self.qr_code_image.save(file_name, ContentFile(buffer.getvalue()), save=False)
+            super().save(update_fields=["qr_code_image"])
+
+    @property
+    def qr_code_url(self):
+        if self.qr_code_image:
+            return self.qr_code_image.url
+        return None
 
     def __str__(self):
-        return f"Xabar: {self.subject} (Talaba: {self.student.short_name_api or self.student.username} -> Mas'ul: {self.responsible_person})"
+        return f"Xabar: {self.subject} (ID: {self.unique_code}) (Talaba: {self.student.short_name_api or self.student.username} -> Mas'ul: {self.responsible_person})"
 
     class Meta:
         verbose_name = "Mas'ul shaxsga xabar"
@@ -489,3 +517,44 @@ class MessageAttachment(models.Model):
         if self.file and hasattr(self.file, 'size'):
             return round(self.file.size / 1024, 2)
         return 0
+
+class MessageReply(models.Model):
+    message = models.ForeignKey(MessageToResponsible, related_name='replies', on_delete=models.CASCADE, verbose_name="Xabar")
+    replied_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Javob bergan shaxs")
+    content = models.TextField(verbose_name="Javob matni")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Javob vaqti")
+    unique_code = models.CharField(max_length=8, unique=True, editable=False, verbose_name="Javob ID (8 xonali)")
+    qr_code_image = models.ImageField(upload_to='message_qrcodes/replies/', blank=True, null=True, verbose_name="QR kod (javob)")
+
+    def save(self, *args, **kwargs):
+        if not self.unique_code:
+            import random
+            for _ in range(10):
+                code = ''.join([str(random.randint(0, 9)) for _ in range(8)])
+                if not MessageReply.objects.filter(unique_code=code).exists():
+                    self.unique_code = code
+                    break
+            else:
+                raise Exception("Unique 8-digit code generation failed after 10 attempts.")
+        super().save(*args, **kwargs)
+        if self.unique_code and not self.qr_code_image:
+            qr = qrcode.make(self.unique_code)
+            buffer = BytesIO()
+            qr.save(buffer, format='PNG')
+            file_name = f"reply_{self.pk}_qr.png"
+            self.qr_code_image.save(file_name, ContentFile(buffer.getvalue()), save=False)
+            super().save(update_fields=["qr_code_image"])
+
+    @property
+    def qr_code_url(self):
+        if self.qr_code_image:
+            return self.qr_code_image.url
+        return None
+
+    def __str__(self):
+        return f"Javob: {self.content[:30]}... (ID: {self.unique_code})"
+
+    class Meta:
+        verbose_name = "Xabar javobi"
+        verbose_name_plural = "Xabar javoblari"
+        ordering = ['-created_at']

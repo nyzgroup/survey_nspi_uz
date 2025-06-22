@@ -10,6 +10,7 @@ from django.urls import reverse # reverse ni import qilish
 from django.utils import timezone
 from django.core.cache import cache
 from django.http import Http404, HttpResponseForbidden
+from django.utils.decorators import method_decorator
 
 from .forms import LoginForm
 from .models import Student,Survey, SurveyResponse, Answer, Question
@@ -666,3 +667,83 @@ def survey_statistics_view(request, survey_pk):
         'page_title': f'"{survey.title}" Statistikasi'
     }
     return render(request, 'auth_app/survey_stat.html', context)
+
+
+from django.views.generic import ListView, DetailView, CreateView
+from django.urls import reverse_lazy
+from django.contrib.auth.mixins import LoginRequiredMixin
+from .models import ResponsiblePerson, MessageToResponsible, MessageReply
+from .forms import MessageToResponsibleForm, MessageReplyForm
+
+class ResponsiblePersonListView(ListView):
+    model = ResponsiblePerson
+    template_name = "auth_app/responsible_list.html"
+    context_object_name = "responsibles"
+    queryset = ResponsiblePerson.objects.filter(is_active=True)
+
+class MessageListView(ListView):
+    model = MessageToResponsible
+    template_name = "auth_app/message_list.html"
+    context_object_name = "messages"
+    paginate_by = 20
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        if hasattr(self.request.user, 'is_superuser') and self.request.user.is_superuser:
+            return qs
+        student = get_student_from_request(self.request)
+        if student:
+            return qs.filter(student=student)
+        return qs.none()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        student = get_student_from_request(self.request)
+        context['student'] = student
+        if not student:
+            context['student_warning'] = "Foydalanuvchi sessiyasi yoki student obyekt topilmadi! Iltimos, qayta kiring yoki administratorga murojaat qiling."
+        return context
+
+class MessageDetailView(LoginRequiredMixin, DetailView):
+    model = MessageToResponsible
+    template_name = "auth_app/message_detail.html"
+    context_object_name = "message"
+
+class MessageReplyView(LoginRequiredMixin, CreateView):
+    model = MessageReply
+    form_class = MessageReplyForm
+    template_name = "auth_app/message_reply_form.html"
+
+    def form_valid(self, form):
+        form.instance.message_id = self.kwargs["pk"]
+        form.instance.replied_by = self.request.user
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy("message_detail", kwargs={"pk": self.kwargs["pk"]})
+
+@method_decorator(custom_login_required_with_token_refresh, name="dispatch")
+class MessageCreateView(CreateView):
+    model = MessageToResponsible
+    form_class = MessageToResponsibleForm
+    template_name = "auth_app/message_create.html"
+    success_url = reverse_lazy("message_list")
+
+    def form_valid(self, form):
+        student = getattr(self.request.user, 'student', None)
+        if not student:
+            student = getattr(self.request, 'current_student', None)
+        if not student:
+            from django.http import HttpResponseForbidden
+            return HttpResponseForbidden("Talaba ma'lumotlari topilmadi. Iltimos, qayta kiring.")
+        form.instance.student = student
+        return super().form_valid(form)
+
+def get_student_from_request(request):
+    student = getattr(request.user, 'student', None)
+    if not student:
+        student = getattr(request, 'current_student', None)
+    # Fallback: Agar user Student modelidan bo'lsa va login bo'lgan bo'lsa
+    if not student and getattr(request.user, 'is_authenticated', False) and request.user.__class__.__name__ == 'Student':
+        student = request.user
+    return student

@@ -3,7 +3,7 @@
 import logging
 from django import forms
 from django.core.exceptions import ValidationError
-from .models import Student, Survey, Question, Choice, SurveyResponse, Answer
+from .models import Student, Survey, Question, Choice, SurveyResponse, Answer, MessageToResponsible, MessageAttachment, MessageReply
 
 logger = logging.getLogger(__name__)
 
@@ -136,3 +136,38 @@ def create_answer_form_set(survey, student=None, data=None):
         formset = AnswerFormSet(form_kwargs=form_kwargs)
 
     return formset
+
+
+# --- Murojaat, biriktirma va javob uchun formalar ---
+
+class MessageToResponsibleForm(forms.ModelForm):
+    class Meta:
+        model = MessageToResponsible
+        fields = ['responsible_person', 'subject', 'content']
+        widgets = {
+            "subject": forms.TextInput(attrs={"class": "form-control"}),
+            "content": forms.Textarea(attrs={"class": "form-control", "rows": 4}),
+        }
+
+class MessageAttachmentForm(forms.ModelForm):
+    class Meta:
+        model = MessageAttachment
+        fields = ["file"]
+
+    def clean_file(self):
+        file = self.cleaned_data["file"]
+        allowed_types = ["pdf", "doc", "docx", "xls", "xlsx", "jpg", "jpeg", "png", "mp3", "wav", "ogg", "mp4", "mov", "avi"]
+        ext = file.name.split(".")[-1].lower()
+        if ext not in allowed_types:
+            raise forms.ValidationError("Ruxsat etilmagan fayl turi.")
+        if file.size > 10 * 1024 * 1024:
+            raise forms.ValidationError("Fayl hajmi 10MB dan oshmasligi kerak.")
+        return file
+
+class MessageReplyForm(forms.ModelForm):
+    class Meta:
+        model = MessageReply
+        fields = ["content"]
+        widgets = {
+            "content": forms.Textarea(attrs={"class": "form-control", "rows": 3}),
+        }

@@ -1,0 +1,25 @@
+{% extends 'auth_app/base.html' %}
+{% block title %}Mas'ul shaxslar{% endblock %}
+{% block content %}
+<h2 class="text-2xl font-bold mb-6 text-center">Mas'ul shaxslar</h2>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+  {% for person in responsibles %}
+  <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center hover:shadow-2xl transition">
+    {% if person.image_url %}
+    <img src="{{ person.image_url }}" class="rounded-full w-32 h-32 object-cover mb-4 border-4 border-blue-100 shadow" alt="{{ person.full_name }}">
+    {% endif %}
+    <h5 class="text-lg font-semibold mb-1 text-blue-700">{{ person.full_name }}</h5>
+    <p class="mb-1 text-gray-700"><strong>Lavozimi:</strong> {{ person.position }}</p>
+    {% if person.phone_number %}<p class="mb-1 text-gray-600"><strong>Telefon:</strong> {{ person.phone_number }}</p>{% endif %}
+    {% if person.email %}<p class="mb-1 text-gray-600"><strong>Email:</strong> {{ person.email }}</p>{% endif %}
+    {% if person.telegram_username %}<p class="mb-1 text-gray-600"><strong>Telegram:</strong> @{{ person.telegram_username }}</p>{% endif %}
+    {% if person.office_location %}<p class="mb-1 text-gray-600"><strong>Xonasi:</strong> {{ person.office_location }}</p>{% endif %}
+    {% if person.responsibilities_short %}<p class="mb-1 text-gray-600"><strong>Mas'uliyat sohalari:</strong> {{ person.responsibilities_short }}</p>{% endif %}
+  </div>
+  {% empty %}
+  <div class="col-span-full">
+    <div class="alert alert-info text-center">Mas'ul shaxslar topilmadi.</div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}
