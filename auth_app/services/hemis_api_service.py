@@ -17,11 +17,15 @@ class HemisAPIClient(BaseAPIClient):
         payload = {'login': username, 'password': password}
         try:
             response_data = self.post(settings.EXTERNAL_API_LOGIN_ENDPOINT.replace(self.base_url, ''), json=payload)
-            # API javobini tekshirish
-            if response_data and response_data.get('success') and response_data.get('data', {}).get('token'):
+            # API javobini tekshirish - response_data dict yoki string bo'lishi mumkin
+            if isinstance(response_data, dict) and response_data.get('success') and response_data.get('data', {}).get('token'):
                 return response_data['data']['token'], response_data.get('data', {}).get('refresh_token_cookie_data') # Refresh token uchun cookie
             else:
-                error_msg = (response_data.get('error') if response_data else None) or "Login muvaffaqiyatsiz (API)."
+                # response_data string yoki dict bo'lishi mumkin
+                if isinstance(response_data, dict):
+                    error_msg = response_data.get('error') or "Login muvaffaqiyatsiz (API)."
+                else:
+                    error_msg = str(response_data) if response_data else "Login muvaffaqiyatsiz (API)."
                 raise APIClientException(error_msg, response_data=response_data)
         except APIClientException as e:
             # Xatolikni loglash va qayta chiqarish (yoki boshqacha qayta ishlash)
@@ -46,11 +50,16 @@ class HemisAPIClient(BaseAPIClient):
 
         try:
             response_data = self.get(settings.EXTERNAL_API_ACCOUNT_ME_ENDPOINT.replace(self.base_url, ''), headers=headers)
-            if response_data and response_data.get('success') and response_data.get('data'):
+            # response_data dict yoki string bo'lishi mumkin
+            if isinstance(response_data, dict) and response_data.get('success') and response_data.get('data'):
                 # cache.set(cache_key, response_data['data'], timeout=60*15) # 15 daqiqaga keshlash
                 return response_data['data']
             else:
-                error_msg = (response_data.get('error') if response_data else None) or "Talaba ma'lumotlarini olishda xatolik (API)."
+                # response_data string yoki dict bo'lishi mumkin
+                if isinstance(response_data, dict):
+                    error_msg = response_data.get('error') or "Talaba ma'lumotlarini olishda xatolik (API)."
+                else:
+                    error_msg = str(response_data) if response_data else "Talaba ma'lumotlarini olishda xatolik (API)."
                 raise APIClientException(error_msg, response_data=response_data)
         except APIClientException as e:
             logger.warning(f"HEMIS API get_account_me failed: {e.args[0]}", extra={'response': e.response_data})
@@ -68,13 +77,18 @@ class HemisAPIClient(BaseAPIClient):
         headers = {'Cookie': refresh_cookie_value}
         try:
             response_data = self.post(settings.EXTERNAL_API_REFRESH_TOKEN_ENDPOINT.replace(self.base_url, ''), headers=headers)
-            if response_data and response_data.get('success') and response_data.get('data', {}).get('token'):
+            # response_data dict yoki string bo'lishi mumkin
+            if isinstance(response_data, dict) and response_data.get('success') and response_data.get('data', {}).get('token'):
                 new_access_token = response_data['data']['token']
                 # Yangi refresh token cookie'si ham kelishi mumkin, uni ham qaytarish kerak
                 new_refresh_cookie = response_data.get('headers', {}).get('Set-Cookie') # Yoki API javobiga qarab
                 return new_access_token, new_refresh_cookie
             else:
-                error_msg = (response_data.get('error') if response_data else None) or "Tokenni yangilashda xatolik (API)."
+                # response_data string yoki dict bo'lishi mumkin
+                if isinstance(response_data, dict):
+                    error_msg = response_data.get('error') or "Tokenni yangilashda xatolik (API)."
+                else:
+                    error_msg = str(response_data) if response_data else "Tokenni yangilashda xatolik (API)."
                 logger.warning(f"Failed to refresh token: {error_msg}", extra={'response_data': response_data})
                 raise APIClientException(error_msg, response_data=response_data)
         except APIClientException as e:

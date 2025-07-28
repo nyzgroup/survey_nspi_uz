@@ -70,9 +70,14 @@ class BaseAPIClient:
             
             error_message = f"API HTTP Error {status_code} on {url}"
             if response_data:
-                 api_err = response_data.get('error') or response_data.get('message') or response_data.get('detail')
-                 if api_err:
-                     error_message = str(api_err) # API xabarini ishlatamiz
+                # response_data dict yoki string bo'lishi mumkin
+                if isinstance(response_data, dict):
+                    api_err = response_data.get('error') or response_data.get('message') or response_data.get('detail')
+                    if api_err:
+                        error_message = str(api_err) # API xabarini ishlatamiz
+                elif isinstance(response_data, str):
+                    # Agar string bo'lsa, uni to'g'ridan-to'g'ri ishlatamiz
+                    error_message = response_data[:200] if len(response_data) > 200 else response_data
 
             logger.error(f"{error_message}. Response data: {response_data}", exc_info=True, extra=log_extra)
             raise APIClientException(error_message, status_code=status_code, response_data=response_data) from e
