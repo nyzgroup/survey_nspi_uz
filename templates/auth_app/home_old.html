@@ -1,0 +1,331 @@
+{% extends "auth_app/base.html" %}
+
+{% block page_title %}Navoiy Davlat Universiteti - HEMIS Tizimi{% endblock %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    .hero-floating-bg {
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: 10rem;
+        height: 10rem;
+        background: rgba(99, 102, 241, 0.2);
+        border-radius: 50%;
+        filter: blur(3rem);
+        animation: pulse 2s infinite;
+    }
+    
+    .float-animation {
+        animation: float 6s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+    }
+    
+    .stats-icon {
+        width: 3.5rem;
+        height: 3.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        border-radius: 0.75rem;
+        transition: all 0.3s ease;
+    }
+    
+    .partners-logo {
+        filter: grayscale(1) opacity(0.7);
+        transition: filter 0.3s ease;
+        max-height: 48px;
+    }
+    
+    .partners-logo:hover {
+        filter: grayscale(0) opacity(1);
+    }
+    
+    .feature-icon {
+        width: 3.5rem;
+        height: 3.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        border-radius: 0.5rem;
+        margin-bottom: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="fade-in-on-scroll">
+    <!-- Hero Section -->
+    <section class="hero-gradient position-relative overflow-hidden py-5" style="min-height: 80vh;">
+        <div class="hero-floating-bg"></div>
+        <div class="container-fluid">
+            <div class="row align-items-center min-vh-75">
+                <div class="col-lg-6 mb-4 mb-lg-0">
+                    <h1 class="display-4 fw-bold text-white mb-4">
+                        <i class="fas fa-graduation-cap text-warning me-3" style="animation: bounce 2s infinite;"></i>
+                        Navoiy Davlat Universiteti - Anti Korrupsiya Tizimi
+                    </h1>
+                    <p class="lead text-white mb-4">Ta'lim sifatini oshirish va boshqarish tizimi</p>
+                    <ul class="list-unstyled mb-4 text-white-50">
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            Zamonaviy raqamli boshqaruv
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            Talaba va o'qituvchi uchun qulay interfeys
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            Onlayn natijalar va tezkor xabarlar
+                        </li>
+                    </ul>
+                    <div class="d-flex flex-column flex-sm-row gap-3">
+                        <a href="{% url 'login' %}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-sign-in-alt me-2"></i>Tizimga kirish
+                        </a>
+                        <a href="#features" class="btn btn-outline-light btn-lg">
+                            <i class="fas fa-info-circle me-2"></i>Batafsil ma'lumot
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-6 text-center position-relative">
+                    <img src="https://nsuni.uz/api/files/settings/db112544-a8cb-41a5-b9f2-139072961f8e.jpg" 
+                         alt="NDPI HEMIS Tizimi" 
+                         class="img-fluid rounded-3 shadow-lg float-animation" 
+                         style="max-width: 400px;">
+                    <i class="fas fa-cloud position-absolute top-0 start-0 text-white-50 fs-1" 
+                       style="animation: pulse 2s infinite;"></i>
+                    <i class="fas fa-sparkles position-absolute bottom-0 end-0 text-warning fs-2" 
+                       style="animation: spin 10s linear infinite;"></i>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Statistics Section -->
+    <section class="py-5 bg-light">
+        <div class="container-fluid">
+            <div class="row g-4">
+                <div class="col-6 col-md-3">
+                    <div class="card card-custom text-center h-100 border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="stats-icon bg-primary bg-gradient text-white mx-auto mb-3">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <h3 class="text-primary fw-bold mb-0">20,000+</h3>
+                            <small class="text-muted">Talabalar</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="card card-custom text-center h-100 border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="stats-icon bg-success bg-gradient text-white mx-auto mb-3">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                            </div>
+                            <h3 class="text-primary fw-bold mb-0">1000+</h3>
+                            <small class="text-muted">O'qituvchilar</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="card card-custom text-center h-100 border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="stats-icon bg-info bg-gradient text-white mx-auto mb-3">
+                                <i class="fas fa-book"></i>
+                            </div>
+                            <h3 class="text-primary fw-bold mb-0">50+</h3>
+                            <small class="text-muted">Yo'nalishlar</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="card card-custom text-center h-100 border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="stats-icon bg-warning bg-gradient text-white mx-auto mb-3">
+                                <i class="fas fa-smile"></i>
+                            </div>
+                            <h3 class="text-primary fw-bold mb-0">95%</h3>
+                            <small class="text-muted">Mamnun talabalar</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Features Section -->
+    <section class="py-5 bg-white">
+        <div class="container-fluid">
+            <h2 class="text-center fw-bold mb-5">Imkoniyatlar</h2>
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-4">
+                    <div class="card card-custom h-100 border-0 shadow-sm">
+                        <div class="card-body p-4">
+                            <div class="feature-icon bg-primary bg-gradient text-white">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <h5 class="card-title mb-3">So'rovnoma Yaratish</h5>
+                            <p class="card-text text-muted">O'qituvchilar o'zlari mustaqil tarzda so'rovnomalar yaratish imkoniyatiga ega.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="card card-custom h-100 border-0 shadow-sm">
+                        <div class="card-body p-4">
+                            <div class="feature-icon bg-success bg-gradient text-white">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <h5 class="card-title mb-3">Statistik Tahlil</h5>
+                            <p class="card-text text-muted">Yig'ilgan natijalar asosida avtomatik tahlillar va grafik hisobotlar.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="card card-custom h-100 border-0 shadow-sm">
+                        <div class="card-body p-4">
+                            <div class="feature-icon bg-info bg-gradient text-white">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <h5 class="card-title mb-3">Xavfsizlik va Maxfiylik</h5>
+                            <p class="card-text text-muted">Javoblar anonim tarzda to'planadi va xavfsizlik yuqori darajada ta'minlanadi.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Features Section -->
+    <section id="features" class="py-5 bg-light">
+        <div class="container-fluid">
+            <h2 class="text-center fw-bold mb-5">HEMIS Tizimi Imkoniyatlari</h2>
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-4">
+                    <div class="card card-custom h-100 border-0 shadow-sm">
+                        <div class="card-body p-4">
+                            <div class="feature-icon bg-primary bg-gradient text-white">
+                                <i class="fas fa-user-circle"></i>
+                            </div>
+                            <h5 class="card-title mb-3">Talaba Profili</h5>
+                            <p class="card-text text-muted">Shaxsiy profilingiz, akademik ma'lumotlaringiz va barcha kerakli resurslar bir joyda</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="card card-custom h-100 border-0 shadow-sm">
+                        <div class="card-body p-4">
+                            <div class="feature-icon bg-info bg-gradient text-white">
+                                <i class="fas fa-calendar-alt"></i>
+                            </div>
+                            <h5 class="card-title mb-3">Akademik Jadval</h5>
+                            <p class="card-text text-muted">Dars jadvalingiz, imtihonlar va barcha akademik tadbirlar</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="card card-custom h-100 border-0 shadow-sm">
+                        <div class="card-body p-4">
+                            <div class="feature-icon bg-warning bg-gradient text-white">
+                                <i class="fas fa-chart-bar"></i>
+                            </div>
+                            <h5 class="card-title mb-3">Baholar Tahlili</h5>
+                            <p class="card-text text-muted">Fanlar bo'yicha baxolaringiz va ularning dinamikasini kuzatish</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="card card-custom h-100 border-0 shadow-sm">
+                        <div class="card-body p-4">
+                            <div class="feature-icon bg-success bg-gradient text-white">
+                                <i class="fas fa-credit-card"></i>
+                            </div>
+                            <h5 class="card-title mb-3">Moliyaviy Hisobot</h5>
+                            <p class="card-text text-muted">To'lovlar va qarzdorliklaringiz to'g'risida to'liq ma'lumot</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="card card-custom h-100 border-0 shadow-sm">
+                        <div class="card-body p-4">
+                            <div class="feature-icon bg-danger bg-gradient text-white">
+                                <i class="fas fa-sparkles"></i>
+                            </div>
+                            <h5 class="card-title mb-3">Tadbirlar</h5>
+                            <p class="card-text text-muted">Institutdagi barcha tadbirlar va ularga yozilish imkoniyati</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="card card-custom h-100 border-0 shadow-sm">
+                        <div class="card-body p-4">
+                            <div class="feature-icon bg-secondary bg-gradient text-white">
+                                <i class="fas fa-comments"></i>
+                            </div>
+                            <h5 class="card-title mb-3">Xabarlashuv</h5>
+                            <p class="card-text text-muted">O'qituvchilar va administratsiya bilan bevosita aloqa</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Partners Section -->
+    <section class="py-4 bg-white border-top">
+        <div class="container-fluid">
+            <h2 class="text-center fw-bold h5 mb-4">Hamkorlar va Foydali havolalar</h2>
+            <div class="row justify-content-center align-items-center g-4">
+                <div class="col-6 col-md-3 col-lg-2 text-center">
+                    <a href="https://edu.uz" target="_blank" class="d-block">
+                        <img src="https://api-portal.gov.uz/uploads/7/2025/06/20/62a99df6-a2f5-6531-77dd-f8d1e6adc293_authority_7.png" 
+                             alt="Edu.uz" class="partners-logo img-fluid">
+                    </a>
+                </div>
+                <div class="col-6 col-md-3 col-lg-2 text-center">
+                    <a href="https://uzedu.uz" target="_blank" class="d-block">
+                        <img src="https://uzedu.uz/img/logoSecondaryDark.svg" 
+                             alt="UzEdu" class="partners-logo img-fluid">
+                    </a>
+                </div>
+                <div class="col-6 col-md-3 col-lg-2 text-center">
+                    <a href="https://my.gov.uz" target="_blank" class="d-block">
+                        <img src="https://my.gov.uz/img/logo.svg" 
+                             alt="my.gov.uz" class="partners-logo img-fluid">
+                    </a>
+                </div>
+                <div class="col-6 col-md-3 col-lg-2 text-center">
+                    <a href="https://nyzgroup.uz" target="_blank" class="d-block">
+                        <img src="https://instagram.fbhk1-3.fna.fbcdn.net/v/t51.2885-19/374686593_1041794377260169_6114997283851085654_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_ht=instagram.fbhk1-3.fna.fbcdn.net&_nc_cat=101&_nc_oc=Q6cZ2QF3s7wLomwl5Qq8tUdaZLMmFxo8qyE1NzzrL_EfTBRun0YXURr6agJ6KxWHY__nkNo&_nc_ohc=PpmV8VT0TjYQ7kNvwGcNmr9&_nc_gid=5KFEwzrDmLCB_xRPulFbrw&edm=AOQ1c0wBAAAA&ccb=7-5&oh=00_AfNEY81Wwf7zcKLjiODA9SX6LDW4x_PsTfAxLt9Jrl_Xjw&oe=685B2B95&_nc_sid=8b3546" 
+                             alt="NYZGRUP" class="partners-logo img-fluid rounded-circle">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action Section -->
+    <section class="py-5 hero-gradient text-white">
+        <div class="container-fluid text-center">
+            <h2 class="fw-bold mb-3">HEMIS Tizimiga Kirish</h2>
+            <p class="lead mb-4">Talabalar, o'qituvchilar va administratsiya uchun barcha kerakli resurslar bir joyda</p>
+            <div class="d-flex flex-column flex-sm-row justify-content-center gap-3">
+                <a href="{% url 'login' %}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-sign-in-alt me-2"></i>Tizimga kirish
+                </a>
+                <a href="#" class="btn btn-outline-light btn-lg">
+                    <i class="fas fa-question-circle me-2"></i>Yordam olish
+                </a>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

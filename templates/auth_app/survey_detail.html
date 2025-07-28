@@ -2,18 +2,180 @@
 
 {% block page_title %}So'rovnoma: {{ survey.title }}{% endblock %}
 
+{% block extra_css %}
+<style>
+    .survey-container {
+        max-width: 800px;
+    }
+    
+    .question-card {
+        border: none;
+        border-radius: 1rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+        transition: all 0.3s ease;
+    }
+    
+    .question-header {
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        color: white;
+        border-radius: 1rem 1rem 0 0;
+        padding: 1.5rem;
+    }
+    
+    .question-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 0;
+    }
+    
+    .question-required {
+        color: #ef4444;
+        margin-left: 0.25rem;
+    }
+    
+    .question-body {
+        padding: 2rem;
+    }
+    
+    .progress-custom {
+        height: 8px;
+        border-radius: 50px;
+        background-color: #e5e7eb;
+    }
+    
+    .progress-bar-custom {
+        background: linear-gradient(90deg, #6366f1, #8b5cf6);
+        border-radius: 50px;
+        transition: width 0.5s ease;
+    }
+    
+    .form-check-input:checked {
+        background-color: #6366f1;
+        border-color: #6366f1;
+    }
+    
+    .form-check-input:focus {
+        border-color: #6366f1;
+        box-shadow: 0 0 0 0.25rem rgba(99, 102, 241, 0.25);
+    }
+    
+    .survey-navigation {
+        background: white;
+        border-radius: 1rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        padding: 1.5rem;
+        position: sticky;
+        bottom: 2rem;
+        z-index: 100;
+    }
+    
+    .btn-nav {
+        min-width: 120px;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.75rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-nav:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+    
+    .fade-in {
+        animation: fadeInUp 0.6s ease-out;
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .survey-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 1rem;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        color: white;
+    }
+    
+    @media (max-width: 768px) {
+        .survey-container {
+            margin: 0.5rem;
+        }
+        
+        .question-header,
+        .question-body {
+            padding: 1rem;
+        }
+        
+        .btn-nav {
+            min-width: 100px;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .survey-navigation {
+            bottom: 1rem;
+            margin: 0 0.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container py-6 flex justify-center">
-  <div class="w-full max-w-2xl bg-white rounded-xl shadow-lg p-8">
-    <h2 class="text-2xl font-bold mb-4 text-blue-700">{{ survey.title }}</h2>
-    <p class="mb-6 text-gray-600">{{ survey.description }}</p>
-    <div id="survey-form-root"></div>
-    <script>
-      // survey_data_json va csrf_token contextdan olinadi
-      const surveyData = JSON.parse('{{ survey_data_json|escapejs }}');
-      const csrfToken = '{{ csrf_token }}';
-      // Bu yerda React/Vue yoki oddiy JS bilan formani dinamik hosil qilish mumkin
-    </script>
-  </div>
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-10 col-xl-8">
+            <div class="survey-container mx-auto">
+                <!-- Survey Header -->
+                <div class="survey-header text-center">
+                    <h1 class="h3 fw-bold mb-3">{{ survey.title }}</h1>
+                    <p class="lead mb-0 opacity-90">{{ survey.description }}</p>
+                </div>
+                
+                <!-- Survey Form Container -->
+                <div id="survey-form-root" class="fade-in-on-scroll">
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Yuklanmoqda...</span>
+                        </div>
+                        <p class="mt-3 text-muted">So'rovnoma yuklanmoqda...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<script>
+// Survey data va CSRF token
+const surveyData = JSON.parse('{{ survey_data_json|escapejs }}');
+const csrfToken = '{{ csrf_token }}';
+
+// Survey form initializer
+document.addEventListener('DOMContentLoaded', function() {
+    if (typeof surveyData !== 'undefined' && surveyData) {
+        const container = document.getElementById('survey-form-root');
+        if (container && typeof renderSurveyForm === 'function') {
+            renderSurveyForm(surveyData, container);
+        } else {
+            console.error('Survey form renderer not found');
+            container.innerHTML = `
+                <div class="alert alert-danger text-center">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    So'rovnoma yuklanmadi. Sahifani yangilang.
+                </div>
+            `;
+        }
+    }
+});
+</script>
 {% endblock %}

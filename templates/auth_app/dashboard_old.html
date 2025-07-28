@@ -1,0 +1,476 @@
+{% extends "auth_app/base.html" %}
+
+{% block page_title %}Profilim - {{ student.short_name_api|default:student.username|default:"Talaba" }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .floating-elements {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        pointer-events: none;
+        z-index: 1;
+        overflow: hidden;
+    }
+    
+    .floating-icon {
+        position: absolute;
+        color: rgba(99, 102, 241, 0.1);
+        font-size: 2rem;
+        animation: float 15s infinite linear;
+    }
+    
+    @keyframes float {
+        0% {
+            transform: translateY(100vh) rotate(0deg);
+            opacity: 0;
+        }
+        10% {
+            opacity: 1;
+        }
+        90% {
+            opacity: 1;
+        }
+        100% {
+            transform: translateY(-100px) rotate(360deg);
+            opacity: 0;
+        }
+    }
+    
+    .profile-banner {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 200px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .profile-banner::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(
+            45deg,
+            transparent 30%,
+            rgba(255, 255, 255, 0.1) 50%,
+            transparent 70%
+        );
+        animation: shimmer 3s infinite;
+    }
+    
+    @keyframes shimmer {
+        0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+        100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+    }
+    
+    .profile-card {
+        margin-top: -80px;
+        z-index: 10;
+        position: relative;
+    }
+    
+    .avatar-container {
+        width: 100px;
+        height: 100px;
+        border: 4px solid white;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+        font-size: 2.5rem;
+        color: white;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+    
+    .info-card {
+        background: white;
+        border-radius: 1rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .info-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    }
+    
+    .tab-content-custom {
+        min-height: 400px;
+    }
+    
+    .survey-item {
+        transition: all 0.3s ease;
+        border-left: 4px solid transparent;
+    }
+    
+    .survey-item:hover {
+        border-left-color: var(--bs-primary);
+        background-color: rgba(99, 102, 241, 0.05);
+    }
+    
+    .survey-status {
+        font-size: 0.8rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 1rem;
+        font-weight: 500;
+    }
+    
+    .status-completed {
+        background-color: rgba(34, 197, 94, 0.1);
+        color: #16a34a;
+    }
+    
+    .status-pending {
+        background-color: rgba(234, 179, 8, 0.1);
+        color: #ca8a04;
+    }
+    
+    .status-new {
+        background-color: rgba(59, 130, 246, 0.1);
+        color: #2563eb;
+    }
+    
+    /* Mobile Responsive Styles */
+    @media (max-width: 768px) {
+        .profile-banner {
+            min-height: 150px;
+        }
+        
+        .profile-card {
+            margin-top: -60px;
+        }
+        
+        .avatar-container {
+            width: 80px;
+            height: 80px;
+            font-size: 2rem;
+        }
+        
+        .display-6 {
+            font-size: 1.5rem;
+        }
+        
+        .lead {
+            font-size: 1rem;
+        }
+        
+        .nav-tabs-custom {
+            flex-direction: column;
+        }
+        
+        .nav-tabs-custom .nav-link {
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .info-card {
+            margin-bottom: 1rem;
+        }
+        
+        .tab-content-custom {
+            min-height: 300px;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .profile-banner {
+            min-height: 120px;
+        }
+        
+        .profile-card {
+            margin-top: -40px;
+        }
+        
+        .avatar-container {
+            width: 70px;
+            height: 70px;
+            font-size: 1.5rem;
+        }
+        
+        .stats-icon {
+            font-size: 1.5rem !important;
+        }
+        
+        .card-body {
+            padding: 1rem;
+        }
+        
+        .survey-item .card-body {
+            padding: 1rem;
+        }
+        
+        .d-flex.justify-content-between {
+            flex-direction: column;
+            align-items: flex-start !important;
+        }
+        
+        .d-flex.justify-content-between .d-flex.flex-column {
+            margin-top: 1rem;
+            align-items: flex-start !important;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="floating-elements"></div>
+
+<!-- Profile Banner -->
+<section class="profile-banner d-flex align-items-center">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12 text-center text-white">
+                <h1 class="display-6 fw-bold mb-2">Xush kelibsiz!</h1>
+                <p class="lead opacity-75">{{ student.short_name_api|default:student.username|default:"Talaba" }}</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Profile Content -->
+<div class="container-fluid profile-card">
+    <!-- Profile Card -->
+    <div class="row justify-content-center mb-4">
+        <div class="col-lg-8">
+            <div class="card info-card">
+                <div class="card-body text-center py-4">
+                    <div class="avatar-container mb-3">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <h3 class="mb-2">{{ student.short_name_api|default:student.username|default:"Talaba" }}</h3>
+                    <p class="text-muted mb-0">{{ student.group_name|default:"Talaba" }}</p>
+                    {% if student.faculty_name %}
+                        <small class="text-muted">{{ student.faculty_name }}</small>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="card info-card text-center h-100">
+                <div class="card-body">
+                    <div class="text-primary mb-2">
+                        <i class="fas fa-poll-h fa-2x"></i>
+                    </div>
+                    <h4 class="fw-bold mb-1">{{ total_surveys|default:0 }}</h4>
+                    <small class="text-muted">Jami So'rovnomalar</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card info-card text-center h-100">
+                <div class="card-body">
+                    <div class="text-success mb-2">
+                        <i class="fas fa-check-circle fa-2x"></i>
+                    </div>
+                    <h4 class="fw-bold mb-1">{{ completed_surveys|default:0 }}</h4>
+                    <small class="text-muted">Tugatilgan</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card info-card text-center h-100">
+                <div class="card-body">
+                    <div class="text-warning mb-2">
+                        <i class="fas fa-clock fa-2x"></i>
+                    </div>
+                    <h4 class="fw-bold mb-1">{{ pending_surveys|default:0 }}</h4>
+                    <small class="text-muted">Kutilmoqda</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card info-card text-center h-100">
+                <div class="card-body">
+                    <div class="text-info mb-2">
+                        <i class="fas fa-chart-line fa-2x"></i>
+                    </div>
+                    <h4 class="fw-bold mb-1">{{ participation_rate|default:0 }}%</h4>
+                    <small class="text-muted">Ishtirok</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card info-card">
+                <div class="card-header bg-transparent border-0">
+                    <ul class="nav nav-tabs nav-tabs-custom" id="profileTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="surveys-tab" data-bs-toggle="tab" data-bs-target="#surveys" 
+                                    type="button" role="tab" aria-controls="surveys" aria-selected="true">
+                                <i class="fas fa-list me-2"></i>So'rovnomalar
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="profile-info-tab" data-bs-toggle="tab" data-bs-target="#profile-info" 
+                                    type="button" role="tab" aria-controls="profile-info" aria-selected="false">
+                                <i class="fas fa-user me-2"></i>Profil Ma'lumotlari
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="messages-tab" data-bs-toggle="tab" data-bs-target="#messages" 
+                                    type="button" role="tab" aria-controls="messages" aria-selected="false">
+                                <i class="fas fa-envelope me-2"></i>Xabarlar
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content tab-content-custom" id="profileTabsContent">
+                        <!-- Surveys Tab -->
+                        <div class="tab-pane fade show active" id="surveys" role="tabpanel" aria-labelledby="surveys-tab">
+                            {% if surveys %}
+                                <div class="row g-3">
+                                    {% for survey in surveys %}
+                                        <div class="col-12">
+                                            <div class="card survey-item">
+                                                <div class="card-body">
+                                                    <div class="d-flex justify-content-between align-items-start">
+                                                        <div class="flex-grow-1">
+                                                            <h6 class="card-title mb-2">{{ survey.title }}</h6>
+                                                            <p class="card-text text-muted small mb-2">{{ survey.description|truncatewords:15 }}</p>
+                                                            <div class="d-flex align-items-center gap-3">
+                                                                <small class="text-muted">
+                                                                    <i class="fas fa-calendar-alt me-1"></i>
+                                                                    {{ survey.created_at|date:"d.m.Y" }}
+                                                                </small>
+                                                                <small class="text-muted">
+                                                                    <i class="fas fa-question-circle me-1"></i>
+                                                                    {{ survey.questions.count }} savol
+                                                                </small>
+                                                            </div>
+                                                        </div>
+                                                        <div class="d-flex flex-column align-items-end gap-2">
+                                                            {% if survey.id in completed_survey_ids %}
+                                                                <span class="survey-status status-completed">
+                                                                    <i class="fas fa-check me-1"></i>Tugallangan
+                                                                </span>
+                                                            {% else %}
+                                                                <span class="survey-status status-pending">
+                                                                    <i class="fas fa-clock me-1"></i>Kutilmoqda
+                                                                </span>
+                                                                <a href="{% url 'survey_detail' survey.id %}" class="btn btn-primary btn-sm">
+                                                                    <i class="fas fa-play me-1"></i>Boshlash
+                                                                </a>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <div class="text-center py-5">
+                                    <div class="mb-3">
+                                        <i class="fas fa-poll-h fa-3x text-muted opacity-50"></i>
+                                    </div>
+                                    <h5 class="text-muted">Hozircha so'rovnomalar yo'q</h5>
+                                    <p class="text-muted">Yangi so'rovnomalar paydo bo'lganda bu yerda ko'rasiz</p>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Profile Info Tab -->
+                        <div class="tab-pane fade" id="profile-info" role="tabpanel" aria-labelledby="profile-info-tab">
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <div class="info-card p-4">
+                                        <h6 class="fw-bold mb-3">
+                                            <i class="fas fa-user-circle me-2 text-primary"></i>
+                                            Shaxsiy Ma'lumotlar
+                                        </h6>
+                                        <div class="mb-3">
+                                            <label class="form-label text-muted small">To'liq ism</label>
+                                            <div class="fw-medium">{{ student.short_name_api|default:student.username|default:"Ma'lumot yo'q" }}</div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label text-muted small">Login</label>
+                                            <div class="fw-medium">{{ student.username|default:"Ma'lumot yo'q" }}</div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label text-muted small">Talaba ID</label>
+                                            <div class="fw-medium">{{ student.student_id_number|default:"Ma'lumot yo'q" }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="info-card p-4">
+                                        <h6 class="fw-bold mb-3">
+                                            <i class="fas fa-graduation-cap me-2 text-success"></i>
+                                            Ta'lim Ma'lumotlari
+                                        </h6>
+                                        <div class="mb-3">
+                                            <label class="form-label text-muted small">Guruh</label>
+                                            <div class="fw-medium">{{ student.group_name|default:"Ma'lumot yo'q" }}</div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label text-muted small">Fakultet</label>
+                                            <div class="fw-medium">{{ student.faculty_name|default:"Ma'lumot yo'q" }}</div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label text-muted small">O'qish turi</label>
+                                            <div class="fw-medium">{{ student.education_type_name|default:"Ma'lumot yo'q" }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Messages Tab -->
+                        <div class="tab-pane fade" id="messages" role="tabpanel" aria-labelledby="messages-tab">
+                            {% if messages_for_student %}
+                                <div class="row g-3">
+                                    {% for message in messages_for_student %}
+                                        <div class="col-12">
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <div class="d-flex justify-content-between align-items-start">
+                                                        <div class="flex-grow-1">
+                                                            <h6 class="card-title">{{ message.title }}</h6>
+                                                            <p class="card-text text-muted">{{ message.content|truncatewords:20 }}</p>
+                                                            <small class="text-muted">
+                                                                <i class="fas fa-calendar-alt me-1"></i>
+                                                                {{ message.created_at|date:"d.m.Y H:i" }}
+                                                            </small>
+                                                        </div>
+                                                        <div>
+                                                            <a href="{% url 'message_detail' message.id %}" class="btn btn-outline-primary btn-sm">
+                                                                <i class="fas fa-eye me-1"></i>Ko'rish
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <div class="text-center py-5">
+                                    <div class="mb-3">
+                                        <i class="fas fa-envelope fa-3x text-muted opacity-50"></i>
+                                    </div>
+                                    <h5 class="text-muted">Xabarlar yo'q</h5>
+                                    <p class="text-muted">Sizga yuborilgan xabarlar bu yerda ko'rsatiladi</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

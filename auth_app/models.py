@@ -129,6 +129,15 @@ class Student(models.Model):
         ordering = ['-updated_at', 'last_name', 'first_name']
 
     @property
+    def full_name(self):
+        """Talabaning to'liq ismini qaytaradi"""
+        if self.full_name_api:
+            return self.full_name_api
+        name_parts = [self.last_name, self.first_name, self.patronymic]
+        full_name = " ".join(filter(None, name_parts))
+        return full_name.strip() if full_name.strip() else self.username
+
+    @property
     def get_birth_date_display(self):
         if self.birth_date_timestamp:
             try:

@@ -1,96 +1,714 @@
 {% extends "auth_app/base.html" %}
-{% block page_title %}Tizimga Kirish{% endblock %}
+{% block page_title %}Tizimga Kirish - NSPI{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary-gradient: linear-gradient(135deg, #fff5f5 0%, #ffeaea 50%, #ffdbdb 100%);
+        --coral-gradient: linear-gradient(135deg, #ff7875 0%, #ff6b6b 50%, #ff5757 100%);
+        --soft-gradient: linear-gradient(135deg, #fff8f7 0%, #ffeeed 100%);
+        --glass-bg: rgba(255, 255, 255, 0.85);
+        --glass-border: rgba(255, 139, 139, 0.2);
+        --shadow-light: 0 8px 32px rgba(255, 139, 139, 0.15);
+        --shadow-heavy: 0 15px 35px rgba(255, 139, 139, 0.25);
+        --text-primary: #2d3748;
+        --text-secondary: #4a5568;
+        --text-muted: #718096;
+        --coral-primary: #ff6b6b;
+        --coral-light: #ff8b8b;
+        --coral-soft: rgba(255, 107, 107, 0.1);
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        overflow: hidden;
+    }
+
+    .login-page {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: var(--primary-gradient);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+    }
+
+    /* Animated Background */
+    .bg-animation {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        z-index: 1;
+    }
+
+    .floating-element {
+        position: absolute;
+        opacity: 0.08;
+        color: rgba(255, 107, 107, 0.4);
+        animation: float-around 20s infinite linear;
+        font-size: 2rem;
+    }
+
+    .floating-element:nth-child(1) { left: 10%; animation-delay: 0s; }
+    .floating-element:nth-child(2) { left: 20%; animation-delay: 2s; }
+    .floating-element:nth-child(3) { left: 80%; animation-delay: 4s; }
+    .floating-element:nth-child(4) { left: 70%; animation-delay: 6s; }
+    .floating-element:nth-child(5) { left: 40%; animation-delay: 8s; }
+
+    @keyframes float-around {
+        0% {
+            transform: translateY(100vh) rotate(0deg);
+            opacity: 0;
+        }
+        10% {
+            opacity: 0.4;
+        }
+        90% {
+            opacity: 0.4;
+        }
+        100% {
+            transform: translateY(-100px) rotate(360deg);
+            opacity: 0;
+        }
+    }
+
+    /* Modern Glass Card */
+    .login-container {
+        position: relative;
+        z-index: 10;
+        max-width: 450px;
+        width: 100%;
+        margin: 2rem;
+        padding: 0;
+    }
+
+    .glass-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        border: 1px solid var(--glass-border);
+        border-radius: 24px;
+        box-shadow: var(--shadow-light);
+        padding: 3rem 2.5rem;
+        position: relative;
+        overflow: hidden;
+        animation: slideUp 0.8s ease-out;
+    }
+
+    .glass-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255, 139, 139, 0.4), transparent);
+    }    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Header Section */
+    .login-header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+    }
+
+    .logo-container {
+        margin-bottom: 1.5rem;
+        position: relative;
+    }
+
+    .logo {
+        height: 70px;
+        width: auto;
+        filter: none;
+        animation: logoGlow 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes logoGlow {
+        from {
+            filter: drop-shadow(0 0 5px rgba(255, 107, 107, 0.3));
+            transform: scale(1);
+        }
+        to {
+            filter: drop-shadow(0 0 15px rgba(255, 107, 107, 0.6));
+            transform: scale(1.02);
+        }
+    }
+
+    .welcome-text h1 {
+        color: var(--coral-primary);
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 2px 4px rgba(255, 107, 107, 0.1);
+    }
+
+    .welcome-text p {
+        color: var(--text-secondary);
+        font-size: 1rem;
+        margin: 0;
+        font-weight: 400;
+    }
+
+    /* Form Styling */
+    .modern-form {
+        position: relative;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+        position: relative;
+    }
+
+    .form-label {
+        display: block;
+        color: var(--text-primary);
+        font-size: 0.875rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 1rem 1.25rem;
+        background: rgba(255, 255, 255, 0.7);
+        border: 2px solid rgba(255, 139, 139, 0.2);
+        border-radius: 16px;
+        color: var(--text-primary);
+        font-size: 1rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        backdrop-filter: blur(10px);
+    }
+
+    .form-input:focus {
+        outline: none;
+        background: rgba(255, 255, 255, 0.9);
+        border-color: var(--coral-primary);
+        box-shadow: 0 0 0 4px var(--coral-soft);
+        transform: translateY(-1px);
+    }
+
+    .form-input::placeholder {
+        color: var(--text-muted);
+    }
+
+    .form-input.error {
+        border-color: #ff6b6b;
+        background: rgba(255, 107, 107, 0.1);
+    }
+
+    /* Password Toggle */
+    .password-wrapper {
+        position: relative;
+    }
+
+    .password-toggle {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+    }
+
+    .password-toggle:hover {
+        color: var(--coral-primary);
+        background: var(--coral-soft);
+    }
+
+    /* Modern Button */
+    .login-btn {
+        width: 100%;
+        padding: 1rem 2rem;
+        background: var(--coral-gradient);
+        border: 2px solid transparent;
+        border-radius: 16px;
+        color: white;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+        margin: 2rem 0 1.5rem 0;
+        box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+    }
+
+    .login-btn:hover {
+        background: linear-gradient(135deg, #ff5757 0%, #ff4d4d 50%, #ff4040 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
+    }
+
+    .login-btn:active {
+        transform: translateY(0);
+    }
+
+    .login-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        transition: left 0.5s;
+    }
+
+    .login-btn:hover::before {
+        left: 100%;
+    }
+
+    /* Form Options */
+    .form-options {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .remember-me {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+    }
+
+    .remember-me input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--coral-primary);
+    }
+
+    .forgot-password {
+        color: var(--coral-primary);
+        text-decoration: none;
+        font-size: 0.875rem;
+        transition: color 0.2s ease;
+    }
+
+    .forgot-password:hover {
+        color: var(--coral-light);
+        text-decoration: underline;
+    }
+
+    /* Error Messages */
+    .error-message {
+        background: rgba(255, 107, 107, 0.2);
+        border: 1px solid rgba(255, 107, 107, 0.3);
+        border-radius: 12px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        color: #ffe0e0;
+        font-size: 0.875rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        animation: errorSlide 0.3s ease-out;
+    }
+
+    @keyframes errorSlide {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Footer */
+    .login-footer {
+        text-align: center;
+        padding-top: 1.5rem;
+        border-top: 1px solid rgba(255, 139, 139, 0.2);
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+    }
+
+    .login-footer a {
+        color: var(--coral-primary);
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .login-footer a:hover {
+        color: var(--coral-light);
+        text-decoration: underline;
+    }
+
+    /* Loading Animation */
+    .loading {
+        position: relative;
+    }
+
+    .loading::after {
+        content: '';
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        margin: auto;
+        border: 2px solid transparent;
+        border-top-color: rgba(255, 255, 255, 0.9);
+        border-radius: 50%;
+        animation: spin 1s ease infinite;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    @keyframes spin {
+        0% { transform: translate(-50%, -50%) rotate(0deg); }
+        100% { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .login-container {
+            margin: 1rem;
+            max-width: 100%;
+        }
+
+        .glass-card {
+            padding: 2rem 1.5rem;
+        }
+
+        .welcome-text h1 {
+            font-size: 1.75rem;
+        }
+
+        .form-input {
+            padding: 0.875rem 1rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .glass-card {
+            padding: 1.5rem 1rem;
+            border-radius: 20px;
+        }
+
+        .welcome-text h1 {
+            font-size: 1.5rem;
+        }
+    }
+
+    /* Accessibility */
+    @media (prefers-reduced-motion: reduce) {
+        .floating-element,
+        .glass-card,
+        .logo {
+            animation: none;
+        }
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-
-  <center>
-    <div class="bg-white/90 backdrop-blur-lg shadow-2xl rounded-2xl p-8 max-w-sm w-full space-y-6 border border-slate-100 transition-all">
-    <div class="text-center space-y-2">
-      <img src="https://nsuni.uz/assets/logobluefull-Cet2BLY6.png" class="mx-auto h-12" alt="Logo">
-      <h2 class="text-2xl font-bold text-slate-800">Tizimga Kirish</h2>
-      <p class="text-slate-500 text-sm">ID va parolingizni kiriting</p>
+<div class="login-page">
+    <!-- Animated Background -->
+    <div class="bg-animation">
+        <div class="floating-element"><i class="fas fa-graduation-cap"></i></div>
+        <div class="floating-element"><i class="fas fa-book-open"></i></div>
+        <div class="floating-element"><i class="fas fa-user-graduate"></i></div>
+        <div class="floating-element"><i class="fas fa-certificate"></i></div>
+        <div class="floating-element"><i class="fas fa-award"></i></div>
     </div>
 
-    {% if form.non_field_errors %}
-    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative text-sm" role="alert">
-      <strong class="font-semibold">Xatolik:</strong>
-      {% for error in form.non_field_errors %}
-      <span class="block">{{ error }}</span>
-      {% endfor %}
-    </div>
-    {% endif %}
+    <!-- Main Login Container -->
+    <div class="login-container">
+        <div class="glass-card">
+            <!-- Header -->
+            <div class="login-header">
+                <div class="logo-container">
+                    <img src="https://nsuni.uz/assets/logobluefull-Cet2BLY6.png" 
+                         alt="NSPI Universiteti" 
+                         class="logo">
+                </div>
+                <div class="welcome-text">
+                    <h1>Xush kelibsiz</h1>
+                    <p>Tizimga kirish uchun ma'lumotlaringizni kiriting</p>
+                </div>
+            </div>
 
-    <form class="space-y-4" method="post" novalidate>
-      {% csrf_token %}
+            <!-- Error Messages -->
+            {% if form.non_field_errors %}
+                <div class="error-message">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div>
+                        {% for error in form.non_field_errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
 
-      <div>
-        <label for="{{ form.username.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1"></label>
-        <input id="{{ form.username.id_for_label }}" name="{{ form.username.html_name }}" type="text"
-               value="{{ form.username.value|default_if_none:'' }}"
-               class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-400 focus:outline-none transition-all shadow-sm text-sm {% if form.username.errors %}border-red-500{% endif %}"
-               placeholder="Talaba ID raqamingiz" autocomplete="username" required>
-        {% if form.username.errors %}
-        <p class="text-sm text-red-500 mt-1">{{ form.username.errors.0 }}</p>
-        {% endif %}
-      </div>
+            <!-- Login Form -->
+            <form method="post" class="modern-form" novalidate>
+                {% csrf_token %}
 
-      <div>
-        <label for="{{ form.password.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1"></label>
-        <div class="relative">
-          <input id="passwordInput" name="{{ form.password.html_name }}" type="password"
-                 class="w-full px-4 py-2.5 pr-10 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-400 focus:outline-none transition-all shadow-sm text-sm {% if form.password.errors %}border-red-500{% endif %}"
-                 placeholder="********" autocomplete="current-password" required>
-          <button type="button" onclick="togglePassword()" class="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500 hover:text-gray-700">
-            <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                 stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-            </svg>
-          </button>
+                <!-- Username Field -->
+                <div class="form-group">
+                    <label for="{{ form.username.id_for_label }}" class="form-label">
+                        <i class="fas fa-user"></i>
+                        Talaba ID raqami
+                    </label>
+                    <input id="{{ form.username.id_for_label }}" 
+                           name="{{ form.username.html_name }}" 
+                           type="text"
+                           value="{{ form.username.value|default_if_none:'' }}"
+                           class="form-input {% if form.username.errors %}error{% endif %}"
+                           placeholder="ID raqamingizni kiriting" 
+                           autocomplete="username" 
+                           required>
+                    {% if form.username.errors %}
+                        <div class="error-message">
+                            <i class="fas fa-exclamation-circle"></i>
+                            {{ form.username.errors.0 }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Password Field -->
+                <div class="form-group">
+                    <label for="{{ form.password.id_for_label }}" class="form-label">
+                        <i class="fas fa-lock"></i>
+                        Parol
+                    </label>
+                    <div class="password-wrapper">
+                        <input id="passwordInput" 
+                               name="{{ form.password.html_name }}" 
+                               type="password"
+                               class="form-input {% if form.password.errors %}error{% endif %}"
+                               placeholder="Parolingizni kiriting" 
+                               autocomplete="current-password" 
+                               required>
+                        <button type="button" class="password-toggle" onclick="togglePassword()">
+                            <i id="eyeIcon" class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    {% if form.password.errors %}
+                        <div class="error-message">
+                            <i class="fas fa-exclamation-circle"></i>
+                            {{ form.password.errors.0 }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Form Options -->
+                <div class="form-options">
+                    <label class="remember-me">
+                        <input type="checkbox" id="rememberMe" name="remember_me">
+                        Eslab qolish
+                    </label>
+                    <a href="#" class="forgot-password">Parolni unutdingizmi?</a>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="login-btn" id="loginBtn">
+                    <i class="fas fa-sign-in-alt me-2"></i>
+                    Tizimga kirish
+                </button>
+            </form>
+
+            <!-- Footer -->
+            <div class="login-footer">
+                <p>Hisobingiz yo'qmi? <a href="#">Ro'yxatdan o'tish</a></p>
+            </div>
         </div>
-        {% if form.password.errors %}
-        <p class="text-sm text-red-500 mt-1">{{ form.password.errors.0 }}</p>
-        {% endif %}
-      </div>
-
-      <div class="flex items-center justify-between">
-        <label class="flex items-center text-sm text-gray-600">
-          <input type="checkbox" name="remember_me" class="mr-2 rounded border-gray-300 text-blue-500 focus:ring-blue-400">
-          Eslab qolish
-        </label>
-        <a href="#" class="text-sm text-blue-600 hover:text-blue-800 transition">Parolni unutdingizmi?</a>
-      </div>
-
-      <button type="submit"
-              class="w-full py-2.5 text-sm font-semibold text-white bg-blue-500 hover:bg-blue-600 rounded-lg shadow-md transition">
-        Tizimga kirish
-      </button>
-    </form>
-
-    <div class="text-center text-xs text-gray-500 pt-2 border-t border-gray-200">
-      Hisobingiz yo‘qmi? <a href="#" class="text-blue-600 hover:text-blue-500 font-medium">Ro‘yxatdan o‘tish</a>
     </div>
-  </div>
-  </center>
-
+</div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
+// Password toggle functionality
 function togglePassword() {
-  const input = document.getElementById("passwordInput");
-  const icon = document.getElementById("eyeIcon");
-
-  if (input.type === "password") {
-    input.type = "text";
-    icon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a10.05 10.05 0 011.658-2.918m2.386-2.386A9.956 9.956 0 0112 5c4.477 0 8.268 2.943 9.542 7a9.964 9.964 0 01-4.293 5.303M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>`;
-  } else {
-    input.type = "password";
-    icon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />`;
-  }
+    const input = document.getElementById("passwordInput");
+    const icon = document.getElementById("eyeIcon");
+    
+    if (input.type === "password") {
+        input.type = "text";
+        icon.className = "fas fa-eye-slash";
+    } else {
+        input.type = "password";
+        icon.className = "fas fa-eye";
+    }
 }
+
+// Enhanced form handling
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('.modern-form');
+    const loginBtn = document.getElementById('loginBtn');
+    const inputs = form.querySelectorAll('.form-input');
+
+    // Add floating labels effect
+    inputs.forEach(input => {
+        input.addEventListener('focus', function() {
+            this.parentElement.classList.add('focused');
+        });
+
+        input.addEventListener('blur', function() {
+            if (!this.value) {
+                this.parentElement.classList.remove('focused');
+            }
+        });
+
+        // Remove error styling on input
+        input.addEventListener('input', function() {
+            this.classList.remove('error');
+            const errorMsg = this.parentElement.querySelector('.error-message');
+            if (errorMsg) {
+                errorMsg.style.display = 'none';
+            }
+        });
+    });
+
+    // Form submission with loading state
+    form.addEventListener('submit', function(event) {
+        const username = document.getElementById('{{ form.username.id_for_label }}').value.trim();
+        const password = document.getElementById('passwordInput').value.trim();
+
+        if (!username || !password) {
+            event.preventDefault();
+            
+            if (!username) {
+                const usernameInput = document.getElementById('{{ form.username.id_for_label }}');
+                usernameInput.classList.add('error');
+            }
+            
+            if (!password) {
+                const passwordInput = document.getElementById('passwordInput');
+                passwordInput.classList.add('error');
+            }
+            
+            return false;
+        }
+
+        // Add loading state
+        loginBtn.classList.add('loading');
+        loginBtn.disabled = true;
+        
+        // Remove loading state after 5 seconds (fallback)
+        setTimeout(() => {
+            loginBtn.classList.remove('loading');
+            loginBtn.disabled = false;
+        }, 5000);
+    });
+
+    // Add ripple effect to button
+    loginBtn.addEventListener('click', function(e) {
+        const ripple = document.createElement('span');
+        const size = 60;
+        const pos = this.getBoundingClientRect();
+        const x = e.clientX - pos.left - size / 2;
+        const y = e.clientY - pos.top - size / 2;
+        
+        ripple.style.width = ripple.style.height = size + 'px';
+        ripple.style.left = x + 'px';
+        ripple.style.top = y + 'px';
+        ripple.style.position = 'absolute';
+        ripple.style.borderRadius = '50%';
+        ripple.style.background = 'rgba(255, 255, 255, 0.3)';
+        ripple.style.transform = 'scale(0)';
+        ripple.style.animation = 'ripple 0.6s linear';
+        ripple.style.pointerEvents = 'none';
+        
+        this.appendChild(ripple);
+        
+        setTimeout(() => {
+            ripple.remove();
+        }, 600);
+    });
+
+    // Add CSS for ripple animation
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+
+    // Auto-focus first input
+    setTimeout(() => {
+        const firstInput = form.querySelector('.form-input');
+        if (firstInput) {
+            firstInput.focus();
+        }
+    }, 300);
+});
+
+// Add particles effect on successful login
+function addSuccessEffect() {
+    for (let i = 0; i < 50; i++) {
+        createParticle();
+    }
+}
+
+function createParticle() {
+    const particle = document.createElement('div');
+    particle.style.position = 'fixed';
+    particle.style.width = '4px';
+    particle.style.height = '4px';
+    particle.style.background = '#fff';
+    particle.style.borderRadius = '50%';
+    particle.style.pointerEvents = 'none';
+    particle.style.zIndex = '10000';
+    particle.style.left = Math.random() * 100 + 'vw';
+    particle.style.top = '100vh';
+    particle.style.animation = 'particleFloat 3s ease-out forwards';
+    
+    document.body.appendChild(particle);
+    
+    setTimeout(() => {
+        particle.remove();
+    }, 3000);
+}
+
+// Add particle animation
+const particleStyle = document.createElement('style');
+particleStyle.textContent = `
+    @keyframes particleFloat {
+        to {
+            transform: translateY(-100vh) translateX(${Math.random() * 200 - 100}px);
+            opacity: 0;
+        }
+    }
+`;
+document.head.appendChild(particleStyle);
 </script>
 {% endblock %}

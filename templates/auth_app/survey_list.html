@@ -1,31 +1,221 @@
+
 {% extends 'auth_app/base.html' %}
 
 {% block page_title %}So'rovnomalar{% endblock %}
 
+{% block extra_css %}
+<style>
+    .survey-card {
+        border: none;
+        border-radius: 1rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        overflow: hidden;
+    }
+    
+    .survey-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    }
+    
+    .survey-status-completed {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+        font-size: 0.8rem;
+        font-weight: 600;
+        padding: 0.5rem 1rem;
+        border-radius: 2rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .survey-card-header {
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        color: white;
+        padding: 1.5rem;
+    }
+    
+    .page-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 1rem;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        color: white;
+        text-align: center;
+    }
+    
+    .empty-state {
+        background: white;
+        border-radius: 1rem;
+        padding: 3rem;
+        text-align: center;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .btn-survey {
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        border: none;
+        border-radius: 0.75rem;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-survey:hover {
+        background: linear-gradient(135deg, #5855eb, #7c3aed);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+    }
+    
+    @media (max-width: 768px) {
+        .page-header {
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .survey-card-header {
+            padding: 1rem;
+        }
+        
+        .btn-outline-info {
+            border-color: #17a2b8;
+            color: #17a2b8;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-outline-info:hover {
+            background: linear-gradient(135deg, #17a2b8, #138496);
+            border-color: #17a2b8;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(23, 162, 184, 0.3);
+        }
+        
+        .btn-outline-secondary {
+            border-color: #6c757d;
+            color: #6c757d;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-outline-secondary:hover {
+            background: linear-gradient(135deg, #6c757d, #5a6268);
+            border-color: #6c757d;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<h2 class="text-2xl font-bold mb-6 text-center">Faol so'rovnomalar</h2>
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-  {% for item in surveys_with_status %}
-  <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col justify-between hover:shadow-2xl transition">
-    <div>
-      <h3 class="text-lg font-semibold mb-2 text-blue-700">{{ item.survey.title }}</h3>
-      <div class="text-sm text-gray-600 mb-4">{{ item.survey.description|truncatewords:25 }}</div>
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1 class="h2 fw-bold mb-2">Faol So'rovnomalar</h1>
+        <p class="lead mb-0 opacity-90">Sizga tayinlangan so'rovnomalarda qatnashing</p>
     </div>
-    <div class="mt-auto">
-      {% if item.has_responded %}
-      <span class="inline-block px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-semibold">Javob berilgan</span>
-      {% else %}
-      <a href="{% url 'survey_detail' item.survey.id %}" class="btn btn-primary w-full mt-2">Javob berish</a>
-      {% endif %}
+    
+    <!-- Survey Grid -->
+    <div class="row g-4">
+        {% for item in surveys_with_status %}
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card survey-card h-100">
+                    <div class="survey-card-header">
+                        <h5 class="card-title mb-2 fw-bold">{{ item.survey.title }}</h5>
+                        <div class="d-flex align-items-center gap-2 text-white-50">
+                            <i class="fas fa-calendar-alt"></i>
+                            <small>{{ item.survey.created_at|date:"d.m.Y" }}</small>
+                        </div>
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <p class="card-text text-muted mb-4 flex-grow-1">
+                            {{ item.survey.description|truncatewords:25 }}
+                        </p>
+                        
+                        <!-- Survey Stats -->
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <small class="text-muted">
+                                    <i class="fas fa-question-circle me-1"></i>
+                                    {{ item.survey.questions.count }} savol
+                                </small>
+                                <small class="text-muted">
+                                    <i class="fas fa-clock me-1"></i>
+                                    ~{{ item.survey.questions.count|default:5 }} daqiqa
+                                </small>
+                            </div>
+                        </div>
+                        
+                        <!-- Action Button -->
+                        <div class="mt-auto">
+                            {% if item.has_responded %}
+                                <div class="survey-status-completed text-center w-100 mb-2">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>Javob berilgan</span>
+                                </div>
+                                {% if user.is_staff %}
+                                    <a href="{% url 'survey_statistics' item.survey.id %}" 
+                                       class="btn btn-outline-info btn-sm w-100">
+                                        <i class="fas fa-chart-bar me-2"></i>Statistika
+                                    </a>
+                                {% endif %}
+                            {% else %}
+                                <a href="{% url 'survey_detail' item.survey.id %}" 
+                                   class="btn btn-survey text-white w-100 mb-2">
+                                    <i class="fas fa-play me-2"></i>Javob berish
+                                </a>
+                                {% if user.is_staff %}
+                                    <a href="{% url 'survey_statistics' item.survey.id %}" 
+                                       class="btn btn-outline-secondary btn-sm w-100">
+                                        <i class="fas fa-chart-line me-2"></i>Statistika ko'rish
+                                    </a>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12">
+                <div class="empty-state">
+                    <div class="mb-4">
+                        <i class="fas fa-poll-h fa-4x text-muted opacity-50"></i>
+                    </div>
+                    <h4 class="text-muted mb-3">Faol so'rovnomalar topilmadi</h4>
+                    <p class="text-muted mb-4">
+                        Hozircha sizga tayinlangan so'rovnomalar yo'q. <br>
+                        Yangi so'rovnomalar paydo bo'lganda bu yerda ko'rasiz.
+                    </p>
+                    <a href="/" class="btn btn-primary">
+                        <i class="fas fa-home me-2"></i>Bosh sahifaga qaytish
+                    </a>
+                </div>
+            </div>
+        {% endfor %}
     </div>
-  </div>
-  {% empty %}
-  <div class="col-span-full">
-    <div class="alert alert-info text-center">
-      Faol so'rovnomalar topilmadi.<br>
-      <a href="/" class="text-blue-600 underline">Bosh sahifaga qaytish</a>
-    </div>
-  </div>
-  {% endfor %}
+    
+    <!-- Additional Info -->
+    {% if surveys_with_status %}
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="card border-0 bg-light">
+                    <div class="card-body text-center">
+                        <h6 class="fw-bold mb-3">
+                            <i class="fas fa-info-circle me-2 text-primary"></i>
+                            Ma'lumot
+                        </h6>
+                        <p class="text-muted mb-0 small">
+                            So'rovnomalarga javob bergandan so'ng, natijalar administratorlar tomonidan tahlil qilinadi. 
+                            Sizning javoblaringiz anonim va maxfiy saqlanadi.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
 </div>
 {% endblock %}

@@ -28,8 +28,8 @@ urlpatterns += [
 
 urlpatterns += [
     path("responsibles/", views.ResponsiblePersonListView.as_view(), name="responsible_list"),
-    path("messages/", views.MessageListView.as_view(), name="message_list"),
+    path("messages/", views.message_list_view, name="message_list"),
     path("messages/create/", views.MessageCreateView.as_view(), name="message_create"),
-    path("messages/<int:pk>/", views.MessageDetailView.as_view(), name="message_detail"),
+    path("messages/<int:pk>/", views.message_detail_view, name="message_detail"),
     path("messages/<int:pk>/reply/", views.MessageReplyView.as_view(), name="message_reply"),
 ]

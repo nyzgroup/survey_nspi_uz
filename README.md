@@ -5,7 +5,7 @@
 ![Django](https://img.shields.io/badge/Django-4.2-blue?logo=django&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3.9%2B-blue?logo=python&logoColor=white)
 ![Celery](https://img.shields.io/badge/Celery-5.3-green?logo=celery)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.x-blue?logo=tailwindcss&logoColor=white)
+![Bootstrap](https://img.shields.io/badge/Bootstrap-5.3.2-purple?logo=bootstrap&logoColor=white)
 ![Litsenziya](https://img.shields.io/badge/Litsenziya-MIT-green)
 
 Ushbu loyiha talabalar uchun tashqi **HEMIS API** orqali autentifikatsiya qilish va ular uchun administratorlar tomonidan yaratilgan dinamik so'rovnomalarda qatnashish imkonini beruvchi veb-ilova hisoblanadi. Loyiha Django, Celery va zamonaviy frontend texnologiyalaridan unumli foydalangan.
@@ -19,7 +19,7 @@ Ushbu loyiha talabalar uchun tashqi **HEMIS API** orqali autentifikatsiya qilish
 -   **Asinxron vazifalar:** Foydalanuvchi profillarini yangilash kabi sekin operatsiyalar **Celery** yordamida fonda bajariladi, bu esa tizimning tez ishlashini ta'minlaydi.
 -   **Zamonaviy va Interaktiv UI/UX:** So'rovnoma sahifasi Vanilla JavaScript yordamida client-side rendering (CSR) qilinadi. Bu sahifani yangilamasdan tezkor ishlash imkonini beradi.
 -   **Professional Admin Paneli:** `Jazzmin` yordamida admin paneli ancha chiroyli va funksional ko'rinishga keltirilgan.
--   **Responsiv Dizayn:** **Tailwind CSS** yordamida yaratilgan interfeys mobil qurilmalardan tortib katta ekranlargacha mukammal ko'rinadi.
+-   **Responsiv Dizayn:** **Bootstrap 5.3.2** va custom CSS yordamida yaratilgan interfeys mobil qurilmalardan tortib katta ekranlargacha mukammal ko'rinadi.
 -   **Xavfsiz konfiguratsiya:** Barcha maxfiy ma'lumotlar (`SECRET_KEY`, API tokenlar) koddan ajratilib, `.env` faylida saqlanadi.
 
 ---
@@ -42,7 +42,7 @@ So'rovnoma sahifasi foydalanuvchi uchun maksimal darajada qulay qilib ishlangan.
 | Kategoriya          | Texnologiya                                                                |
 | ------------------- | -------------------------------------------------------------------------- |
 | **Backend**         | Django, Django REST Framework, Simple JWT                                  |
-| **Frontend**        | HTML5, Tailwind CSS, Vanilla JavaScript, Alpine.js |
+| **Frontend**        | HTML5, Bootstrap 5.3.2, Vanilla JavaScript, Font Awesome 6.4.0 |
 | **Ma'lumotlar Baza**| PostgreSQL (Production uchun tavsiya etiladi), SQLite3 (Development uchun)   |
 | **Asinxron Vazifalar** | Celery, Redis (Broker va Natijalar uchun)                                |
 | **Server**          | Gunicorn / uWSGI (Production), Nginx (Reverse Proxy)                       |

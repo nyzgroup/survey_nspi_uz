@@ -1,0 +1,735 @@
+{% extends 'auth_app/base.html' %}
+
+{% block page_title %}{{ page_title }} - So'rovnoma Statistikasi{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --success-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        --warning-gradient: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+        --info-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --danger-gradient: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+    }
+
+    /* Floating Animation Elements */
+    .floating-elements {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        pointer-events: none;
+        z-index: 1;
+        overflow: hidden;
+    }
+    
+    .floating-icon {
+        position: absolute;
+        color: rgba(102, 126, 234, 0.1);
+        font-size: 1.5rem;
+        animation: float 25s infinite linear;
+    }
+    
+    @keyframes float {
+        0% {
+            transform: translateY(100vh) rotate(0deg);
+            opacity: 0;
+        }
+        10% {
+            opacity: 1;
+        }
+        90% {
+            opacity: 1;
+        }
+        100% {
+            transform: translateY(-100px) rotate(360deg);
+            opacity: 0;
+        }
+    }
+
+    /* Header Section */
+    .stats-hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #667eea 100%);
+        background-size: 400% 400%;
+        animation: gradientShift 8s ease infinite;
+        color: white;
+        padding: 2rem 0;
+        border-radius: 1.5rem;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    @keyframes gradientShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    .stats-hero::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(
+            45deg,
+            transparent 30%,
+            rgba(255, 255, 255, 0.1) 50%,
+            transparent 70%
+        );
+        animation: shimmer 4s infinite;
+    }
+    
+    @keyframes shimmer {
+        0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+        100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+    }
+
+    /* Stats Cards */
+    .stat-card {
+        background: white;
+        border-radius: 1.5rem;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        transition: all 0.4s ease;
+        border: 1px solid rgba(102, 126, 234, 0.1);
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 15px 40px rgba(102, 126, 234, 0.2);
+    }
+
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--primary-gradient);
+    }
+
+    .stat-card.success::before { background: var(--success-gradient); }
+    .stat-card.warning::before { background: var(--warning-gradient); }
+    .stat-card.info::before { background: var(--info-gradient); }
+    .stat-card.danger::before { background: var(--danger-gradient); }
+
+    .stat-icon {
+        width: 70px;
+        height: 70px;
+        border-radius: 1.2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        margin: 0 auto 1rem;
+        background: var(--primary-gradient);
+        color: white;
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+    }
+
+    .stat-card.success .stat-icon { background: var(--success-gradient); }
+    .stat-card.warning .stat-icon { background: var(--warning-gradient); }
+    .stat-card.info .stat-icon { background: var(--info-gradient); }
+    .stat-card.danger .stat-icon { background: var(--danger-gradient); }
+
+    .stat-number {
+        font-size: 2.8rem;
+        font-weight: 800;
+        margin: 0;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .stat-card.success .stat-number {
+        background: var(--success-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .stat-card.warning .stat-number {
+        background: var(--warning-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .stat-card.info .stat-number {
+        background: var(--info-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    /* Chart Cards */
+    .chart-card {
+        background: white;
+        border-radius: 1.5rem;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(102, 126, 234, 0.1);
+        margin-bottom: 2rem;
+    }
+
+    .chart-card-header {
+        background: linear-gradient(135deg, #f8f9ff 0%, #e6ebff 100%);
+        border-radius: 1.5rem 1.5rem 0 0;
+        padding: 1.5rem;
+        border-bottom: 1px solid rgba(102, 126, 234, 0.1);
+    }
+
+    /* Table Styles */
+    .stats-table {
+        background: white;
+        border-radius: 1.5rem;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(102, 126, 234, 0.1);
+        overflow: hidden;
+    }
+
+    .stats-table .table {
+        margin: 0;
+    }
+
+    .stats-table .table thead th {
+        background: linear-gradient(135deg, #f8f9ff 0%, #e6ebff 100%);
+        border: none;
+        font-weight: 600;
+        color: #374151;
+        padding: 1rem;
+    }
+
+    .stats-table .table tbody tr {
+        transition: all 0.3s ease;
+    }
+
+    .stats-table .table tbody tr:hover {
+        background-color: rgba(102, 126, 234, 0.05);
+        transform: scale(1.01);
+    }
+
+    /* Action Buttons */
+    .btn-gradient {
+        background: var(--primary-gradient);
+        border: none;
+        color: white;
+        font-weight: 500;
+        padding: 0.7rem 1.5rem;
+        border-radius: 2rem;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-size: 0.85rem;
+    }
+
+    .btn-gradient:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        color: white;
+    }
+
+    .btn-outline-gradient {
+        background: transparent;
+        border: 2px solid;
+        border-image: linear-gradient(135deg, #667eea, #764ba2) 1;
+        color: #667eea;
+        font-weight: 500;
+        padding: 0.7rem 1.5rem;
+        border-radius: 2rem;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-size: 0.85rem;
+    }
+
+    .btn-outline-gradient:hover {
+        background: var(--primary-gradient);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+    }
+
+    /* Loading States */
+    .loading-card {
+        background: white;
+        border-radius: 1.5rem;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        padding: 4rem 2rem;
+        text-align: center;
+    }
+
+    .loading-spinner {
+        width: 60px;
+        height: 60px;
+        border: 4px solid rgba(102, 126, 234, 0.1);
+        border-left: 4px solid #667eea;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 2rem;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .stats-hero {
+            padding: 1.5rem 0;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            font-size: 1.5rem;
+        }
+
+        .stat-number {
+            font-size: 2.2rem;
+        }
+
+        .chart-card-header {
+            padding: 1rem;
+        }
+
+        .btn-gradient,
+        .btn-outline-gradient {
+            font-size: 0.8rem;
+            padding: 0.6rem 1.2rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            font-size: 1.2rem;
+        }
+
+        .stat-number {
+            font-size: 1.8rem;
+        }
+
+        .stats-hero h1 {
+            font-size: 1.5rem;
+        }
+
+        .btn-gradient,
+        .btn-outline-gradient {
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Floating Animation Elements -->
+<div class="floating-elements"></div>
+
+<div class="survey-stats-page">
+  <div class="container-fluid">
+    <!-- Hero Header -->
+    <div class="stats-hero">
+      <div class="container">
+        <div class="row align-items-center">
+          <div class="col-lg-8">
+            <h1 class="display-6 fw-bold mb-2">
+              <i class="fas fa-chart-line me-3"></i>
+              {{ page_title }}
+            </h1>
+            <p class="lead opacity-90 mb-0">
+              So'rovnoma natijalari va batafsil tahlili
+            </p>
+          </div>
+          <div class="col-lg-4 text-end">
+            <div class="d-flex gap-2 justify-content-end">
+              <button class="btn btn-light btn-sm" onclick="refreshStats()">
+                <i class="fas fa-sync-alt me-2"></i>Yangilash
+              </button>
+              <button class="btn btn-light btn-sm" onclick="exportStats()">
+                <i class="fas fa-download me-2"></i>Eksport
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div id="loading-indicator" class="loading-card">
+      <div class="loading-spinner"></div>
+      <h4 class="text-muted mb-2">Statistika yuklanmoqda...</h4>
+      <p class="text-muted">Ma'lumotlar tayyorlanmoqda, iltimos kuting</p>
+    </div>
+
+    <!-- Statistics Container -->
+    <div id="survey-stat-root" class="d-none">
+      <!-- Stats Overview Cards -->
+      <div class="row g-4 mb-4">
+        <div class="col-12 col-sm-6 col-lg-3">
+          <div class="stat-card text-center p-4">
+            <div class="stat-icon">
+              <i class="fas fa-users"></i>
+            </div>
+            <h3 class="stat-number" id="total-participants">0</h3>
+            <p class="text-muted mb-0 fw-medium">Jami ishtirokchilar</p>
+          </div>
+        </div>
+        
+        <div class="col-12 col-sm-6 col-lg-3">
+          <div class="stat-card success text-center p-4">
+            <div class="stat-icon">
+              <i class="fas fa-check-circle"></i>
+            </div>
+            <h3 class="stat-number" id="completed-surveys">0</h3>
+            <p class="text-muted mb-0 fw-medium">To'ldirilgan so'rovnomalar</p>
+          </div>  
+        </div>
+        
+        <div class="col-12 col-sm-6 col-lg-3">
+          <div class="stat-card warning text-center p-4">
+            <div class="stat-icon">
+              <i class="fas fa-clock"></i>
+            </div>
+            <h3 class="stat-number" id="pending-surveys">0</h3>
+            <p class="text-muted mb-0 fw-medium">Kutilayotgan javoblar</p>
+          </div>
+        </div>
+        
+        <div class="col-12 col-sm-6 col-lg-3">
+          <div class="stat-card info text-center p-4">
+            <div class="stat-icon">
+              <i class="fas fa-percentage"></i>
+            </div>
+            <h3 class="stat-number" id="completion-rate">0%</h3>
+            <p class="text-muted mb-0 fw-medium">Bajarilish foizi</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts Section -->
+      <div class="row g-4 mb-4">
+        <!-- Response Distribution Chart -->
+        <div class="col-12 col-lg-6">
+          <div class="chart-card">
+            <div class="chart-card-header">
+              <h5 class="mb-0 fw-bold">
+                <i class="fas fa-chart-pie me-2" style="color: #667eea;"></i>
+                Javoblar taqsimoti
+              </h5>
+            </div>
+            <div class="card-body p-4">
+              <canvas id="responseChart" width="400" height="300"></canvas>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Timeline Chart -->
+        <div class="col-12 col-lg-6">
+          <div class="chart-card">
+            <div class="chart-card-header">
+              <h5 class="mb-0 fw-bold">
+                <i class="fas fa-chart-line me-2" style="color: #11998e;"></i>
+                Vaqt bo'yicha javoblar
+              </h5>
+            </div>
+            <div class="card-body p-4">
+              <canvas id="timelineChart" width="400" height="300"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Detailed Statistics Table -->
+      <div class="stats-table">
+        <div class="chart-card-header">
+          <h5 class="mb-0 fw-bold">
+            <i class="fas fa-table me-2" style="color: #667eea;"></i>
+            Batafsil statistika
+          </h5>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-hover" id="detailed-stats-table">
+            <thead>
+              <tr>
+                <th class="fw-bold">Savol</th>
+                <th class="fw-bold">Javoblar soni</th>
+                <th class="fw-bold">Foiz</th>
+                <th class="fw-bold">O'rtacha ball</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Data will be populated by JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Error State -->
+    <div id="error-state" class="d-none">
+      <div class="loading-card">
+        <div class="text-center">
+          <div class="mb-4">
+            <i class="fas fa-exclamation-triangle" style="font-size: 4rem; color: #ff9a9e;"></i>
+          </div>
+          <h4 class="text-muted mb-3">Ma'lumotlarni yuklashda xatolik</h4>
+          <p class="text-muted mb-4">Iltimos, internetga ulanishingizni tekshiring va qayta urinib ko'ring</p>
+          <button class="btn btn-gradient" onclick="loadStats()">
+            <i class="fas fa-redo me-2"></i>Qayta urinish
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const surveyId = "{{ survey.id }}";
+  const loadingIndicator = document.getElementById('loading-indicator');
+  const statsContainer = document.getElementById('survey-stat-root');
+  const errorState = document.getElementById('error-state');
+
+  // Create floating animation elements
+  createFloatingElements();
+
+  // Load statistics on page load
+  loadStats();
+
+  function createFloatingElements() {
+    const floatingElements = document.querySelector('.floating-elements');
+    const icons = ['fas fa-chart-bar', 'fas fa-chart-pie', 'fas fa-chart-line', 'fas fa-analytics', 'fas fa-poll', 'fas fa-clipboard-list'];
+    
+    function createFloatingIcon() {
+      const icon = document.createElement('i');
+      icon.className = `floating-icon ${icons[Math.floor(Math.random() * icons.length)]}`;
+      icon.style.left = Math.random() * 100 + 'vw';
+      icon.style.animationDelay = Math.random() * 25 + 's';
+      icon.style.animationDuration = (20 + Math.random() * 15) + 's';
+      floatingElements.appendChild(icon);
+      
+      setTimeout(() => {
+        if (icon.parentNode) {
+          icon.parentNode.removeChild(icon);
+        }
+      }, 35000);
+    }
+    
+    // Create floating icons periodically
+    setInterval(createFloatingIcon, 4000);
+    
+    // Create initial icons
+    for (let i = 0; i < 3; i++) {
+      setTimeout(createFloatingIcon, i * 2000);
+    }
+  }
+
+  function loadStats() {
+    showLoading();
+    
+    // Simulate API call with dummy data for now
+    setTimeout(() => {
+      const dummyData = {
+        total_participants: 150,
+        completed_surveys: 120,
+        pending_surveys: 30,
+        completion_rate: 80,
+        response_distribution: {
+          labels: ['To\'ldirilgan', 'Kutilayotgan', 'Boshlangan'],
+          data: [120, 30, 15]
+        },
+        timeline_data: {
+          labels: ['Dush', 'Sesh', 'Chor', 'Pay', 'Jum', 'Shan', 'Yak'],
+          data: [10, 15, 20, 25, 30, 12, 8]
+        },
+        question_stats: [
+          { question: 'O\'qituvchi bilimi', responses: 120, percentage: 95, average_score: 4.5 },
+          { question: 'Dars sifati', responses: 118, percentage: 93, average_score: 4.3 },
+          { question: 'Materiallar', responses: 115, percentage: 90, average_score: 4.1 },
+          { question: 'Umumiy baho', responses: 120, percentage: 95, average_score: 4.4 }
+        ]
+      };
+      
+      hideLoading();
+      updateStatistics(dummyData);
+      renderCharts(dummyData);
+      showStats();
+    }, 2000);
+  }
+
+  function showLoading() {
+    loadingIndicator.classList.remove('d-none');
+    statsContainer.classList.add('d-none');
+    errorState.classList.add('d-none');
+  }
+
+  function hideLoading() {
+    loadingIndicator.classList.add('d-none');
+  }
+
+  function showStats() {
+    statsContainer.classList.remove('d-none');
+    errorState.classList.add('d-none');
+  }
+
+  function showError() {
+    errorState.classList.remove('d-none');
+    statsContainer.classList.add('d-none');
+  }
+
+  function updateStatistics(data) {
+    // Animate numbers
+    animateNumber('total-participants', data.total_participants);
+    animateNumber('completed-surveys', data.completed_surveys);
+    animateNumber('pending-surveys', data.pending_surveys);
+    animateNumber('completion-rate', data.completion_rate, '%');
+
+    // Update detailed table
+    const tableBody = document.querySelector('#detailed-stats-table tbody');
+    tableBody.innerHTML = '';
+    
+    if (data.question_stats) {
+      data.question_stats.forEach(stat => {
+        const row = `
+          <tr>
+            <td class="fw-medium">${stat.question}</td>
+            <td><span class="badge bg-primary rounded-pill">${stat.responses}</span></td>
+            <td><strong>${stat.percentage}%</strong></td>
+            <td><span class="text-success fw-bold">${stat.average_score || 'N/A'}</span></td>
+          </tr>
+        `;
+        tableBody.innerHTML += row;
+      });
+    }
+  }
+
+  function animateNumber(elementId, finalValue, suffix = '') {
+    const element = document.getElementById(elementId);
+    const duration = 2000;
+    const startValue = 0;
+    const increment = finalValue / (duration / 16);
+    let currentValue = startValue;
+
+    const timer = setInterval(() => {
+      currentValue += increment;
+      if (currentValue >= finalValue) {
+        currentValue = finalValue;
+        clearInterval(timer);
+      }
+      element.textContent = Math.floor(currentValue) + suffix;
+    }, 16);
+  }
+
+  function renderCharts(data) {
+    // Response Distribution Pie Chart
+    const responseCtx = document.getElementById('responseChart');
+    if (responseCtx && data.response_distribution) {
+      new Chart(responseCtx, {
+        type: 'doughnut',
+        data: {
+          labels: data.response_distribution.labels,
+          datasets: [{
+            data: data.response_distribution.data,
+            backgroundColor: [
+              'rgba(17, 153, 142, 0.8)',
+              'rgba(255, 154, 158, 0.8)',
+              'rgba(102, 126, 234, 0.8)'
+            ],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: {
+                padding: 20,
+                usePointStyle: true
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // Timeline Line Chart
+    const timelineCtx = document.getElementById('timelineChart');
+    if (timelineCtx && data.timeline_data) {
+      new Chart(timelineCtx, {
+        type: 'line',
+        data: {
+          labels: data.timeline_data.labels,
+          datasets: [{
+            label: 'Javoblar soni',
+            data: data.timeline_data.data,
+            borderColor: 'rgba(102, 126, 234, 1)',
+            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+            borderWidth: 3,
+            fill: true,
+            tension: 0.4
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              display: false
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: {
+                color: 'rgba(0,0,0,0.1)'
+              }
+            },
+            x: {
+              grid: {
+                color: 'rgba(0,0,0,0.1)'
+              }
+            }
+          }
+        }
+      });
+    }
+  }
+
+  // Global functions for buttons
+  window.refreshStats = function() {
+    loadStats();
+  };
+
+  window.exportStats = function() {
+    // Export functionality
+    const csvContent = "data:text/csv;charset=utf-8," + 
+      "Savol,Javoblar soni,Foiz,O'rtacha ball\n" +
+      "O'qituvchi bilimi,120,95%,4.5\n" +
+      "Dars sifati,118,93%,4.3\n" +
+      "Materiallar,115,90%,4.1\n" +
+      "Umumiy baho,120,95%,4.4";
+      
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "survey_statistics.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+});
+</script>
+{% endblock %}

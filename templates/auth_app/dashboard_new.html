@@ -119,13 +119,6 @@
         overflow: hidden;
     }
 
-    .profile-avatar img {
-        position: absolute;
-        top: 0;
-        left: 0;
-        z-index: 2;
-    }
-
     .profile-avatar::before {
         content: '';
         position: absolute;
@@ -154,11 +147,10 @@
         background: white;
         border-radius: 1.5rem;
         box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: all 0.4s ease;
         border: 1px solid rgba(102, 126, 234, 0.1);
         position: relative;
         overflow: hidden;
-        cursor: pointer;
     }
 
     .stats-card:hover {
@@ -176,24 +168,6 @@
         background: var(--primary-gradient);
     }
 
-    .stats-card::after {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 0;
-        height: 0;
-        background: radial-gradient(circle, rgba(102, 126, 234, 0.1) 0%, transparent 70%);
-        transform: translate(-50%, -50%);
-        transition: all 0.6s ease;
-        border-radius: 50%;
-    }
-
-    .stats-card:hover::after {
-        width: 300px;
-        height: 300px;
-    }
-
     .stats-card.success::before { background: var(--success-gradient); }
     .stats-card.warning::before { background: var(--warning-gradient); }
     .stats-card.info::before { background: var(--info-gradient); }
@@ -209,35 +183,11 @@
         margin: 0 auto 1rem;
         background: var(--primary-gradient);
         color: white;
-        transition: all 0.3s ease;
-        position: relative;
-        z-index: 2;
-    }
-
-    .stats-card:hover .stats-icon {
-        transform: scale(1.1) rotate(5deg);
     }
 
     .stats-card.success .stats-icon { background: var(--success-gradient); }
     .stats-card.warning .stats-icon { background: var(--warning-gradient); }
     .stats-card.info .stats-icon { background: var(--info-gradient); }
-
-    .stats-card h3 {
-        position: relative;
-        z-index: 2;
-        transition: all 0.3s ease;
-    }
-
-    .stats-card p {
-        position: relative;
-        z-index: 2;
-        transition: all 0.3s ease;
-    }
-
-    .stats-card:hover h3,
-    .stats-card:hover p {
-        transform: translateY(-2px);
-    }
 
     /* Tab Navigation */
     .custom-tabs {
@@ -524,11 +474,7 @@
             <div class="profile-card p-4">
                 <div class="text-center">
                     <div class="profile-avatar mb-4">
-                        {% if student.image_url %}
-                            <img src="{{ student.image_url }}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
-                        {% else %}
-                            <i class="fas fa-user"></i>
-                        {% endif %}
+                        <i class="fas fa-user"></i>
                     </div>
                     <h2 class="fw-bold mb-2">{{ student.short_name_api|default:student.username|default:"Talaba" }}</h2>
                     <p class="text-muted mb-1">{{ student.group_name|default:"Talaba" }}</p>
@@ -785,56 +731,6 @@ document.addEventListener('DOMContentLoaded', function() {
     for (let i = 0; i < 5; i++) {
         setTimeout(createFloatingIcon, i * 1000);
     }
-    
-    // Animate statistics numbers on load
-    function animateNumber(element, finalValue, duration = 2000, suffix = '') {
-        const startValue = 0;
-        const increment = finalValue / (duration / 16);
-        let currentValue = startValue;
-        
-        const timer = setInterval(() => {
-            currentValue += increment;
-            if (currentValue >= finalValue) {
-                element.textContent = finalValue + suffix;
-                clearInterval(timer);
-            } else {
-                element.textContent = Math.floor(currentValue) + suffix;
-            }
-        }, 16);
-    }
-    
-    // Find and animate all statistics numbers
-    const statsElements = document.querySelectorAll('.stats-card h3');
-    statsElements.forEach((element, index) => {
-        const text = element.textContent.trim();
-        let value = 0;
-        let suffix = '';
-        
-        if (text.includes('%')) {
-            value = parseFloat(text.replace('%', ''));
-            suffix = '%';
-        } else {
-            value = parseInt(text);
-        }
-        
-        if (!isNaN(value)) {
-            // Start animation with delay for each card
-            setTimeout(() => {
-                animateNumber(element, value, 1500, suffix);
-            }, index * 200);
-        }
-    });
-    
-    // Add pulse effect to stats cards
-    const statsCards = document.querySelectorAll('.stats-card');
-    statsCards.forEach((card, index) => {
-        setTimeout(() => {
-            card.style.transform = 'scale(1.05)';
-            setTimeout(() => {
-                card.style.transform = 'scale(1)';
-            }, 200);
-        }, index * 300);
-    });
 });
 </script>
 {% endblock %}

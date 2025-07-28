@@ -5,6 +5,7 @@ from .decorators import custom_login_required_with_token_refresh
 from django.shortcuts import render, redirect
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.admin.views.decorators import staff_member_required
 from django.db import transaction
 from django.urls import reverse # reverse ni import qilish
 from django.utils import timezone
@@ -187,6 +188,7 @@ def login_view(request):
             request.session['api_token'] = api_token
             request.session['student_db_id'] = student.id
             request.session['username_display'] = str(student)
+            request.session['student_image_url'] = student.image_url
             
             expires_in_login = settings.SESSION_COOKIE_AGE # default
             refresh_cookie_login = None
@@ -328,10 +330,31 @@ def dashboard_view(request):
     #         logger.error(f"Unexpected error during dashboard profile refresh for {current_student.username}: {e}", exc_info=True)
     #         messages.error(request, "Profilni yangilashda kutilmagan xatolik yuz berdi.")
 
+    # Statistika ma'lumotlarini hisoblash
+    from .models import Survey, SurveyResponse
+    
+    # Faol so'rovnomalar soni
+    total_surveys = Survey.objects.filter(is_active=True).count()
+    
+    # Talaba tomonidan tugatilgan so'rovnomalar
+    if current_student:
+        completed_surveys = SurveyResponse.objects.filter(student=current_student).count()
+        # Kutilayotgan so'rovnomalar (umumiy faol - tugatilgan)
+        pending_surveys = max(0, total_surveys - completed_surveys)
+        # Ishtirok darajasi
+        participation_rate = round((completed_surveys / total_surveys * 100) if total_surveys > 0 else 0, 1)
+    else:
+        completed_surveys = 0
+        pending_surveys = total_surveys
+        participation_rate = 0
 
     context = {
         'student': current_student, # Endi bu yangilangan bo'lishi mumkin
         'username_display': str(current_student),
+        'total_surveys': total_surveys,
+        'completed_surveys': completed_surveys,
+        'pending_surveys': pending_surveys,
+        'participation_rate': participation_rate,
     }
     return render(request, 'auth_app/dashboard.html', context)
 
@@ -508,14 +531,19 @@ def submit_survey_api_view(request, survey_pk):
         if not answers_data or not any(answers_data.values()):
              return JsonResponse({'status': 'error', 'message': 'Iltimos, kamida bitta savolga javob bering.'}, status=400)
 
+        # Majburiy savollar uchun validation
+        questions_map = {q.id: q for q in survey.questions.all()}
+        for question in questions_map.values():
+            if question.is_required:
+                question_answer = answers_data.get(str(question.id))
+                if not question_answer or (isinstance(question_answer, str) and not question_answer.strip()) or (isinstance(question_answer, list) and not question_answer):
+                    return JsonResponse({'status': 'error', 'message': f'"{question.text}" savoliga javob berish majburiy!'}, status=400)
+
         with transaction.atomic():
             survey_response = SurveyResponse.objects.create(
                 survey=survey,
                 student=student if not survey.is_anonymous else None
             )
-
-            # Savollarni oldindan lug'atga yuklab olish (har bir iteratsiyada DB so'rovi qilmaslik uchun)
-            questions_map = {q.id: q for q in survey.questions.all()}
 
             for question_id_str, value in answers_data.items():
                 question_id = int(question_id_str)
@@ -570,11 +598,16 @@ from .serializers import QuestionStatisticsSerializer
 class SurveyStatisticsAPIView(APIView):
     """
     Bitta so'rovnoma uchun barcha statistikani hisoblab,
-    JSON formatida qaytaradigan API endpoint. YANGILANGAN.
+    JSON formatida qaytaradigan API endpoint. Ma'lumotlar bazasidagi aniq ma'lumotlar bilan.
     """
-    permission_classes = [IsAdminUser]
+    # Temporary comment out for testing
+    # permission_classes = [IsAdminUser]
 
     def get(self, request, survey_pk):
+        # Manual staff check
+        if not request.user.is_authenticated or not request.user.is_staff:
+            return Response({"error": "Sizda bu API'ga kirish huquqi yo'q."}, status=403)
+            
         try:
             survey = Survey.objects.get(pk=survey_pk)
         except Survey.DoesNotExist:
@@ -584,8 +617,20 @@ class SurveyStatisticsAPIView(APIView):
         
         total_participants = responses.count()
         
+        # --- So'rovnoma haqida asosiy ma'lumotlar ---
+        survey_info = {
+            "id": survey.id,
+            "title": survey.title,
+            "description": survey.description,
+            "is_anonymous": survey.is_anonymous,
+            "created_at": survey.created_at.strftime("%Y-%m-%d %H:%M:%S") if survey.created_at else None,
+            "updated_at": survey.updated_at.strftime("%Y-%m-%d %H:%M:%S") if survey.updated_at else None,
+            "is_active": survey.is_active,
+            "questions_count": survey.questions.count(),
+            "total_responses": total_participants,
+        }
+        
         # --- Demografik statistika ---
-        # Yangi kesimlar qo'shildi
         faculty_stats, level_stats, gender_stats = {}, {}, {}
         education_form_stats, payment_form_stats = {}, {}
         social_category_stats, accommodation_stats = {}, {}
@@ -599,27 +644,77 @@ class SurveyStatisticsAPIView(APIView):
             social_category_stats = self._get_grouped_stats(responses, 'student__social_category_name', "Ijtimoiy holat noma'lum")
             accommodation_stats = self._get_grouped_stats(responses, 'student__accommodation_name', "Turar joyi noma'lum")
         
+        # --- Javoblar bo'yicha batafsil ma'lumotlar ---
+        responses_details = []
+        if not survey.is_anonymous:
+            for response in responses[:100]:  # Birinchi 100 ta javobni olamiz
+                student = response.student
+                response_detail = {
+                    "response_id": response.id,
+                    "submitted_at": response.submitted_at.strftime("%Y-%m-%d %H:%M:%S") if response.submitted_at else None,
+                    "student_info": {
+                        "student_id_number": student.student_id_number,
+                        "full_name": student.full_name,
+                        "faculty": student.faculty_name_api,
+                        "level": student.level_name,
+                        "gender": student.gender_name,
+                        "education_form": student.education_form_name,
+                        "payment_form": student.payment_form_name,
+                        "social_category": student.social_category_name,
+                        "accommodation": student.accommodation_name,
+                    } if student else None,
+                    "answers_count": response.answers.count()
+                }
+                responses_details.append(response_detail)
+        
         # --- Savollar bo'yicha statistika ---
         questions_stats_data = []
         questions = Question.objects.filter(survey=survey).prefetch_related('choices')
 
         for question in questions:
-            # ... (bu qism o'zgarishsiz qoladi, oldingi javobdagi kod) ...
-            question_data = {'id': question.id, 'text': question.text, 'question_type': question.question_type, 'choices_stats': [], 'text_answers': []}
+            question_data = {
+                'id': question.id, 
+                'text': question.text, 
+                'question_type': question.question_type,
+                'is_required': question.is_required,
+                'order': question.order,
+                'choices_stats': [], 
+                'text_answers': [],
+                'total_answers': 0
+            }
+            
             if question.question_type in ['single_choice', 'multiple_choice']:
                 choices_with_counts = question.choices.annotate(
                     count=Count('chosen_in_answers', filter=Q(chosen_in_answers__survey_response__survey=survey)) +
                           Count('multi_chosen_in_answers', filter=Q(multi_chosen_in_answers__survey_response__survey=survey))
                 ).order_by('-count')
-                question_data['choices_stats'] = [{"id": c.id, "text": c.text, "count": c.count} for c in choices_with_counts]
+                
+                total_question_answers = sum(c.count for c in choices_with_counts)
+                question_data['total_answers'] = total_question_answers
+                
+                for choice in choices_with_counts:
+                    percentage = (choice.count / total_question_answers * 100) if total_question_answers > 0 else 0
+                    question_data['choices_stats'].append({
+                        "id": choice.id, 
+                        "text": choice.text, 
+                        "count": choice.count,
+                        "percentage": round(percentage, 2)
+                    })
+                    
             elif question.question_type == 'text':
-                text_answers = Answer.objects.filter(survey_response__survey=survey, question=question).values_list('text_answer', flat=True).exclude(text_answer__exact='')
-                question_data['text_answers'] = list(text_answers[:50])
+                text_answers = Answer.objects.filter(
+                    survey_response__survey=survey, 
+                    question=question
+                ).exclude(text_answer__exact='').values_list('text_answer', flat=True)
+                
+                question_data['total_answers'] = text_answers.count()
+                question_data['text_answers'] = list(text_answers[:50])  # Birinchi 50 ta matnli javob
+                
             questions_stats_data.append(question_data)
         
         # --- Yakuniy JSON javobini yig'ish ---
         final_data = {
-            "survey_title": survey.title,
+            "survey_info": survey_info,
             "total_participants": total_participants,
             "demographics": {
                 "by_faculty": faculty_stats,
@@ -630,7 +725,13 @@ class SurveyStatisticsAPIView(APIView):
                 "by_social_category": social_category_stats,
                 "by_accommodation": accommodation_stats,
             },
-            "questions_statistics": questions_stats_data
+            "responses_details": responses_details,
+            "questions_statistics": questions_stats_data,
+            "summary": {
+                "total_questions": len(questions_stats_data),
+                "completion_rate": round((total_participants / 1000) * 100, 2) if total_participants > 0 else 0,  # Taxminiy
+                "average_responses_per_question": round(sum(q.get('total_answers', 0) for q in questions_stats_data) / len(questions_stats_data), 2) if questions_stats_data else 0
+            }
         }
         
         return Response(final_data)
@@ -652,11 +753,16 @@ def is_staff_user(user):
     return user.is_staff
 
 @user_passes_test(is_staff_user) # Faqat admin (staff) foydalanuvchilar kira oladi
+@custom_login_required_with_token_refresh
 def survey_statistics_view(request, survey_pk):
     """
     Bitta so'rovnomaning statistikasini ko'rsatadigan sahifani render qiladi.
     Asosiy ma'lumotlar JavaScript orqali API'dan olinadi.
     """
+    # Faqat staff foydalanuvchilar kirishi mumkin
+    if not request.user.is_staff:
+        return HttpResponseForbidden("Sizda bu sahifaga kirish huquqi yo'q.")
+    
     try:
         survey = Survey.objects.get(pk=survey_pk)
     except Survey.DoesNotExist:
@@ -681,33 +787,58 @@ class ResponsiblePersonListView(ListView):
     context_object_name = "responsibles"
     queryset = ResponsiblePerson.objects.filter(is_active=True)
 
-class MessageListView(ListView):
-    model = MessageToResponsible
-    template_name = "auth_app/message_list.html"
-    context_object_name = "messages"
-    paginate_by = 20
-
-    def get_queryset(self):
-        qs = super().get_queryset()
-        if hasattr(self.request.user, 'is_superuser') and self.request.user.is_superuser:
-            return qs
-        student = get_student_from_request(self.request)
+@custom_login_required_with_token_refresh
+def message_list_view(request):
+    """Xabarlar ro'yxati - function-based view"""
+    # Admin foydalanuvchilar uchun barcha xabarlar
+    if hasattr(request.user, 'is_superuser') and request.user.is_superuser:
+        messages_list = MessageToResponsible.objects.all().order_by('-created_at')
+    else:
+        # Oddiy foydalanuvchilar uchun faqat o'zlariga tegishli xabarlar
+        student = getattr(request, 'current_student', None)
         if student:
-            return qs.filter(student=student)
-        return qs.none()
+            messages_list = MessageToResponsible.objects.filter(student=student).order_by('-created_at')
+        else:
+            messages_list = MessageToResponsible.objects.none()
+    
+    # Pagination
+    from django.core.paginator import Paginator
+    paginator = Paginator(messages_list, 20)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    context = {
+        'messages': page_obj,
+        'student': getattr(request, 'current_student', None),
+        'page_obj': page_obj,
+        'is_paginated': page_obj.has_other_pages(),
+    }
+    
+    return render(request, 'auth_app/message_list.html', context)
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        student = get_student_from_request(self.request)
-        context['student'] = student
-        if not student:
-            context['student_warning'] = "Foydalanuvchi sessiyasi yoki student obyekt topilmadi! Iltimos, qayta kiring yoki administratorga murojaat qiling."
-        return context
-
-class MessageDetailView(LoginRequiredMixin, DetailView):
-    model = MessageToResponsible
-    template_name = "auth_app/message_detail.html"
-    context_object_name = "message"
+@custom_login_required_with_token_refresh
+def message_detail_view(request, pk):
+    """Xabar tafsilotlari - function-based view"""
+    try:
+        message = MessageToResponsible.objects.get(pk=pk)
+        
+        # Admin emas bo'lsa, faqat o'z xabarlarini ko'rish huquqi
+        if not (hasattr(request.user, 'is_superuser') and request.user.is_superuser):
+            student = getattr(request, 'current_student', None)
+            if not student or message.student != student:
+                messages.error(request, "Bu xabarni ko'rish huquqingiz yo'q.")
+                return redirect('message_list')
+        
+        context = {
+            'message': message,
+            'student': getattr(request, 'current_student', None),
+        }
+        
+        return render(request, 'auth_app/message_detail.html', context)
+        
+    except MessageToResponsible.DoesNotExist:
+        messages.error(request, "Xabar topilmadi.")
+        return redirect('message_list')
 
 class MessageReplyView(LoginRequiredMixin, CreateView):
     model = MessageReply
@@ -739,11 +870,4 @@ class MessageCreateView(CreateView):
         form.instance.student = student
         return super().form_valid(form)
 
-def get_student_from_request(request):
-    student = getattr(request.user, 'student', None)
-    if not student:
-        student = getattr(request, 'current_student', None)
-    # Fallback: Agar user Student modelidan bo'lsa va login bo'lgan bo'lsa
-    if not student and getattr(request.user, 'is_authenticated', False) and request.user.__class__.__name__ == 'Student':
-        student = request.user
-    return student
+# get_student_from_request funksiyasi o'chirildi - endi custom_login_required_with_token_refresh dekorator ishlatamiz

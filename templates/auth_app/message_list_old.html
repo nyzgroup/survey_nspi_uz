@@ -1,0 +1,51 @@
+{% extends 'auth_app/base.html' %}
+{% block title %}Mening murojaatlarim{% endblock %}
+{% block content %}
+<h2 class="text-2xl font-bold mb-6 text-center">Mening murojaatlarim</h2>
+<!-- Debug: Ko'rsatilayotgan murojaatlar soni: -->
+<div class="mb-2 text-xs text-gray-400">Jami: {{ messages|length }} ta murojaat</div>
+<div class="mb-2 text-xs text-red-500">Current student ID: {{ student.id }} | Username: {{ student.username }}</div>
+{% if student_warning %}
+  <div class="alert alert-danger text-red-700 font-semibold my-3">{{ student_warning }}</div>
+{% endif %}
+<div class="overflow-x-auto">
+  <table class="min-w-full bg-white rounded-xl shadow-lg">
+    <thead class="bg-blue-100">
+      <tr>
+        <th class="py-3 px-4 text-left text-blue-700 font-semibold">Mavzu</th>
+        <th class="py-3 px-4 text-left text-blue-700 font-semibold">Mas'ul shaxs</th>
+        <th class="py-3 px-4 text-left text-blue-700 font-semibold">Holat</th>
+        <th class="py-3 px-4 text-left text-blue-700 font-semibold">Yuborilgan</th>
+        <th class="py-3 px-4 text-left text-blue-700 font-semibold">So‘nggi javob</th>
+        <th class="py-3 px-4"></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for message in messages %}
+      <tr class="border-b hover:bg-blue-50 transition">
+        <td class="py-3 px-4">{{ message.subject }}</td>
+        <td class="py-3 px-4">
+          {# Fallback for responsible person name #}
+          {% if message.responsible_person %}
+            {{ message.responsible_person.full_name|default:message.responsible_person|default:'-' }}
+          {% else %}-{% endif %}
+        </td>
+        <td class="py-3 px-4"><span class="inline-block px-3 py-1 rounded-full bg-blue-200 text-blue-800 text-xs font-semibold">{{ message.get_status_display }}</span></td>
+        <td class="py-3 px-4">{{ message.created_at|date:'d.m.Y H:i' }}</td>
+        <td class="py-3 px-4">
+          {% if message.replies.last %}
+            <span class="text-green-700 text-xs">{{ message.replies.last.content|truncatewords:10 }}</span>
+            <div class="text-gray-400 text-xs mt-1">{{ message.replies.last.created_at|date:'d.m.Y H:i' }}</div>
+          {% else %}
+            <span class="text-gray-400 text-xs">Javob yo‘q</span>
+          {% endif %}
+        </td>
+        <td class="py-3 px-4"><a href="{% url 'message_detail' message.pk %}" class="btn btn-sm btn-primary">Batafsil</a></td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6" class="text-center py-6 text-gray-500">Murojaatlar topilmadi.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
