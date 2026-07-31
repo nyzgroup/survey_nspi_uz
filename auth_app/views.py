@@ -1,263 +1,253 @@
 # auth_app/views.py
 import logging
-from functools import wraps
 from .decorators import custom_login_required_with_token_refresh
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
-from django.db import transaction
-from django.urls import reverse # reverse ni import qilish
+from django.db import transaction, IntegrityError
+from django.urls import reverse
 from django.utils import timezone
+from django.utils.safestring import mark_safe
 from django.core.cache import cache
-from django.http import Http404, HttpResponseForbidden
+from django.http import Http404, HttpResponseForbidden, JsonResponse
+from django.middleware.csrf import get_token
 from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_protect
+from django.contrib.auth.decorators import login_required
 
-from .forms import LoginForm
-from .models import Student,Survey, SurveyResponse, Answer, Question
-from .services.hemis_api_service import HemisAPIClient, APIClientException
-from .utils import map_api_data_to_student_model_defaults, update_student_instance_with_defaults # <--- YANGI IMPORTLAR
-
-
-
-from django.shortcuts import get_object_or_404
-from django.contrib.auth.decorators import login_required # Yoki bizning custom_login_required
-from .forms import create_answer_form_set # Yangi forma
+from .forms import LoginForm, create_answer_form_set
+from .models import Student, Employee, Survey, SurveyResponse, Answer, Question
+from .decorators import employee_login_required
+from .services.hemis_api_service import (
+    student_login as hemis_student_login,
+    get_student_me,
+    get_student_by_login,
+    tutor_login as hemis_tutor_login,
+    get_tutor_profile,
+    generate_oauth_state,
+    build_hemis_oauth_url,
+    hemis_oauth_exchange_code,
+    hemis_oauth_userinfo,
+    HemisAuthError, HemisAPIError, HemisRateLimitError,
+)
+from .utils import (
+    map_api_data_to_student_model_defaults,
+    update_student_instance_with_defaults,
+    map_api_data_to_employee_model_defaults,
+    update_employee_instance_with_defaults,
+    _handle_api_token_refresh,
+)
+from .security import safe_redirect, safe_redirect_url, rate_limit, get_client_ip
 
 logger = logging.getLogger(__name__)
 REQUESTS_VERIFY_SSL = getattr(settings, 'REQUESTS_VERIFY_SSL', True)
 API_TOKEN_REFRESH_THRESHOLD_SECONDS = getattr(settings, 'API_TOKEN_REFRESH_THRESHOLD_SECONDS', 5 * 60) # default 5 daqiqa
 
-class AuthenticationFailed(APIClientException):
+class AuthenticationFailed(HemisAPIError):
     pass
 
-class PermissionDeniedAPI(APIClientException):
+class PermissionDeniedAPI(HemisAPIError):
     pass
 
 # --- Helper Functions ---
 def _get_error_log_id():
     return timezone.now().strftime('%Y%m%d%H%M%S%f')
 
-def _handle_api_token_refresh(request):
-    refresh_cookie = request.session.get('hemis_refresh_cookie')
-    current_token_expiry = request.session.get('api_token_expiry_timestamp')
-    log_id_base = _get_error_log_id()
-
-    needs_refresh = not current_token_expiry or \
-                    current_token_expiry <= timezone.now().timestamp() + API_TOKEN_REFRESH_THRESHOLD_SECONDS
-
-    if not refresh_cookie or not needs_refresh:
-        return True
-
-    logger.info(f"Attempting to refresh API token for session: {request.session.session_key}")
-    api_client = HemisAPIClient() # Token bu yerda kerak emas, refresh_auth_token o'zi refresh_cookie ni ishlatadi
-    log_id = f"{log_id_base}_REFRESH"
-
-    try:
-        new_access_token, new_refresh_cookie_data = api_client.refresh_auth_token(refresh_cookie)
-        request.session['api_token'] = new_access_token
-        
-        # API javobidan 'expires_in' olishga harakat qilamiz
-        expires_in = settings.SESSION_COOKIE_AGE # default
-        if isinstance(new_refresh_cookie_data, dict) and 'expires_in' in new_refresh_cookie_data:
-            try:
-                expires_in = int(new_refresh_cookie_data['expires_in'])
-            except (ValueError, TypeError):
-                logger.warning(f"API dan kelgan 'expires_in' ({new_refresh_cookie_data['expires_in']}) yaroqsiz. Standart qiymat ishlatiladi.")
-        
-        request.session['api_token_expiry_timestamp'] = timezone.now().timestamp() + expires_in
-
-        # Agar API yangi refresh cookie qaytarsa (string yoki dict ichida)
-        new_actual_refresh_cookie = None
-        if isinstance(new_refresh_cookie_data, str):
-            new_actual_refresh_cookie = new_refresh_cookie_data
-        elif isinstance(new_refresh_cookie_data, dict) and new_refresh_cookie_data.get('refresh_token_cookie_value'):
-            new_actual_refresh_cookie = new_refresh_cookie_data['refresh_token_cookie_value']
-        elif isinstance(new_refresh_cookie_data, dict) and new_refresh_cookie_data.get('refresh_cookie'): # Boshqa nom bilan kelishi mumkin
-            new_actual_refresh_cookie = new_refresh_cookie_data['refresh_cookie']
-
-
-        if new_actual_refresh_cookie:
-            request.session['hemis_refresh_cookie'] = new_actual_refresh_cookie
-            logger.info(f"Refresh cookie also updated for session: {request.session.session_key}")
-        
-        logger.info(f"API token successfully refreshed for session: {request.session.session_key}. New expiry: {timezone.datetime.fromtimestamp(request.session['api_token_expiry_timestamp'])}")
-        return True
-    except APIClientException as e:
-        logger.error(f"Error Log ID: {log_id} - Failed to refresh API token: {e.args[0]} (Status: {e.status_code})", 
-                     extra={'response_data': e.response_data, 'session_key': request.session.session_key})
-        request.session.flush()
-        messages.error(request, f"Sessiyangiz muddati tugadi. Iltimos, qayta kiring. (Xatolik ID: {log_id})")
-        return False
-    except Exception as e:
-        logger.critical(f"Error Log ID: {log_id} - Unexpected error during token refresh: {e}", 
-                        exc_info=True, extra={'session_key': request.session.session_key})
-        request.session.flush()
-        messages.error(request, f"Tokenni yangilashda kutilmagan xatolik. Qayta kiring. (Xatolik ID: {log_id})")
-        return False
-
-# --- Decorators ---
-def custom_login_required_with_token_refresh(view_func):
-    @wraps(view_func)
-    def _wrapped_view(request, *args, **kwargs):
-        student_db_id_in_session = request.session.get('student_db_id')
-        api_token_in_session = request.session.get('api_token')
-
-        if not api_token_in_session or not student_db_id_in_session:
-            messages.warning(request, "Iltimos, davom etish uchun tizimga kiring.")
-            login_url_name = settings.LOGIN_URL # Bu odatda URL nomi bo'ladi
-            try:
-                login_url_path = reverse(login_url_name)
-            except Exception:
-                login_url_path = f"/{login_url_name}/" # Fallback agar reverse ishlamasa
-            
-            current_path = request.get_full_path()
-            return redirect(f'{login_url_path}?next={current_path}')
-        
-        try:
-            request.current_student = Student.objects.get(pk=student_db_id_in_session)
-        except Student.DoesNotExist:
-            logger.warning(f"Student ID {student_db_id_in_session} from session not found in DB. Flushing session.")
-            request.session.flush()
-            messages.error(request, "Sessiya yaroqsiz yoki foydalanuvchi topilmadi. Iltimos, qayta kiring.")
-            return redirect(settings.LOGIN_URL) # LOGIN_URL bu yerda ham nom bo'lishi kerak
-
-        if not _handle_api_token_refresh(request):
-            # _handle_api_token_refresh xabar berib, sessiyani tozalab, False qaytaradi.
-            # Login sahifasiga redirect kerak.
-            return redirect(settings.LOGIN_URL)
-            
-        return view_func(request, *args, **kwargs)
-    return _wrapped_view
-
-
 # --- Views ---
+@rate_limit(
+    'login',
+    limit=getattr(settings, 'RATE_LIMIT_LOGIN', 8),
+    window_seconds=getattr(settings, 'RATE_LIMIT_LOGIN_WINDOW', 60),
+    methods=('POST',),
+)
 def login_view(request):
-    if 'api_token' in request.session and 'student_db_id' in request.session:
-        if _handle_api_token_refresh(request):
-            try:
-                # Foydalanuvchi hali ham bazada mavjudligini tekshirish
-                Student.objects.get(pk=request.session['student_db_id'])
-                next_url = request.session.pop('login_next_url', None) or request.GET.get('next')
-                return redirect(next_url or 'dashboard')
-            except Student.DoesNotExist:
-                logger.warning(f"Logged in user (ID: {request.session.get('student_db_id')}) not found in DB. Flushing session.")
-                request.session.flush()
-                # Bu holatda login formaga qaytamiz
-        else:
-            # Token yangilash muvaffaqiyatsiz bo'lsa, _handle_api_token_refresh o'zi login sahifasiga
-            # yo'naltirishi yoki xabar berishi kerak. Agar yo'naltirmasa, bu yerda:
-            return redirect(settings.LOGIN_URL)
-
+    # Allaqachon kirgan foydalanuvchini yo'naltirish
+    if 'api_token' in request.session:
+        if 'employee_db_id' in request.session:
+            return redirect('employee_home')
+        if 'student_db_id' in request.session:
+            if _handle_api_token_refresh(request):
+                try:
+                    Student.objects.get(pk=request.session['student_db_id'])
+                    next_url = request.session.pop('login_next_url', None) or request.GET.get('next')
+                    return safe_redirect(request, next_url, default=reverse('dashboard'))
+                except Student.DoesNotExist:
+                    request.session.flush()
+            else:
+                return redirect(settings.LOGIN_URL)
 
     if request.method == 'GET' and 'next' in request.GET:
-        request.session['login_next_url'] = request.GET.get('next')
+        # Faqat xavfsiz next saqlanadi (open redirect oldini olish)
+        request.session['login_next_url'] = safe_redirect_url(
+            request, request.GET.get('next'), default=''
+        ) or None
 
     form = LoginForm(request.POST or None)
     log_id_base = _get_error_log_id()
 
     if request.method == 'POST' and form.is_valid():
-        username = form.cleaned_data['username']
-        password = form.cleaned_data['password']
-        
-        api_client = HemisAPIClient()
+        username   = form.cleaned_data['username']
+        password   = form.cleaned_data['password']
+        login_type = request.POST.get('login_type', 'student')  # 'student' yoki 'employee'
 
         try:
-            logger.info(f"Login attempt for user: {username}")
-            api_token, refresh_data = api_client.login(username, password) # refresh_data endi dict yoki string bo'lishi mumkin
-            
-            logger.info(f"Login successful for {username}, fetching account data with new token.")
-            student_info_from_api = api_client.get_account_me(api_token_override=api_token)
+            if login_type == 'employee':
+                return _handle_employee_login(request, username, password, log_id_base)
+            else:
+                return _handle_student_login(request, username, password, log_id_base, form)
 
-            if not student_info_from_api or not isinstance(student_info_from_api, dict):
-                log_id = f"{log_id_base}_NODATA"
-                logger.error(f"Error Log ID: {log_id} - No student data received from API for {username} or data is not a dict. API Response: {str(student_info_from_api)[:250]}")
-                messages.error(request, f"API dan ma'lumot olishda xatolik. (Xatolik ID: {log_id})")
-                return render(request, 'auth_app/login.html', {'form': form})
+        except HemisAuthError as exc:
+            log_id = f"{log_id_base}_AUTH"
+            logger.warning(f"Log ID: {log_id} - Auth error for {username}: {exc}")
+            messages.error(request, "Login yoki parol xato. Iltimos, tekshirib qayta urinib ko'ring.")
 
-            with transaction.atomic():
-                student_defaults = map_api_data_to_student_model_defaults(student_info_from_api, username)
-                if not student_defaults: # Agar map_api_data_to_student_model_defaults bo'sh qaytarsa
-                    raise ValueError("API ma'lumotlarini modellashtirishda xatolik.")
+        except HemisRateLimitError as exc:
+            log_id = f"{log_id_base}_RATE"
+            logger.warning(f"Log ID: {log_id} - Rate limit for {username}: {exc}")
+            messages.error(request, str(exc))
+            return render(request, 'auth_app/login.html',
+                          {'form': form, 'rate_limited': True, 'active_tab': login_type})
 
-                student, created = Student.objects.update_or_create(
-                    username=username,
-                    defaults=student_defaults # update_or_create o'zi o'zgarishlarni saqlaydi
-                )
-            
-            request.session['api_token'] = api_token
-            request.session['student_db_id'] = student.id
-            request.session['username_display'] = str(student)
-            request.session['student_image_url'] = student.image_url
-            
-            expires_in_login = settings.SESSION_COOKIE_AGE # default
-            refresh_cookie_login = None
+        except HemisAPIError as exc:
+            log_id = f"{log_id_base}_API"
+            logger.error(f"Log ID: {log_id} - API error for {username}: {exc}", exc_info=True)
+            msg = str(exc)
+            if any(t in msg.lower() for t in ["ulanib bo'lmadi", "connection", "refused"]):
+                user_message = "HEMIS serveriga ulanib bo'lmadi. Internet aloqangizni tekshiring."
+            elif "timeout" in msg.lower() or "vaqti tugadi" in msg.lower():
+                user_message = "HEMIS serveridan javob kutish vaqti tugadi. Keyinroq urinib ko'ring."
+            else:
+                user_message = f"HEMIS tizimi bilan bog'lanishda xatolik. (ID: {log_id})"
+            messages.error(request, user_message)
 
-            if isinstance(refresh_data, str): # Agar refresh_data to'g'ridan-to'g'ri cookie string bo'lsa
-                refresh_cookie_login = refresh_data
-            elif isinstance(refresh_data, dict):
-                if 'expires_in' in refresh_data:
-                    try:
-                        expires_in_login = int(refresh_data['expires_in'])
-                    except (ValueError, TypeError):
-                        logger.warning(f"Login API dan kelgan 'expires_in' ({refresh_data['expires_in']}) yaroqsiz.")
-                
-                if 'refresh_token_cookie_value' in refresh_data:
-                    refresh_cookie_login = refresh_data['refresh_token_cookie_value']
-                elif 'refresh_cookie' in refresh_data: # Boshqa nom bilan
-                    refresh_cookie_login = refresh_data['refresh_cookie']
-                # Agar refresh token to'g'ridan-to'g'ri 'refresh_token' kaliti bilan kelsa:
-                # elif 'refresh_token' in refresh_data: 
-                #    request.session['hemis_refresh_token_value'] = refresh_data['refresh_token'] # Buni saqlash kerak bo'lsa
-            
-            request.session['api_token_expiry_timestamp'] = timezone.now().timestamp() + expires_in_login
-            
-            if refresh_cookie_login:
-                request.session['hemis_refresh_cookie'] = refresh_cookie_login
-            
-            request.session.set_expiry(settings.SESSION_COOKIE_AGE) # Django sessiyasining muddati
+        except ValueError as exc:
+            log_id = f"{log_id_base}_VAL"
+            logger.error(f"Log ID: {log_id} - ValueError for {username}: {exc}", exc_info=True)
+            messages.error(request, f"Ma'lumotlarni qayta ishlashda xatolik. (ID: {log_id})")
 
-            display_name = student_defaults.get('full_name_api') or student.username
-            messages.success(request, f"Xush kelibsiz, {display_name}!")
-            logger.info(f"User {username} logged in. Session expiry: {request.session.get_expiry_date()}, API token expiry: {timezone.datetime.fromtimestamp(request.session['api_token_expiry_timestamp'])}")
-            
-            next_url = request.session.pop('login_next_url', None) or request.GET.get('next')
-            return redirect(next_url or 'dashboard')
-
-        except APIClientException as e:
-            log_id = f"{log_id_base}_APICLI"
-            logger.error(
-                f"Error Log ID: {log_id} - User: {username}, APIClientException: {e.args[0]}, "
-                f"Status: {e.status_code}, API Response: {str(e.response_data)[:250]}, URL: {e.url}",
-                exc_info=False
-            )
-            user_message = str(e.args[0] if e.args else "Noma'lum API xatosi")
-            if e.status_code in [400, 401, 403] or \
-               (isinstance(user_message, str) and any(term in user_message.lower() for term in ["token", "authentication", "авторизации", "credentials", "login", "parol", "not found", "no active account"])):
-                 user_message = "Login yoki parol xato."
-            elif e.status_code == 503 or (e.status_code is None and any(term in user_message.lower() for term in ["connection", "ulan", "refused"])):
-                user_message = "API serveriga ulanib bo'lmadi. Internet aloqangizni tekshiring yoki keyinroq urinib ko'ring."
-            elif e.status_code == 504 or (e.status_code is None and "timeout" in user_message.lower()):
-                user_message = "API serveridan javob kutish vaqti tugadi."
-            elif e.status_code == 404 and e.url and "/auth/login" in str(e.url):
-                 user_message = "Autentifikatsiya xizmati manzili noto'g'ri sozlanган."
-            elif not user_message or user_message == "Noma'lum API xatosi":
-                 user_message = "API bilan bog'lanishda noma'lum xatolik."
-
-            messages.error(request, f"{user_message} (Xatolik ID: {log_id})")
-        
-        except ValueError as ve: # Masalan, map_api_data_to_student_model_defaults xatolik qaytarsa
-            log_id = f"{log_id_base}_VALERR"
-            logger.error(f"Error Log ID: {log_id} - User: {username}, ValueError: {ve}", exc_info=True)
-            messages.error(request, f"Ma'lumotlarni qayta ishlashda xatolik. (Xatolik ID: {log_id})")
-
-        except Exception as e:
+        except Exception as exc:
             log_id = f"{log_id_base}_UNEXP"
-            logger.critical(f"Error Log ID: {log_id} - User: {username}, Unexpected error in login_view: {type(e).__name__} - {e}", exc_info=True)
-            messages.error(request, f"Noma'lum tizim xatoligi yuz berdi. Iltimos, administratorga murojaat qiling. (Xatolik ID: {log_id})")
+            logger.critical(f"Log ID: {log_id} - Unexpected error for {username}: {type(exc).__name__} - {exc}", exc_info=True)
+            messages.error(request, f"Noma'lum tizim xatoligi. Administrator bilan bog'laning. (ID: {log_id})")
 
-    context = {'form': form}
-    return render(request, 'auth_app/login.html', context)
+    active_tab = request.POST.get('login_type', 'student') if request.method == 'POST' else 'student'
+    return render(request, 'auth_app/login.html', {'form': form, 'active_tab': active_tab})
+
+
+def _handle_student_login(request, username, password, log_id_base, form):
+    logger.info(f"Student login attempt: {username}")
+
+    hemis_auth   = hemis_student_login(username, password)
+    api_token    = hemis_auth["token"]
+    hemis_id     = hemis_auth.get("hemis_id")
+    refresh_data = hemis_auth.get("refresh_data")
+
+    logger.info(f"HEMIS student login OK for {username}, hemis_id={hemis_id}")
+
+    student_info = None
+    if api_token:
+        try:
+            student_info = get_student_me(api_token)
+        except HemisAPIError as exc:
+            logger.warning(f"/account/me failed for {username}: {exc}. Trying admin fallback...")
+
+    if not student_info:
+        student_info = get_student_by_login(username)
+        if student_info:
+            logger.info(f"Admin API fallback succeeded for {username}")
+        else:
+            log_id = f"{log_id_base}_NODATA"
+            logger.error(f"Log ID: {log_id} - Student profile not found: {username}")
+            messages.error(request, f"HEMIS tizimidan ma'lumot olishda xatolik. Qayta urinib ko'ring. (ID: {log_id})")
+            return render(request, 'auth_app/login.html', {'form': form, 'active_tab': 'student'})
+
+    with transaction.atomic():
+        student_defaults = map_api_data_to_student_model_defaults(student_info, username)
+        if not student_defaults:
+            raise ValueError("API ma'lumotlarini modellashtirishda xatolik.")
+        if hemis_id:
+            student_defaults['api_user_hash'] = hemis_id
+        student, created = Student.objects.update_or_create(
+            username=username,
+            defaults=student_defaults,
+        )
+
+    request.session['api_token']         = api_token
+    request.session['student_db_id']     = student.id
+    request.session['username_display']  = str(student)
+    request.session['student_image_url'] = student.image_url
+
+    expires_in_login   = settings.SESSION_COOKIE_AGE
+    refresh_cookie_val = None
+    if isinstance(refresh_data, str):
+        refresh_cookie_val = refresh_data
+    elif isinstance(refresh_data, dict):
+        try:
+            expires_in_login = int(refresh_data.get('expires_in', expires_in_login))
+        except (ValueError, TypeError):
+            pass
+        refresh_cookie_val = (
+            refresh_data.get('refresh_token_cookie_value') or
+            refresh_data.get('refresh_cookie')
+        )
+    request.session['api_token_expiry_timestamp'] = timezone.now().timestamp() + expires_in_login
+    if refresh_cookie_val:
+        request.session['hemis_refresh_cookie'] = refresh_cookie_val
+    request.session.set_expiry(settings.SESSION_COOKIE_AGE)
+
+    display_name = student_defaults.get('full_name_api') or student.username
+    messages.success(request, f"Xush kelibsiz, {display_name}!")
+    logger.info(f"Student {username} logged in successfully (created={created}).")
+
+    next_url = request.session.pop('login_next_url', None) or request.GET.get('next')
+    return safe_redirect(request, next_url, default=reverse('dashboard'))
+
+
+def _handle_employee_login(request, username, password, log_id_base):
+    logger.info(f"Employee login attempt: {username}")
+
+    hemis_auth    = hemis_tutor_login(username, password)
+    api_token     = hemis_auth["token"]
+    hemis_id      = hemis_auth.get("hemis_id")
+    refresh_token = hemis_auth.get("refresh_token")
+
+    logger.info(f"HEMIS tutor login OK for {username}, hemis_id={hemis_id}")
+
+    profile_data = {}
+    if api_token:
+        try:
+            profile_data = get_tutor_profile(api_token)
+        except HemisAPIError as exc:
+            logger.warning(f"/tutor/profile failed for {username}: {exc}. Proceeding with minimal data.")
+
+    with transaction.atomic():
+        emp_defaults = map_api_data_to_employee_model_defaults(profile_data, username)
+        if hemis_id:
+            emp_defaults['hemis_id'] = hemis_id
+        employee, created = Employee.objects.update_or_create(
+            username=username,
+            defaults=emp_defaults,
+        )
+
+    request.session['api_token']          = api_token
+    request.session['employee_db_id']     = employee.id
+    request.session['username_display']   = str(employee)
+    request.session['employee_image_url'] = employee.image_url
+    request.session['user_role']          = 'employee'
+    if refresh_token:
+        request.session['hemis_refresh_cookie'] = refresh_token
+    request.session['api_token_expiry_timestamp'] = (
+        timezone.now().timestamp() + settings.SESSION_COOKIE_AGE
+    )
+    request.session.set_expiry(settings.SESSION_COOKIE_AGE)
+
+    display_name = emp_defaults.get('full_name_api') or employee.username
+    messages.success(request, f"Xush kelibsiz, {display_name}!")
+    logger.info(f"Employee {username} logged in successfully (created={created}).")
+
+    next_url = request.session.pop('login_next_url', None) or request.GET.get('next')
+    return safe_redirect(request, next_url, default=reverse('employee_home'))
 
 
 def logout_view(request):
@@ -282,18 +272,243 @@ def logout_view(request):
 
 
 def home_view(request):
-    if 'api_token' in request.session and 'student_db_id' in request.session:
-        if _handle_api_token_refresh(request):
-            return redirect('dashboard')
-        else:
+    if 'api_token' in request.session:
+        if 'employee_db_id' in request.session:
+            return redirect('employee_home')
+        if 'student_db_id' in request.session:
+            if _handle_api_token_refresh(request):
+                return redirect('dashboard')
             return redirect(settings.LOGIN_URL)
-    # Agar LOGIN_URL 'login' bo'lsa, templates/home.html ni render qilish o'rniga
-    # to'g'ridan-to'g'ri login sahifasiga yo'naltirish mumkin.
-    # return redirect(settings.LOGIN_URL)
     return render(request, 'auth_app/home.html')
 
 
-@custom_login_required_with_token_refresh 
+@employee_login_required
+def employee_home_view(request):
+    employee = request.current_employee
+    context = {'employee': employee}
+    return render(request, 'auth_app/employee_home.html', context)
+
+
+def oauth_init_view(request):
+    """
+    HEMIS OAuth2 ga yo'naltirish.
+    GET /oauth/init/?portal=student|employee
+
+    State ni Redis cachega saqlaydi (10 daqiqa), keyin HEMIS authorize URL
+    ga redirect qiladi.
+    """
+    portal = request.GET.get('portal', 'student')
+    if portal not in ('student', 'employee'):
+        portal = 'student'
+
+    if not getattr(settings, 'HEMIS_OAUTH_CLIENT_ID', ''):
+        messages.error(request, "OAuth2 konfiguratsiyasi to'liq emas. Administrator bilan bog'laning.")
+        return redirect('login')
+
+    state        = generate_oauth_state()
+    redirect_uri = _oauth_redirect_uri(request)
+
+    # State ni Redis/cache da 10 daqiqa saqlaymiz (CSRF himoyasi)
+    cache.set(f"hemis_oauth_state:{state}", portal, timeout=600)
+
+    authorize_url = build_hemis_oauth_url(redirect_uri, state, portal=portal)
+    logger.info(f"OAuth init: portal={portal}, redirecting to HEMIS authorize.")
+    return redirect(authorize_url)
+
+
+def oauth_callback_view(request):
+    """
+    HEMIS OAuth2 callback.
+    GET /oauth/callback/?code=...&state=...
+
+    Jarayon:
+      1. State tekshirish (CSRF himoyasi)
+      2. Code → access_token almashtirish
+      3. User info olish
+      4. Student yoki Employee model yaratish/yangilash
+      5. Django sessiyasini boshlash
+      6. Dashboard yoki employee_home ga yo'naltirish
+    """
+    error = request.GET.get('error', '').strip()
+    if error:
+        desc = request.GET.get('error_description', error)
+        messages.error(request, f"HEMIS OAuth xatosi: {desc}")
+        return redirect('login')
+
+    code  = request.GET.get('code',  '').strip()
+    state = request.GET.get('state', '').strip()
+
+    if not code or not state:
+        messages.error(request, "OAuth callback: majburiy parametrlar yo'q.")
+        return redirect('login')
+
+    # State validatsiya (CSRF)
+    cache_key     = f"hemis_oauth_state:{state}"
+    cached_portal = cache.get(cache_key)
+    if not cached_portal:
+        messages.error(request, "OAuth state yaroqsiz yoki muddati o'tgan. Qaytadan urinib ko'ring.")
+        return redirect('login')
+    cache.delete(cache_key)
+
+    portal       = cached_portal if cached_portal in ('student', 'employee') else 'student'
+    redirect_uri = _oauth_redirect_uri(request)
+    log_id_base  = _get_error_log_id()
+
+    try:
+        # 1. Code → access token
+        token_data   = hemis_oauth_exchange_code(code, redirect_uri, portal=portal)
+        oauth_token  = token_data["access_token"]
+
+        # 2. User info
+        oauth_user   = hemis_oauth_userinfo(oauth_token, portal=portal)
+        hemis_id     = str(oauth_user.get("id", "")).strip()
+        user_type    = (oauth_user.get("type") or portal).lower()
+
+        if not hemis_id:
+            messages.error(request, "HEMIS OAuth: foydalanuvchi ID olinmadi.")
+            return redirect('login')
+
+        logger.info(f"OAuth callback OK: hemis_id={hemis_id}, type={user_type}, portal={portal}")
+
+        if user_type == "student":
+            return _handle_oauth_student_login(request, oauth_user, oauth_token, hemis_id)
+        else:
+            return _handle_oauth_employee_login(request, oauth_user, oauth_token, hemis_id)
+
+    except HemisAuthError as exc:
+        log_id = f"{log_id_base}_OA"
+        logger.warning(f"Log ID: {log_id} - OAuth auth error: {exc}")
+        messages.error(request, "OAuth autentifikatsiya xatosi. Qaytadan urinib ko'ring.")
+
+    except HemisAPIError as exc:
+        log_id = f"{log_id_base}_OI"
+        logger.error(f"Log ID: {log_id} - OAuth API error: {exc}", exc_info=True)
+        msg = str(exc)
+        if "ulanib bo'lmadi" in msg or "connection" in msg.lower():
+            messages.error(request, "HEMIS serveriga ulanib bo'lmadi.")
+        else:
+            messages.error(request, f"HEMIS tizimi bilan bog'lanishda xatolik. (ID: {log_id})")
+
+    except Exception as exc:
+        log_id = f"{log_id_base}_OU"
+        logger.critical(f"Log ID: {log_id} - OAuth unexpected: {type(exc).__name__} - {exc}", exc_info=True)
+        messages.error(request, f"Noma'lum tizim xatoligi. (ID: {log_id})")
+
+    return redirect('login')
+
+
+def _oauth_redirect_uri(request) -> str:
+    """OAuth callback URL — settings dagi HEMIS_OAUTH_REDIRECT_URI yoki request dan."""
+    explicit = getattr(settings, 'HEMIS_OAUTH_REDIRECT_URI', '').strip()
+    if explicit:
+        return explicit
+    return request.build_absolute_uri(reverse('oauth_callback'))
+
+
+def _handle_oauth_student_login(request, oauth_user, oauth_token, hemis_id):
+    """OAuth talaba login — Student yaratish/yangilash, sessiya boshlash."""
+    login    = (oauth_user.get("login") or "").strip()
+    username = login or f"oauth_{hemis_id}"
+
+    # student_api_token bilan to'liq profil olishga urinamiz
+    student_info      = None
+    student_api_token = (oauth_user.get("student_api_token") or "").strip()
+
+    if student_api_token:
+        try:
+            student_info = get_student_me(student_api_token)
+        except HemisAPIError:
+            pass
+
+    # Fallback: admin API dan login bo'yicha izlash
+    if not student_info and login:
+        student_info = get_student_by_login(login)
+
+    # Minimal ma'lumot bilan ishlash (profil endpoint ishlamasa ham)
+    if not student_info:
+        full_name = (oauth_user.get("name") or "").strip()
+        parts = full_name.split()
+        student_info = {
+            "full_name":        full_name,
+            "first_name":       parts[1] if len(parts) > 1 else "",
+            "second_name":      parts[0] if parts else "",
+            "image":            (oauth_user.get("picture") or "").strip(),
+            "student_id_number": login,
+        }
+
+    # Sessiya uchun asosiy token: student_api_token > oauth_token
+    api_token = student_api_token or oauth_token
+
+    with transaction.atomic():
+        student_defaults = map_api_data_to_student_model_defaults(student_info, username)
+        if hemis_id:
+            student_defaults['api_user_hash'] = hemis_id
+        student, created = Student.objects.update_or_create(
+            username=username,
+            defaults=student_defaults,
+        )
+
+    request.session['api_token']         = api_token
+    request.session['student_db_id']     = student.id
+    request.session['username_display']  = str(student)
+    request.session['student_image_url'] = student.image_url
+    request.session['api_token_expiry_timestamp'] = (
+        timezone.now().timestamp() + settings.SESSION_COOKIE_AGE
+    )
+    request.session.set_expiry(settings.SESSION_COOKIE_AGE)
+
+    display_name = student_defaults.get('full_name_api') or student.username
+    messages.success(request, f"Xush kelibsiz, {display_name}!")
+    logger.info(f"Student {username} logged in via OAuth (created={created}).")
+
+    next_url = request.session.pop('login_next_url', None)
+    return safe_redirect(request, next_url, default=reverse('dashboard'))
+
+
+def _handle_oauth_employee_login(request, oauth_user, oauth_token, hemis_id):
+    """OAuth hodim login — Employee yaratish/yangilash, sessiya boshlash."""
+    login    = (oauth_user.get("login") or "").strip()
+    username = login or f"oauth_emp_{hemis_id}"
+
+    full_name = (oauth_user.get("name") or "").strip()
+    parts     = full_name.split() if full_name else []
+
+    emp_defaults = {
+        'hemis_id':      hemis_id,
+        'full_name_api': full_name or None,
+        'last_name':     parts[0] if parts else None,
+        'first_name':    " ".join(parts[1:]) if len(parts) > 1 else None,
+        'image_url':     (oauth_user.get("picture") or "").strip() or None,
+        'email':         (oauth_user.get("email") or "").strip() or None,
+        'phone':         (oauth_user.get("phone") or "").strip() or None,
+        'last_login_api': timezone.now(),
+    }
+
+    with transaction.atomic():
+        employee, created = Employee.objects.update_or_create(
+            username=username,
+            defaults=emp_defaults,
+        )
+
+    request.session['api_token']          = oauth_token
+    request.session['employee_db_id']     = employee.id
+    request.session['username_display']   = str(employee)
+    request.session['employee_image_url'] = employee.image_url
+    request.session['user_role']          = 'employee'
+    request.session['api_token_expiry_timestamp'] = (
+        timezone.now().timestamp() + settings.SESSION_COOKIE_AGE
+    )
+    request.session.set_expiry(settings.SESSION_COOKIE_AGE)
+
+    display_name = emp_defaults.get('full_name_api') or employee.username
+    messages.success(request, f"Xush kelibsiz, {display_name}!")
+    logger.info(f"Employee {username} logged in via OAuth (created={created}).")
+
+    next_url = request.session.pop('login_next_url', None)
+    return safe_redirect(request, next_url, default=reverse('employee_home'))
+
+
+@custom_login_required_with_token_refresh
 def dashboard_view(request):
     current_student = getattr(request, 'current_student', None) # Dekorator o'rnatadi
 
@@ -435,26 +650,6 @@ from functools import wraps
 
 from django.conf import settings
 from django.contrib import messages
-from django.db import transaction, IntegrityError
-from django.http import JsonResponse
-from django.middleware.csrf import get_token
-from django.shortcuts import render, redirect, get_object_or_404
-from django.urls import reverse
-from django.utils import timezone
-from django.utils.safestring import mark_safe
-from django.views.decorators.csrf import csrf_protect
-
-# --- Mahalliy (local) importlar ---
-from .decorators import custom_login_required_with_token_refresh
-from .forms import LoginForm, create_answer_form_set
-from .models import Student, Survey, SurveyResponse, Answer, Question
-from .services.hemis_api_service import HemisAPIClient, APIClientException
-from .utils import map_api_data_to_student_model_defaults, update_student_instance_with_defaults
-
-logger = logging.getLogger(__name__)
-
-# ... (login_view, logout_view, dashboard_view, survey_list_view va boshqa funksiyalar bu yerda) ...
-# Biz faqat survey_detail_view va yangi API view'ni o'zgartiramiz.
 
 
 @custom_login_required_with_token_refresh
@@ -499,7 +694,8 @@ def survey_detail_view(request, survey_pk):
     # --- Context'ga JSON va CSRF tokenini qo'shish ---
     context = {
         'survey': survey,
-        'survey_data_json': mark_safe(json.dumps(survey_data, ensure_ascii=False)),
+        # json.dumps XSS uchun xavfsiz; mark_safe faqat JSON struktura uchun
+        'survey_data_json': mark_safe(json.dumps(survey_data, ensure_ascii=False).replace('<', '\\u003c')),
         'csrf_token': get_token(request),  # CSRF tokenini to'g'ridan-to'g'ri uzatish
         'student': student,
         'username_display': str(student),
@@ -509,6 +705,13 @@ def survey_detail_view(request, survey_pk):
 
 @csrf_protect  # CSRF himoyasini qo'lda ta'minlaydi
 @custom_login_required_with_token_refresh
+@rate_limit(
+    'survey_submit',
+    limit=getattr(settings, 'RATE_LIMIT_SURVEY_SUBMIT', 20),
+    window_seconds=60,
+    methods=('POST',),
+    json_error=True,
+)
 def submit_survey_api_view(request, survey_pk):
     """
     JavaScript'dan AJAX/Fetch orqali kelgan JSON javoblarni qabul qiladigan API endpoint.
@@ -519,9 +722,36 @@ def submit_survey_api_view(request, survey_pk):
     survey = get_object_or_404(Survey, pk=survey_pk)
     student = request.current_student
 
+    # Server-side: yopiq / nofaol so'rovnomaga javob berish taqiqlanadi (FIND-006)
+    if not getattr(survey, 'is_active', True) or not survey.is_open:
+        return JsonResponse({
+            'status': 'error',
+            'message': "Bu so'rovnoma hozirda mavjud emas yoki muddati tugagan.",
+        }, status=403)
+
     # Qayta ishtirok etishni tekshirish (poyga holatlari uchun muhim)
     if not survey.is_anonymous and SurveyResponse.objects.filter(survey=survey, student=student).exists():
         return JsonResponse({'status': 'error', 'message': 'Siz bu so\'rovnomada avval qatnashgansiz.'}, status=400)
+
+    # Anonim so'rovnoma: bir sessiya + IP bo'yicha qayta ovoz cheklovi (FIND-013)
+    from django.core.cache import cache
+    anon_cache_key = None
+    if survey.is_anonymous:
+        if not request.session.session_key:
+            request.session.create()
+        anon_cache_key = f"anon_survey_done:{survey.pk}:{request.session.session_key}"
+        if cache.get(anon_cache_key):
+            return JsonResponse({
+                'status': 'error',
+                'message': "Siz bu anonim so'rovnomada ushbu sessiyada avval qatnashgansiz.",
+            }, status=400)
+        ip_key = f"anon_survey_ip:{survey.pk}:{get_client_ip(request)}"
+        ip_count = cache.get(ip_key, 0) or 0
+        if ip_count >= 5:
+            return JsonResponse({
+                'status': 'error',
+                'message': "Bu so'rovnoma uchun juda ko'p urinish aniqlandi. Keyinroq urinib ko'ring.",
+            }, status=429)
 
     try:
         data = json.loads(request.body)
@@ -538,6 +768,8 @@ def submit_survey_api_view(request, survey_pk):
                 question_answer = answers_data.get(str(question.id))
                 if not question_answer or (isinstance(question_answer, str) and not question_answer.strip()) or (isinstance(question_answer, list) and not question_answer):
                     return JsonResponse({'status': 'error', 'message': f'"{question.text}" savoliga javob berish majburiy!'}, status=400)
+
+        from .models import Choice
 
         with transaction.atomic():
             survey_response = SurveyResponse.objects.create(
@@ -558,13 +790,32 @@ def submit_survey_api_view(request, survey_pk):
                     answer.text_answer = str(value)
                     answer.save()
                 elif question.question_type == 'single_choice':
-                    answer.selected_choice_id = int(value)
+                    # Choice faqat shu savolga tegishli bo'lishi shart (FIND-007)
+                    try:
+                        choice = Choice.objects.get(pk=int(value), question=question)
+                    except (Choice.DoesNotExist, ValueError, TypeError):
+                        raise ValueError(f"Noto'g'ri variant: question={question_id}")
+                    answer.selected_choice = choice
                     answer.save()
                 elif question.question_type == 'multiple_choice' and isinstance(value, list):
                     answer.save()  # M2M bog'lanishidan oldin asosiy obyekt saqlanishi shart
                     choice_ids = [int(cid) for cid in value]
-                    answer.selected_choices.set(choice_ids)
-        
+                    valid_choices = list(question.choices.filter(id__in=choice_ids))
+                    if len(valid_choices) != len(set(choice_ids)):
+                        raise ValueError(f"Noto'g'ri variantlar: question={question_id}")
+                    answer.selected_choices.set(valid_choices)
+
+        if survey.is_anonymous and anon_cache_key:
+            cache.set(anon_cache_key, 1, timeout=60 * 60 * 24 * 30)  # 30 kun
+            ip_key = f"anon_survey_ip:{survey.pk}:{get_client_ip(request)}"
+            try:
+                if cache.get(ip_key) is None:
+                    cache.set(ip_key, 1, timeout=60 * 60 * 24)
+                else:
+                    cache.incr(ip_key)
+            except Exception:
+                cache.set(ip_key, 1, timeout=60 * 60 * 24)
+
         # Foydalanuvchiga redirectdan so'ng xabar ko'rsatish
         messages.success(request, f"'{survey.title}' so'rovnomasiga javoblaringiz muvaffaqiyatli yuborildi. Rahmat!")
         return JsonResponse({'status': 'success', 'redirect_url': reverse('survey_list')})
@@ -633,7 +884,6 @@ class SurveyStatisticsAPIView(APIView):
         # --- Demografik statistika ---
         faculty_stats, level_stats, gender_stats = {}, {}, {}
         education_form_stats, payment_form_stats = {}, {}
-        social_category_stats, accommodation_stats = {}, {}
 
         if not survey.is_anonymous and total_participants > 0:
             faculty_stats = self._get_grouped_stats(responses, 'student__faculty_name_api', "Fakultet noma'lum")
@@ -641,8 +891,6 @@ class SurveyStatisticsAPIView(APIView):
             gender_stats = self._get_grouped_stats(responses, 'student__gender_name', "Jinsi noma'lum")
             education_form_stats = self._get_grouped_stats(responses, 'student__education_form_name', "Ta'lim shakli noma'lum")
             payment_form_stats = self._get_grouped_stats(responses, 'student__payment_form_name', "To'lov shakli noma'lum")
-            social_category_stats = self._get_grouped_stats(responses, 'student__social_category_name', "Ijtimoiy holat noma'lum")
-            accommodation_stats = self._get_grouped_stats(responses, 'student__accommodation_name', "Turar joyi noma'lum")
         
         # --- Javoblar bo'yicha batafsil ma'lumotlar ---
         responses_details = []
@@ -660,8 +908,6 @@ class SurveyStatisticsAPIView(APIView):
                         "gender": student.gender_name,
                         "education_form": student.education_form_name,
                         "payment_form": student.payment_form_name,
-                        "social_category": student.social_category_name,
-                        "accommodation": student.accommodation_name,
                     } if student else None,
                     "answers_count": response.answers.count()
                 }
@@ -722,8 +968,6 @@ class SurveyStatisticsAPIView(APIView):
                 "by_gender": gender_stats,
                 "by_education_form": education_form_stats,
                 "by_payment_form": payment_form_stats,
-                "by_social_category": social_category_stats,
-                "by_accommodation": accommodation_stats,
             },
             "responses_details": responses_details,
             "questions_statistics": questions_stats_data,
@@ -781,7 +1025,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import ResponsiblePerson, MessageToResponsible, MessageReply
 from .forms import MessageToResponsibleForm, MessageReplyForm
 
+@method_decorator(custom_login_required_with_token_refresh, name="dispatch")
 class ResponsiblePersonListView(ListView):
+    """Mas'ul shaxslar ro'yxati — faqat autentifikatsiyalangan talaba (FIND-004)."""
     model = ResponsiblePerson
     template_name = "auth_app/responsible_list.html"
     context_object_name = "responsibles"
@@ -840,20 +1086,43 @@ def message_detail_view(request, pk):
         messages.error(request, "Xabar topilmadi.")
         return redirect('message_list')
 
-class MessageReplyView(LoginRequiredMixin, CreateView):
+@method_decorator(staff_member_required, name="dispatch")
+class MessageReplyView(CreateView):
+    """
+    Javob faqat staff/admin tomonidan — object-level: xabar mavjudligi tekshiriladi (FIND-008).
+    """
     model = MessageReply
     form_class = MessageReplyForm
     template_name = "auth_app/message_reply_form.html"
 
+    def dispatch(self, request, *args, **kwargs):
+        self.message_obj = get_object_or_404(MessageToResponsible, pk=kwargs.get("pk"))
+        return super().dispatch(request, *args, **kwargs)
+
     def form_valid(self, form):
-        form.instance.message_id = self.kwargs["pk"]
+        form.instance.message = self.message_obj
         form.instance.replied_by = self.request.user
         return super().form_valid(form)
 
     def get_success_url(self):
         return reverse_lazy("message_detail", kwargs={"pk": self.kwargs["pk"]})
 
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx["message"] = self.message_obj
+        return ctx
+
+
 @method_decorator(custom_login_required_with_token_refresh, name="dispatch")
+@method_decorator(
+    rate_limit(
+        'message_create',
+        limit=getattr(settings, 'RATE_LIMIT_MESSAGE', 15),
+        window_seconds=60,
+        methods=('POST',),
+    ),
+    name="dispatch",
+)
 class MessageCreateView(CreateView):
     model = MessageToResponsible
     form_class = MessageToResponsibleForm

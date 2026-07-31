@@ -1,11 +1,11 @@
 services:
   web:
     build: .
-    command: gunicorn --bind 0.0.0.0:8000 external_auth_project.wsgi:application
+    command: gunicorn --bind 0.0.0.0:8000 --workers 2 external_auth_project.wsgi:application
     volumes:
       - .:/app
     ports:
-      - "8000:8000"
+      - "8010:8000"
     env_file:
       - ./.env.prod
     depends_on:
@@ -19,14 +19,35 @@ services:
     environment:
       - POSTGRES_DB=survey_prod_db
       - POSTGRES_USER=survey_user
-      - POSTGRES_PASSWORD=super_secret_password
+      # Parol faqat birinchi initda ishlatiladi; runtime .env DB_PASSWORD bilan mos bo'lsin
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-changeme_set_in_env}
+    # Tashqi tarmoqqa ochilmasin — faqat localhost (FIND-005)
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U survey_user -d survey_prod_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   redis:
     image: redis:7-alpine
+    # Parol majburiy (FIND-002)
+    command: >
+      redis-server
+      --requirepass ${REDIS_PASSWORD}
+      --appendonly yes
+      --maxmemory-policy allkeys-lru
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    # Faqat localhost (FIND-002)
     ports:
-      - "6379:6379"
+      - "127.0.0.1:6380:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
 
   celery:
     build: .
@@ -38,16 +59,6 @@ services:
     depends_on:
       - redis
       - db
-
-#   pgadmin:
-#     image: dpage/pgadmin4
-#     environment:
-#       PGADMIN_DEFAULT_EMAIL: admin@admin.com
-#       PGADMIN_DEFAULT_PASSWORD: admin123
-#     ports:
-#       - "5050:80"
-#     depends_on:
-#       - db
 
 volumes:
   postgres_data:

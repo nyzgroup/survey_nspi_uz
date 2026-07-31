@@ -7,65 +7,63 @@ from django.db.models import Count
 import logging
 import os
 from .models import (
-    Student, Survey, SurveyFile, Question, Choice, SurveyResponse, Answer,
+    Student, Employee, Survey, SurveyFile, Question, Choice, SurveyResponse, Answer,
     ResponsiblePerson, MessageToResponsible, MessageAttachment, MessageReply
 )
+
+
+@admin.register(Employee)
+class EmployeeAdmin(admin.ModelAdmin):
+    list_display  = ('username', 'full_name_api', 'position', 'department_name', 'last_login_api')
+    search_fields = ('username', 'full_name_api', 'position', 'department_name')
+    readonly_fields = ('created_at', 'updated_at', 'last_login_api', 'hemis_id')
 logger = logging.getLogger(__name__)
 @admin.register(Student)
 class StudentAdmin(admin.ModelAdmin):
     list_per_page = 20
     list_max_show_all = 1000
     list_display = (
-        'username', 'student_id_number', 'api_user_hash',
-        'first_name', 'last_name', 'patronymic', 'full_name_api', 'short_name_api',
-        'get_image_preview', 'birth_date_timestamp', 'passport_pin', 'passport_number', 'email', 'phone',
-        'gender_code', 'gender_name', 'university_name_api',
-        'specialty_id_api', 'specialty_code_api', 'specialty_name_api',
-        'student_status_code', 'student_status_name',
-        'education_form_code', 'education_form_name',
-        'education_type_code', 'education_type_name',
-        'payment_form_code', 'payment_form_name',
-        'group_id_api', 'group_name_api', 'group_education_lang_code', 'group_education_lang_name',
-        'faculty_id_api', 'faculty_name_api', 'faculty_code_api',
-        'education_lang_code', 'education_lang_name',
-        'level_code', 'level_name',
-        'semester_id_api', 'semester_code_api', 'semester_name_api', 'semester_is_current',
-        'semester_education_year_code', 'semester_education_year_name', 'semester_education_year_is_current',
-        'avg_gpa', 'password_is_valid_api', 'address_api',
-        'country_code_api', 'country_name_api',
-        'province_code_api', 'province_name_api',
-        'district_code_api', 'district_name_api',
-        'social_category_code', 'social_category_name',
-        'accommodation_code', 'accommodation_name',
-        'validate_url_api', 'last_login_api', 'created_at', 'updated_at'
+        'username', 'student_id_number',
+        'full_name_api', 'short_name_api',
+        'get_image_preview',
+        'gender_name', 'university_name_api',
+        'specialty_name_api',
+        'student_status_name',
+        'education_form_name',
+        'education_type_name',
+        'payment_form_name',
+        'group_name_api',
+        'faculty_name_api',
+        'level_name',
+        'semester_name_api', 'semester_is_current',
+        'avg_gpa',
+        'country_name_api', 'province_name_api', 'district_name_api',
+        'last_login_api', 'created_at', 'updated_at'
     )
     list_filter = (
-        'faculty_name_api', 
-        'level_name', 
-        'education_form_name', 
+        'faculty_name_api',
+        'level_name',
+        'education_form_name',
         'student_status_name',
+        'gender_name',
         'last_login_api',
         'updated_at',
         'created_at'
     )
     search_fields = (
-        'username', 
-        'first_name', 
-        'last_name', 
-        'student_id_number', 
+        'username',
+        'first_name',
+        'last_name',
+        'student_id_number',
         'full_name_api',
-        'faculty_name_api', 
+        'faculty_name_api',
         'group_name_api',
-        'email',
-        'phone'
     )
     ordering = ('-updated_at', 'last_name', 'first_name')
     readonly_fields_list = [
         'username', 'student_id_number', 'api_user_hash',
         'first_name', 'last_name', 'patronymic', 'full_name_api', 'short_name_api',
         'get_image_preview',
-        'birth_date_timestamp', 'get_birth_date_display_admin',
-        'passport_pin', 'passport_number', 'email', 'phone', 
         'gender_code', 'gender_name', 'university_name_api',
         'specialty_id_api', 'specialty_code_api', 'specialty_name_api',
         'student_status_code', 'student_status_name', 'education_form_code',
@@ -76,13 +74,11 @@ class StudentAdmin(admin.ModelAdmin):
         'education_lang_name', 'level_code', 'level_name', 'semester_id_api',
         'semester_code_api', 'semester_name_api', 'semester_is_current',
         'semester_education_year_code', 'semester_education_year_name',
-        'semester_education_year_is_current', 'avg_gpa', 'password_is_valid_api',
-        'address_api', 'country_code_api', 'country_name_api', 'province_code_api',
+        'semester_education_year_is_current', 'avg_gpa',
+        'country_code_api', 'country_name_api', 'province_code_api',
         'province_name_api', 'district_code_api', 'district_name_api',
-        'social_category_code', 'social_category_name', 'accommodation_code',
-        'accommodation_name', 'validate_url_api', 
         'last_login_api_formatted_detail',
-        'created_at_formatted_detail', 
+        'created_at_formatted_detail',
         'updated_at_formatted_detail'
     ]
     readonly_fields = tuple(readonly_fields_list)
@@ -91,41 +87,36 @@ class StudentAdmin(admin.ModelAdmin):
         ('Asosiy Login Ma\'lumotlari', {
             'fields': ('username', 'student_id_number', 'api_user_hash')
         }),
-        ('Shaxsiy Ma\'lumotlar (API)', {
+        ('F.I.Sh. va Profil (API)', {
             'fields': (
-                'get_image_preview', 
-                ('full_name_api', 'short_name_api'), 
+                'get_image_preview',
+                ('full_name_api', 'short_name_api'),
                 ('first_name', 'last_name', 'patronymic'),
-                ('birth_date_timestamp', 'get_birth_date_display_admin'),
-                'gender_name', 
-                ('passport_pin', 'passport_number'), 
-                'email', 'phone', 'address_api'
+                'gender_name',
             )
         }),
         ('Universitet Ma\'lumotlari (API)', {
             'fields': (
-                'university_name_api', 
+                'university_name_api',
                 ('faculty_name_api', 'faculty_code_api'),
-                ('specialty_name_api', 'specialty_code_api'), 
+                ('specialty_name_api', 'specialty_code_api'),
                 'education_type_name', 'education_form_name',
-                'education_lang_name', 'level_name', 
+                'education_lang_name', 'level_name',
                 ('group_name_api', 'group_education_lang_name'),
                 ('semester_name_api', 'semester_is_current', 'semester_education_year_name'),
-                'payment_form_name', 'student_status_name', 'avg_gpa', 
-                'password_is_valid_api'
+                'payment_form_name', 'student_status_name', 'avg_gpa',
             )
         }),
-        ('Manzil va Ijtimoiy Holat (API)', {
+        ('Joylashuv (API)', {
             'fields': (
                 'country_name_api', 'province_name_api', 'district_name_api',
-                'social_category_name', 'accommodation_name'
-            )
+            ),
+            'classes': ('collapse',),
         }),
         ('Tizim Ma\'lumotlari', {
             'fields': (
-                'last_login_api_formatted_detail', 
-                ('created_at_formatted_detail', 'updated_at_formatted_detail'), 
-                'validate_url_api_link'
+                'last_login_api_formatted_detail',
+                ('created_at_formatted_detail', 'updated_at_formatted_detail'),
             ),
             'classes': ('collapse',),
         }),
@@ -167,23 +158,6 @@ class StudentAdmin(admin.ModelAdmin):
             return format_html('<img src="{}" style="max-height: 100px; max-width: 100px; border-radius: 5px;" />', obj.image_url)
         return self.get_image_preview.empty_value
     
-    @admin.display(description='Tug\'ilgan sana (Formatlangan)', ordering='birth_date_timestamp')
-    def get_birth_date_display_admin(self, obj):
-        if obj.birth_date_timestamp:
-            try:
-                dt_object = timezone.datetime.fromtimestamp(obj.birth_date_timestamp, tz=timezone.get_current_timezone())
-                return dt_object.strftime('%d-%m-%Y')
-            except (ValueError, TypeError, OSError):
-                return "Noma'lum sana (xato)"
-        return "-"
-
-
-    @admin.display(description='API Validatsiya Havolasi')
-    def validate_url_api_link(self, obj):
-        if obj.validate_url_api:
-            return format_html('<a href="{0}" target="_blank">Havola</a>', obj.validate_url_api)
-        return "-"
-
     @admin.display(description='Profil To\'liqligi', boolean=True)
     def is_profile_complete(self, obj):
         required_fields = [
@@ -195,22 +169,25 @@ class StudentAdmin(admin.ModelAdmin):
 
     actions = ['refresh_selected_students_data_from_api_action']
 
-    @admin.action(description="Tanlangan talabalar ma'lumotlarini API dan yangilash")
+    @admin.action(description="Tanlangan talabalar ma'lumotlarini Celery task orqali yangilash")
     def refresh_selected_students_data_from_api_action(self, request, queryset):
-        admin_api_token = getattr(settings, 'HEMIS_ADMIN_API_TOKEN', None)        
-        if not admin_api_token:
-            self.message_user(request, "Ma'muriy API tokeni (HEMIS_ADMIN_API_TOKEN) sozlanmalarda topilmadi.", messages.ERROR)
-            return
-        
-        updated_count = 0
-        failed_students_info = []
+        from .tasks import sync_student_profile_from_api
 
-        if updated_count > 0:
-            self.message_user(request, f"{updated_count} ta talaba ma'lumotlari muvaffaqiyatli yangilandi.", messages.SUCCESS)
-        elif queryset.exists():
-             self.message_user(request, "Talaba ma'lumotlarini yangilash funksiyasi to'liq sozlanmagan yoki xatolik yuz berdi.", messages.WARNING)
-        else:
+        if not queryset.exists():
             self.message_user(request, "Yangilash uchun talabalar tanlanmadi.", messages.INFO)
+            return
+
+        queued_count = 0
+        for student in queryset:
+            sync_student_profile_from_api.delay(student.id)
+            queued_count += 1
+
+        self.message_user(
+            request,
+            f"{queued_count} ta talaba uchun ma'lumot yangilash vazifasi navbatga qo'yildi. "
+            "Yangilanish bir necha daqiqada amalga oshadi.",
+            messages.SUCCESS
+        )
 
 
 class SurveyFileInline(admin.TabularInline):
@@ -372,24 +349,34 @@ class SurveyResponseAdmin(admin.ModelAdmin):
 
     @admin.display(description='Berilgan Javoblar')
     def answers_inline_display(self, obj):
-        answers_html = "<ul style='list-style-type: none; padding-left: 0;'>"
+        # XSS oldini olish: foydalanuvchi matni escape qilinadi (FIND-010)
+        parts = ["<ul style='list-style-type: none; padding-left: 0;'>"]
         for answer in obj.answers.all().select_related('question', 'selected_choice').prefetch_related('selected_choices'):
-            answers_html += f"<li style='margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px;'><strong>{answer.question.text}:</strong><br/>"
+            parts.append(format_html(
+                "<li style='margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px;'><strong>{}:</strong><br/>",
+                answer.question.text,
+            ))
             if answer.question.question_type == 'text':
                 if answer.text_answer:
-                    answers_html += f"<div style='padding-left:15px;'>{mark_safe(answer.text_answer)}</div>"
+                    parts.append(format_html("<div style='padding-left:15px;'>{}</div>", answer.text_answer))
                 else:
-                    answers_html += "<div style='padding-left:15px;'><i>Bo'sh</i></div>"
+                    parts.append("<div style='padding-left:15px;'><i>Bo'sh</i></div>")
             elif answer.question.question_type == 'multiple_choice':
                 choices_text = ", ".join([choice.text for choice in answer.selected_choices.all()])
-                answers_html += f"<div style='padding-left:15px;'>[{choices_text if choices_text else '<i>Tanlanmagan</i>'}]</div>"
+                parts.append(format_html(
+                    "<div style='padding-left:15px;'>[{}]</div>",
+                    choices_text if choices_text else "Tanlanmagan",
+                ))
             elif answer.question.question_type == 'single_choice' and answer.selected_choice:
-                answers_html += f"<div style='padding-left:15px;'>{answer.selected_choice.text}</div>"
+                parts.append(format_html(
+                    "<div style='padding-left:15px;'>{}</div>",
+                    answer.selected_choice.text,
+                ))
             else:
-                answers_html += "<div style='padding-left:15px;'><i>Javob topilmadi yoki noma'lum tur</i></div>"
-            answers_html += "</li>"
-        answers_html += "</ul>"
-        return mark_safe(answers_html)
+                parts.append("<div style='padding-left:15px;'><i>Javob topilmadi yoki noma'lum tur</i></div>")
+            parts.append("</li>")
+        parts.append("</ul>")
+        return mark_safe("".join(str(p) for p in parts))
     
     def has_add_permission(self, request):
         return False

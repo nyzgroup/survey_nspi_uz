@@ -1,714 +1,385 @@
-{% extends "auth_app/base.html" %}
-{% block page_title %}Tizimga Kirish - NSPI{% endblock %}
-
-{% block extra_css %}
+{% load static i18n %}
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tizimga Kirish — NSPI - NSPI HEMIS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-    :root {
-        --primary-gradient: linear-gradient(135deg, #fff5f5 0%, #ffeaea 50%, #ffdbdb 100%);
-        --coral-gradient: linear-gradient(135deg, #ff7875 0%, #ff6b6b 50%, #ff5757 100%);
-        --soft-gradient: linear-gradient(135deg, #fff8f7 0%, #ffeeed 100%);
-        --glass-bg: rgba(255, 255, 255, 0.85);
-        --glass-border: rgba(255, 139, 139, 0.2);
-        --shadow-light: 0 8px 32px rgba(255, 139, 139, 0.15);
-        --shadow-heavy: 0 15px 35px rgba(255, 139, 139, 0.25);
-        --text-primary: #2d3748;
-        --text-secondary: #4a5568;
-        --text-muted: #718096;
-        --coral-primary: #ff6b6b;
-        --coral-light: #ff8b8b;
-        --coral-soft: rgba(255, 107, 107, 0.1);
-    }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0f1e;
+  --panel-bg:#0d1423;
+  --card:#111827;
+  --border:rgba(99,179,237,.12);
+  --accent:#3b82f6;
+  --accent2:#8b5cf6;
+  --accent-glow:rgba(59,130,246,.25);
+  --text:#e2e8f0;
+  --muted:#64748b;
+  --input-bg:#0f1929;
+  --red:#ef4444;
+  --green:#22c55e;
+  --yellow:#f59e0b;
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 
-    * {
-        box-sizing: border-box;
-    }
+/* ── Layout ── */
+.login-page{display:flex;min-height:100vh}
+.left-panel{flex:1;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;overflow:hidden;background:var(--panel-bg)}
+.right-panel{width:480px;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2.5rem 2rem;background:var(--bg);position:relative;z-index:10}
+@media(max-width:900px){.left-panel{display:none}.right-panel{width:100%;min-height:100vh}}
 
-    body {
-        margin: 0;
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-        overflow: hidden;
-    }
+/* ── Left panel decorations ── */
+.grid-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(59,130,246,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(59,130,246,.04) 1px,transparent 1px);background-size:40px 40px}
+.nebula{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none}
+.nebula-1{width:400px;height:400px;background:radial-gradient(circle,rgba(59,130,246,.15),transparent 70%);top:-10%;left:-10%;animation:nebulaFloat 8s ease-in-out infinite alternate}
+.nebula-2{width:300px;height:300px;background:radial-gradient(circle,rgba(139,92,246,.12),transparent 70%);bottom:5%;right:-5%;animation:nebulaFloat 10s ease-in-out infinite alternate-reverse}
+@keyframes nebulaFloat{0%{transform:translate(0,0) scale(1)}100%{transform:translate(20px,-20px) scale(1.08)}}
 
-    .login-page {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background: var(--primary-gradient);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 9999;
-    }
+/* ── Orbital ── */
+.orbital-wrap{display:flex;flex-direction:column;align-items:center;gap:1.5rem;position:relative;z-index:1}
+.orbital{position:relative;width:280px;height:280px;display:flex;align-items:center;justify-content:center}
+.orbital-ring{position:absolute;border-radius:50%;border:1px solid transparent}
+.ring-1{width:100%;height:100%;border-color:rgba(59,130,246,.2);animation:orbitSpin 20s linear infinite}
+.ring-2{width:74%;height:74%;border-color:rgba(139,92,246,.15);animation:orbitSpin 15s linear infinite reverse}
+.ring-3{width:48%;height:48%;border-color:rgba(59,130,246,.12);animation:orbitSpin 10s linear infinite}
+@keyframes orbitSpin{to{transform:rotate(360deg)}}
 
-    /* Animated Background */
-    .bg-animation {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-        z-index: 1;
-    }
+.orbit-dot{position:absolute;width:8px;height:8px;border-radius:50%}
+.dot-blue{background:#3b82f6;box-shadow:0 0 8px #3b82f6;
+  animation:dotOrbit1 8s linear infinite;
+  transform-origin: 140px 4px;}
+.dot-purple{background:#8b5cf6;box-shadow:0 0 8px #8b5cf6;
+  animation:dotOrbit2 12s linear infinite reverse;
+  transform-origin: 104px 4px;}
+@keyframes dotOrbit1{to{transform:rotate(360deg)}}
+@keyframes dotOrbit2{to{transform:rotate(360deg)}}
 
-    .floating-element {
-        position: absolute;
-        opacity: 0.08;
-        color: rgba(255, 107, 107, 0.4);
-        animation: float-around 20s infinite linear;
-        font-size: 2rem;
-    }
+.orbital-core{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,rgba(59,130,246,.2),rgba(139,92,246,.2));border:1px solid rgba(99,179,237,.25);display:flex;align-items:center;justify-content:center;font-size:2rem}
+.orbital-core span{animation:glowPulse 3s ease-in-out infinite}
+@keyframes glowPulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.4) drop-shadow(0 0 8px #3b82f6)}}
 
-    .floating-element:nth-child(1) { left: 10%; animation-delay: 0s; }
-    .floating-element:nth-child(2) { left: 20%; animation-delay: 2s; }
-    .floating-element:nth-child(3) { left: 80%; animation-delay: 4s; }
-    .floating-element:nth-child(4) { left: 70%; animation-delay: 6s; }
-    .floating-element:nth-child(5) { left: 40%; animation-delay: 8s; }
+/* ── Left text ── */
+.left-title{font-size:1.6rem;font-weight:700;background:linear-gradient(135deg,#63b3ed,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center;line-height:1.3}
+.left-sub{font-size:.85rem;color:var(--muted);text-align:center;max-width:280px;line-height:1.6}
+.feature-list{list-style:none;display:flex;flex-direction:column;gap:.65rem;width:100%;max-width:300px;margin-top:.5rem}
+.feature-list li{display:flex;align-items:center;gap:.75rem;font-size:.8rem;color:#94a3b8}
+.feature-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.85rem}
+.fi-blue{background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.2)}
+.fi-purple{background:rgba(139,92,246,.15);border:1px solid rgba(139,92,246,.2)}
+.fi-green{background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.18)}
+.left-footer{font-size:.72rem;color:var(--muted);text-align:center;margin-top:auto;padding-top:1.5rem}
 
-    @keyframes float-around {
-        0% {
-            transform: translateY(100vh) rotate(0deg);
-            opacity: 0;
-        }
-        10% {
-            opacity: 0.4;
-        }
-        90% {
-            opacity: 0.4;
-        }
-        100% {
-            transform: translateY(-100px) rotate(360deg);
-            opacity: 0;
-        }
-    }
+/* ── Right panel header ── */
+.right-logo{font-size:1.05rem;font-weight:700;color:var(--text);letter-spacing:.01em;margin-bottom:2rem;display:flex;align-items:center;gap:.5rem}
+.right-logo span{background:linear-gradient(135deg,#3b82f6,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.right-title{font-size:1.5rem;font-weight:700;color:var(--text);margin-bottom:.35rem}
+.right-sub{font-size:.82rem;color:var(--muted);margin-bottom:1.75rem}
 
-    /* Modern Glass Card */
-    .login-container {
-        position: relative;
-        z-index: 10;
-        max-width: 450px;
-        width: 100%;
-        margin: 2rem;
-        padding: 0;
-    }
+/* ── Tabs ── */
+.auth-tabs{display:flex;gap:.5rem;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:.3rem;margin-bottom:1.75rem;width:100%}
+.auth-tab{flex:1;padding:.55rem 1rem;border-radius:9px;border:none;background:transparent;color:var(--muted);font-size:.82rem;font-weight:500;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:.4rem;font-family:'Inter',sans-serif}
+.auth-tab.active{background:linear-gradient(135deg,rgba(59,130,246,.15),rgba(139,92,246,.1));color:var(--text);border:1px solid rgba(99,179,237,.2)}
+.auth-tab:hover:not(.active){color:var(--text);background:rgba(255,255,255,.04)}
 
-    .glass-card {
-        background: var(--glass-bg);
-        backdrop-filter: blur(25px);
-        -webkit-backdrop-filter: blur(25px);
-        border: 1px solid var(--glass-border);
-        border-radius: 24px;
-        box-shadow: var(--shadow-light);
-        padding: 3rem 2.5rem;
-        position: relative;
-        overflow: hidden;
-        animation: slideUp 0.8s ease-out;
-    }
+/* ── Alerts ── */
+.alert-box{border-radius:10px;padding:.85rem 1rem;font-size:.8rem;margin-bottom:.75rem;display:flex;gap:.65rem;align-items:flex-start;animation:slideUp .25s ease-out}
+@keyframes slideUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.alert-error{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.22);color:#fca5a5}
+.alert-success{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);color:#86efac}
+.alert-warning{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.22);color:#fcd34d}
+.alert-icon{font-size:.9rem;flex-shrink:0;margin-top:.05rem}
 
-    .glass-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 1px;
-        background: linear-gradient(90deg, transparent, rgba(255, 139, 139, 0.4), transparent);
-    }    @keyframes slideUp {
-        from {
-            opacity: 0;
-            transform: translateY(30px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
+/* ── Rate limit box ── */
+.rate-box{background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.25);border-radius:12px;padding:1rem 1.1rem;margin-bottom:1.25rem;font-size:.79rem;color:#fcd34d;line-height:1.6}
+.rate-box strong{display:block;margin-bottom:.4rem;font-size:.82rem}
 
-    /* Header Section */
-    .login-header {
-        text-align: center;
-        margin-bottom: 2.5rem;
-    }
+/* ── Form ── */
+.field-group{margin-bottom:1.1rem}
+.field-label{display:block;font-size:.78rem;font-weight:500;color:#94a3b8;margin-bottom:.4rem;letter-spacing:.03em;text-transform:uppercase}
+.field-wrap{position:relative}
+.field-icon{position:absolute;left:.9rem;top:50%;transform:translateY(-50%);color:var(--muted);font-size:.9rem;pointer-events:none}
+.field-input{width:100%;background:var(--input-bg);border:1px solid var(--border);border-radius:10px;padding:.7rem .9rem .7rem 2.55rem;color:var(--text);font-size:.875rem;outline:none;transition:border-color .2s,box-shadow .2s;font-family:'Inter',sans-serif}
+.field-input::placeholder{color:var(--muted)}
+.field-input:focus{border-color:rgba(99,179,237,.35);box-shadow:0 0 0 3px var(--accent-glow)}
+.field-input.field-error{border-color:rgba(239,68,68,.4);background:rgba(239,68,68,.05)}
+.pwd-toggle{position:absolute;right:.85rem;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;padding:.2rem;font-size:.85rem;line-height:1;transition:color .15s}
+.pwd-toggle:hover{color:var(--text)}
 
-    .logo-container {
-        margin-bottom: 1.5rem;
-        position: relative;
-    }
+/* ── Submit button ── */
+.btn-submit{width:100%;padding:.82rem;border-radius:10px;border:none;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-size:.9rem;font-weight:600;cursor:pointer;transition:opacity .2s,transform .1s;display:flex;align-items:center;justify-content:center;gap:.5rem;letter-spacing:.01em;margin-top:.25rem;font-family:'Inter',sans-serif}
+.btn-submit:hover{opacity:.9}
+.btn-submit:active{transform:scale(.98)}
+.btn-submit:disabled{opacity:.55;cursor:not-allowed}
+.btn-submit .spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .65s linear infinite;display:none}
+.btn-submit.loading .btn-text{display:none}
+.btn-submit.loading .spinner{display:block}
+@keyframes spin{to{transform:rotate(360deg)}}
 
-    .logo {
-        height: 70px;
-        width: auto;
-        filter: none;
-        animation: logoGlow 2s ease-in-out infinite alternate;
-    }
+.divider{display:flex;align-items:center;gap:.75rem;margin:.5rem 0 .75rem;color:var(--muted);font-size:.75rem}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
 
-    @keyframes logoGlow {
-        from {
-            filter: drop-shadow(0 0 5px rgba(255, 107, 107, 0.3));
-            transform: scale(1);
-        }
-        to {
-            filter: drop-shadow(0 0 15px rgba(255, 107, 107, 0.6));
-            transform: scale(1.02);
-        }
-    }
+/* ── OAuth tugma ── */
+.btn-oauth{display:flex;align-items:center;justify-content:center;gap:.55rem;width:100%;padding:.72rem;border-radius:10px;border:1px solid rgba(99,179,237,.2);background:rgba(59,130,246,.06);color:#93c5fd;font-size:.85rem;font-weight:500;text-decoration:none;transition:background .2s,border-color .2s,color .2s;font-family:'Inter',sans-serif}
+.btn-oauth:hover{background:rgba(59,130,246,.12);border-color:rgba(99,179,237,.35);color:#bfdbfe;text-decoration:none}
 
-    .welcome-text h1 {
-        color: var(--coral-primary);
-        font-size: 2rem;
-        font-weight: 700;
-        margin-bottom: 0.5rem;
-        text-shadow: 0 2px 4px rgba(255, 107, 107, 0.1);
-    }
-
-    .welcome-text p {
-        color: var(--text-secondary);
-        font-size: 1rem;
-        margin: 0;
-        font-weight: 400;
-    }
-
-    /* Form Styling */
-    .modern-form {
-        position: relative;
-    }
-
-    .form-group {
-        margin-bottom: 1.5rem;
-        position: relative;
-    }
-
-    .form-label {
-        display: block;
-        color: var(--text-primary);
-        font-size: 0.875rem;
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    .form-input {
-        width: 100%;
-        padding: 1rem 1.25rem;
-        background: rgba(255, 255, 255, 0.7);
-        border: 2px solid rgba(255, 139, 139, 0.2);
-        border-radius: 16px;
-        color: var(--text-primary);
-        font-size: 1rem;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        backdrop-filter: blur(10px);
-    }
-
-    .form-input:focus {
-        outline: none;
-        background: rgba(255, 255, 255, 0.9);
-        border-color: var(--coral-primary);
-        box-shadow: 0 0 0 4px var(--coral-soft);
-        transform: translateY(-1px);
-    }
-
-    .form-input::placeholder {
-        color: var(--text-muted);
-    }
-
-    .form-input.error {
-        border-color: #ff6b6b;
-        background: rgba(255, 107, 107, 0.1);
-    }
-
-    /* Password Toggle */
-    .password-wrapper {
-        position: relative;
-    }
-
-    .password-toggle {
-        position: absolute;
-        right: 1rem;
-        top: 50%;
-        transform: translateY(-50%);
-        background: none;
-        border: none;
-        color: var(--text-muted);
-        cursor: pointer;
-        padding: 0.5rem;
-        border-radius: 8px;
-        transition: all 0.2s ease;
-    }
-
-    .password-toggle:hover {
-        color: var(--coral-primary);
-        background: var(--coral-soft);
-    }
-
-    /* Modern Button */
-    .login-btn {
-        width: 100%;
-        padding: 1rem 2rem;
-        background: var(--coral-gradient);
-        border: 2px solid transparent;
-        border-radius: 16px;
-        color: white;
-        font-size: 1rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        position: relative;
-        overflow: hidden;
-        margin: 2rem 0 1.5rem 0;
-        box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
-    }
-
-    .login-btn:hover {
-        background: linear-gradient(135deg, #ff5757 0%, #ff4d4d 50%, #ff4040 100%);
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
-    }
-
-    .login-btn:active {
-        transform: translateY(0);
-    }
-
-    .login-btn::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-        transition: left 0.5s;
-    }
-
-    .login-btn:hover::before {
-        left: 100%;
-    }
-
-    /* Form Options */
-    .form-options {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1rem;
-    }
-
-    .remember-me {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        color: var(--text-secondary);
-        font-size: 0.875rem;
-    }
-
-    .remember-me input[type="checkbox"] {
-        width: 18px;
-        height: 18px;
-        accent-color: var(--coral-primary);
-    }
-
-    .forgot-password {
-        color: var(--coral-primary);
-        text-decoration: none;
-        font-size: 0.875rem;
-        transition: color 0.2s ease;
-    }
-
-    .forgot-password:hover {
-        color: var(--coral-light);
-        text-decoration: underline;
-    }
-
-    /* Error Messages */
-    .error-message {
-        background: rgba(255, 107, 107, 0.2);
-        border: 1px solid rgba(255, 107, 107, 0.3);
-        border-radius: 12px;
-        padding: 1rem;
-        margin-bottom: 1.5rem;
-        color: #ffe0e0;
-        font-size: 0.875rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        animation: errorSlide 0.3s ease-out;
-    }
-
-    @keyframes errorSlide {
-        from {
-            opacity: 0;
-            transform: translateY(-10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    /* Footer */
-    .login-footer {
-        text-align: center;
-        padding-top: 1.5rem;
-        border-top: 1px solid rgba(255, 139, 139, 0.2);
-        color: var(--text-secondary);
-        font-size: 0.875rem;
-    }
-
-    .login-footer a {
-        color: var(--coral-primary);
-        text-decoration: none;
-        font-weight: 600;
-    }
-
-    .login-footer a:hover {
-        color: var(--coral-light);
-        text-decoration: underline;
-    }
-
-    /* Loading Animation */
-    .loading {
-        position: relative;
-    }
-
-    .loading::after {
-        content: '';
-        position: absolute;
-        width: 20px;
-        height: 20px;
-        margin: auto;
-        border: 2px solid transparent;
-        border-top-color: rgba(255, 255, 255, 0.9);
-        border-radius: 50%;
-        animation: spin 1s ease infinite;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-    }
-
-    @keyframes spin {
-        0% { transform: translate(-50%, -50%) rotate(0deg); }
-        100% { transform: translate(-50%, -50%) rotate(360deg); }
-    }
-
-    /* Responsive Design */
-    @media (max-width: 768px) {
-        .login-container {
-            margin: 1rem;
-            max-width: 100%;
-        }
-
-        .glass-card {
-            padding: 2rem 1.5rem;
-        }
-
-        .welcome-text h1 {
-            font-size: 1.75rem;
-        }
-
-        .form-input {
-            padding: 0.875rem 1rem;
-        }
-    }
-
-    @media (max-width: 480px) {
-        .glass-card {
-            padding: 1.5rem 1rem;
-            border-radius: 20px;
-        }
-
-        .welcome-text h1 {
-            font-size: 1.5rem;
-        }
-    }
-
-    /* Accessibility */
-    @media (prefers-reduced-motion: reduce) {
-        .floating-element,
-        .glass-card,
-        .logo {
-            animation: none;
-        }
-    }
+/* ── HEMIS badge ── */
+.hemis-badge{display:inline-flex;align-items:center;gap:.4rem;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:.35rem .75rem;font-size:.72rem;color:var(--muted);margin-bottom:.5rem}
+.hemis-badge .dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:glowPulse 2s infinite}
 </style>
-{% endblock %}
-
-{% block content %}
+</head>
+<body>
 <div class="login-page">
-    <!-- Animated Background -->
-    <div class="bg-animation">
-        <div class="floating-element"><i class="fas fa-graduation-cap"></i></div>
-        <div class="floating-element"><i class="fas fa-book-open"></i></div>
-        <div class="floating-element"><i class="fas fa-user-graduate"></i></div>
-        <div class="floating-element"><i class="fas fa-certificate"></i></div>
-        <div class="floating-element"><i class="fas fa-award"></i></div>
+
+  <!-- ── Sol panel ── -->
+  <div class="left-panel">
+    <div class="grid-bg"></div>
+    <div class="nebula nebula-1"></div>
+    <div class="nebula nebula-2"></div>
+
+    <div class="orbital-wrap">
+      <div style="text-align:center;margin-bottom:.5rem">
+        <span class="hemis-badge"><span class="dot"></span>HEMIS tizimi faol</span>
+      </div>
+
+      <div class="orbital">
+        <div class="orbital-ring ring-1"></div>
+        <div class="orbital-ring ring-2"></div>
+        <div class="orbital-ring ring-3"></div>
+        <div class="orbit-dot dot-blue"></div>
+        <div class="orbit-dot dot-purple"></div>
+        <div class="orbital-core"><span>🎓</span></div>
+      </div>
+
+      <div class="left-title">NSPI So'rovnoma<br>Platformasi</div>
+      <div class="left-sub">Namangan Davlat Pedagogika Instituti talabalar va hodimlar tizimiga xush kelibsiz</div>
+
+      <ul class="feature-list">
+        <li>
+          <div class="feature-icon fi-blue">🔐</div>
+          HEMIS orqali xavfsiz kirish
+        </li>
+        <li>
+          <div class="feature-icon fi-purple">📊</div>
+          So'rovnomalar va statistika
+        </li>
+        <li>
+          <div class="feature-icon fi-green">💬</div>
+          Mas'ul shaxslarga murojaat
+        </li>
+      </ul>
     </div>
 
-    <!-- Main Login Container -->
-    <div class="login-container">
-        <div class="glass-card">
-            <!-- Header -->
-            <div class="login-header">
-                <div class="logo-container">
-                    <img src="https://nsuni.uz/assets/logobluefull-Cet2BLY6.png" 
-                         alt="NSPI Universiteti" 
-                         class="logo">
-                </div>
-                <div class="welcome-text">
-                    <h1>Xush kelibsiz</h1>
-                    <p>Tizimga kirish uchun ma'lumotlaringizni kiriting</p>
-                </div>
-            </div>
+    <p class="left-footer">© 2026 NSU Anti-Korrupsiya · NSPI</p>
+  </div>
 
-            <!-- Error Messages -->
-            {% if form.non_field_errors %}
-                <div class="error-message">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <div>
-                        {% for error in form.non_field_errors %}
-                            {{ error }}
-                        {% endfor %}
-                    </div>
-                </div>
-            {% endif %}
+  <!-- ── O'ng panel ── -->
+  <div class="right-panel">
+    <div style="width:100%;max-width:360px">
 
-            <!-- Login Form -->
-            <form method="post" class="modern-form" novalidate>
-                {% csrf_token %}
+      <div class="right-logo">
+        <span>NSPI</span>&nbsp;HEMIS
+      </div>
+      <h1 class="right-title">Tizimga kirish</h1>
+      <p class="right-sub">HEMIS login va parolingiz bilan kiring</p>
 
-                <!-- Username Field -->
-                <div class="form-group">
-                    <label for="{{ form.username.id_for_label }}" class="form-label">
-                        <i class="fas fa-user"></i>
-                        Talaba ID raqami
-                    </label>
-                    <input id="{{ form.username.id_for_label }}" 
-                           name="{{ form.username.html_name }}" 
-                           type="text"
-                           value="{{ form.username.value|default_if_none:'' }}"
-                           class="form-input {% if form.username.errors %}error{% endif %}"
-                           placeholder="ID raqamingizni kiriting" 
-                           autocomplete="username" 
-                           required>
-                    {% if form.username.errors %}
-                        <div class="error-message">
-                            <i class="fas fa-exclamation-circle"></i>
-                            {{ form.username.errors.0 }}
-                        </div>
-                    {% endif %}
-                </div>
+      <!-- Tabs -->
+      <div class="auth-tabs" role="tablist">
+        <button class="auth-tab {% if active_tab == 'employee' %}{% else %}active{% endif %}"
+                id="tab-student" type="button" onclick="switchTab('student')">
+          🎓 Talaba
+        </button>
+        <button class="auth-tab {% if active_tab == 'employee' %}active{% endif %}"
+                id="tab-employee" type="button" onclick="switchTab('employee')">
+          👨‍💼 Hodim
+        </button>
+      </div>
 
-                <!-- Password Field -->
-                <div class="form-group">
-                    <label for="{{ form.password.id_for_label }}" class="form-label">
-                        <i class="fas fa-lock"></i>
-                        Parol
-                    </label>
-                    <div class="password-wrapper">
-                        <input id="passwordInput" 
-                               name="{{ form.password.html_name }}" 
-                               type="password"
-                               class="form-input {% if form.password.errors %}error{% endif %}"
-                               placeholder="Parolingizni kiriting" 
-                               autocomplete="current-password" 
-                               required>
-                        <button type="button" class="password-toggle" onclick="togglePassword()">
-                            <i id="eyeIcon" class="fas fa-eye"></i>
-                        </button>
-                    </div>
-                    {% if form.password.errors %}
-                        <div class="error-message">
-                            <i class="fas fa-exclamation-circle"></i>
-                            {{ form.password.errors.0 }}
-                        </div>
-                    {% endif %}
-                </div>
+      <!-- Rate-limit ogohlantirish -->
+      {% if rate_limited %}
+      <div class="rate-box">
+        <strong>⚠️ Kirish vaqtincha cheklandi</strong>
+        HEMIS tizimi ko'p urinishlar sababli kirishni vaqtincha blokladi.
+        Bir necha daqiqadan so'ng qayta urinib ko'ring yoki IT bo'limiga murojaat qiling.
+      </div>
+      {% endif %}
 
-                <!-- Form Options -->
-                <div class="form-options">
-                    <label class="remember-me">
-                        <input type="checkbox" id="rememberMe" name="remember_me">
-                        Eslab qolish
-                    </label>
-                    <a href="#" class="forgot-password">Parolni unutdingizmi?</a>
-                </div>
+      <!-- Django messages -->
+      {% if messages %}
+      {% for msg in messages %}
+      <div class="alert-box {% if msg.tags == 'success' %}alert-success{% elif msg.tags == 'warning' %}alert-warning{% else %}alert-error{% endif %}">
+        <span class="alert-icon">{% if msg.tags == 'success' %}✓{% elif msg.tags == 'warning' %}⚠{% else %}✕{% endif %}</span>
+        <span>{{ msg }}</span>
+      </div>
+      {% endfor %}
+      {% endif %}
 
-                <!-- Submit Button -->
-                <button type="submit" class="login-btn" id="loginBtn">
-                    <i class="fas fa-sign-in-alt me-2"></i>
-                    Tizimga kirish
-                </button>
-            </form>
+      <!-- Forma -->
+      <form method="post" id="loginForm" novalidate>
+        {% csrf_token %}
+        <input type="hidden" name="login_type" id="loginType"
+               value="{{ active_tab|default:'student' }}">
 
-            <!-- Footer -->
-            <div class="login-footer">
-                <p>Hisobingiz yo'qmi? <a href="#">Ro'yxatdan o'tish</a></p>
-            </div>
+        <!-- Login -->
+        <div class="field-group">
+          <label class="field-label" for="id_username" id="usernameLabel">
+            Talaba ID raqami
+          </label>
+          <div class="field-wrap">
+            <span class="field-icon" id="userIcon">👤</span>
+            <input
+              type="text"
+              name="username"
+              id="id_username"
+              class="field-input {% if form.username.errors %}field-error{% endif %}"
+              placeholder="ID raqamingizni kiriting"
+              value="{{ form.username.value|default:'' }}"
+              autocomplete="username"
+              autofocus
+              required
+            >
+          </div>
+          {% if form.username.errors %}
+          <div style="color:#fca5a5;font-size:.75rem;margin-top:.35rem">{{ form.username.errors.0 }}</div>
+          {% endif %}
         </div>
-    </div>
-</div>
-{% endblock %}
 
-{% block extra_js %}
+        <!-- Password -->
+        <div class="field-group">
+          <label class="field-label" for="id_password">Parol</label>
+          <div class="field-wrap">
+            <span class="field-icon">🔑</span>
+            <input
+              type="password"
+              name="password"
+              id="id_password"
+              class="field-input {% if form.password.errors %}field-error{% endif %}"
+              placeholder="HEMIS parolingiz"
+              autocomplete="current-password"
+              required
+            >
+            <button type="button" class="pwd-toggle" id="pwdToggle" aria-label="Parolni ko'rsatish">
+              👁
+            </button>
+          </div>
+          {% if form.password.errors %}
+          <div style="color:#fca5a5;font-size:.75rem;margin-top:.35rem">{{ form.password.errors.0 }}</div>
+          {% endif %}
+        </div>
+
+        <button type="submit" class="btn-submit" id="loginBtn">
+          <span class="btn-text" id="btnText">Kirish</span>
+          <div class="spinner"></div>
+        </button>
+
+        <div class="divider">yoki</div>
+
+        <!-- OAuth tugma -->
+        <a href="#" id="oauthBtn" class="btn-oauth">
+          <span id="oauthIcon">🔑</span>
+          <span id="oauthText">HEMIS kalit orqali kirish</span>
+        </a>
+
+        <p style="font-size:.73rem;color:var(--muted);text-align:center;line-height:1.5;margin-top:.75rem">
+          Login/parolni bilmasangiz HEMIS kalit orqali kiring.<br>
+          Muammo bo'lsa, IT bo'limiga murojaat qiling.
+        </p>
+      </form>
+
+    </div>
+  </div>
+</div>
+
 <script>
-// Password toggle functionality
-function togglePassword() {
-    const input = document.getElementById("passwordInput");
-    const icon = document.getElementById("eyeIcon");
-    
-    if (input.type === "password") {
-        input.type = "text";
-        icon.className = "fas fa-eye-slash";
-    } else {
-        input.type = "password";
-        icon.className = "fas fa-eye";
-    }
+const TABS = {
+  student: {
+    label:       "Talaba ID raqami",
+    placeholder: "ID raqamingizni kiriting",
+    btn:         "Talaba sifatida kirish",
+    icon:        "🎓"
+  },
+  employee: {
+    label:       "Hodim logini",
+    placeholder: "HEMIS login (employee ID)",
+    btn:         "Hodim sifatida kirish",
+    icon:        "👨‍💼"
+  }
+};
+
+function switchTab(tab) {
+  const cfg = TABS[tab];
+  document.getElementById('loginType').value        = tab;
+  document.getElementById('usernameLabel').textContent = cfg.label;
+  document.getElementById('id_username').placeholder  = cfg.placeholder;
+  document.getElementById('btnText').textContent      = cfg.btn;
+  document.getElementById('userIcon').textContent     = cfg.icon;
+
+  document.getElementById('tab-student').classList.toggle('active',  tab === 'student');
+  document.getElementById('tab-employee').classList.toggle('active', tab === 'employee');
+  document.getElementById('id_username').focus();
 }
 
-// Enhanced form handling
-document.addEventListener('DOMContentLoaded', function() {
-    const form = document.querySelector('.modern-form');
-    const loginBtn = document.getElementById('loginBtn');
-    const inputs = form.querySelectorAll('.form-input');
-
-    // Add floating labels effect
-    inputs.forEach(input => {
-        input.addEventListener('focus', function() {
-            this.parentElement.classList.add('focused');
-        });
-
-        input.addEventListener('blur', function() {
-            if (!this.value) {
-                this.parentElement.classList.remove('focused');
-            }
-        });
-
-        // Remove error styling on input
-        input.addEventListener('input', function() {
-            this.classList.remove('error');
-            const errorMsg = this.parentElement.querySelector('.error-message');
-            if (errorMsg) {
-                errorMsg.style.display = 'none';
-            }
-        });
-    });
-
-    // Form submission with loading state
-    form.addEventListener('submit', function(event) {
-        const username = document.getElementById('{{ form.username.id_for_label }}').value.trim();
-        const password = document.getElementById('passwordInput').value.trim();
-
-        if (!username || !password) {
-            event.preventDefault();
-            
-            if (!username) {
-                const usernameInput = document.getElementById('{{ form.username.id_for_label }}');
-                usernameInput.classList.add('error');
-            }
-            
-            if (!password) {
-                const passwordInput = document.getElementById('passwordInput');
-                passwordInput.classList.add('error');
-            }
-            
-            return false;
-        }
-
-        // Add loading state
-        loginBtn.classList.add('loading');
-        loginBtn.disabled = true;
-        
-        // Remove loading state after 5 seconds (fallback)
-        setTimeout(() => {
-            loginBtn.classList.remove('loading');
-            loginBtn.disabled = false;
-        }, 5000);
-    });
-
-    // Add ripple effect to button
-    loginBtn.addEventListener('click', function(e) {
-        const ripple = document.createElement('span');
-        const size = 60;
-        const pos = this.getBoundingClientRect();
-        const x = e.clientX - pos.left - size / 2;
-        const y = e.clientY - pos.top - size / 2;
-        
-        ripple.style.width = ripple.style.height = size + 'px';
-        ripple.style.left = x + 'px';
-        ripple.style.top = y + 'px';
-        ripple.style.position = 'absolute';
-        ripple.style.borderRadius = '50%';
-        ripple.style.background = 'rgba(255, 255, 255, 0.3)';
-        ripple.style.transform = 'scale(0)';
-        ripple.style.animation = 'ripple 0.6s linear';
-        ripple.style.pointerEvents = 'none';
-        
-        this.appendChild(ripple);
-        
-        setTimeout(() => {
-            ripple.remove();
-        }, 600);
-    });
-
-    // Add CSS for ripple animation
-    const style = document.createElement('style');
-    style.textContent = `
-        @keyframes ripple {
-            to {
-                transform: scale(4);
-                opacity: 0;
-            }
-        }
-    `;
-    document.head.appendChild(style);
-
-    // Auto-focus first input
-    setTimeout(() => {
-        const firstInput = form.querySelector('.form-input');
-        if (firstInput) {
-            firstInput.focus();
-        }
-    }, 300);
+// Parol toggle
+document.getElementById('pwdToggle').addEventListener('click', function () {
+  const pwd = document.getElementById('id_password');
+  pwd.type = pwd.type === 'password' ? 'text' : 'password';
+  this.textContent = pwd.type === 'password' ? '👁' : '🙈';
 });
 
-// Add particles effect on successful login
-function addSuccessEffect() {
-    for (let i = 0; i < 50; i++) {
-        createParticle();
-    }
+// Loading holati
+document.getElementById('loginForm').addEventListener('submit', function () {
+  const u = document.getElementById('id_username').value.trim();
+  const p = document.getElementById('id_password').value.trim();
+  if (!u || !p) return;
+  const btn = document.getElementById('loginBtn');
+  btn.classList.add('loading');
+  btn.disabled = true;
+});
+
+// OAuth tugma URL ni tab ga qarab o'zgartirish
+const OAUTH_URLS = {
+  student:  "{% url 'oauth_init' %}?portal=student",
+  employee: "{% url 'oauth_init' %}?portal=employee"
+};
+const OAUTH_LABELS = {
+  student:  { icon: "🔑", text: "HEMIS kalit orqali kirish (talaba portali)" },
+  employee: { icon: "🔐", text: "HEMIS kalit orqali kirish (hodim portali)" }
+};
+
+function updateOAuthBtn(tab) {
+  const btn  = document.getElementById('oauthBtn');
+  const icon = document.getElementById('oauthIcon');
+  const txt  = document.getElementById('oauthText');
+  if (btn && OAUTH_URLS[tab]) {
+    btn.href        = OAUTH_URLS[tab];
+    icon.textContent = OAUTH_LABELS[tab].icon;
+    txt.textContent  = OAUTH_LABELS[tab].text;
+  }
 }
 
-function createParticle() {
-    const particle = document.createElement('div');
-    particle.style.position = 'fixed';
-    particle.style.width = '4px';
-    particle.style.height = '4px';
-    particle.style.background = '#fff';
-    particle.style.borderRadius = '50%';
-    particle.style.pointerEvents = 'none';
-    particle.style.zIndex = '10000';
-    particle.style.left = Math.random() * 100 + 'vw';
-    particle.style.top = '100vh';
-    particle.style.animation = 'particleFloat 3s ease-out forwards';
-    
-    document.body.appendChild(particle);
-    
-    setTimeout(() => {
-        particle.remove();
-    }, 3000);
-}
+// switchTab funksiyasini kengaytirish
+const _origSwitch = switchTab;
+window.switchTab = function(tab) {
+  _origSwitch(tab);
+  updateOAuthBtn(tab);
+};
 
-// Add particle animation
-const particleStyle = document.createElement('style');
-particleStyle.textContent = `
-    @keyframes particleFloat {
-        to {
-            transform: translateY(-100vh) translateX(${Math.random() * 200 - 100}px);
-            opacity: 0;
-        }
-    }
-`;
-document.head.appendChild(particleStyle);
+// Sahifa yuklanganda to'g'ri tab
+(function () {
+  const initial = document.getElementById('loginType').value || 'student';
+  const cfg = TABS[initial];
+  if (cfg) {
+    document.getElementById('usernameLabel').textContent = cfg.label;
+    document.getElementById('id_username').placeholder   = cfg.placeholder;
+    document.getElementById('btnText').textContent       = cfg.btn;
+    document.getElementById('userIcon').textContent      = cfg.icon;
+  }
+  updateOAuthBtn(initial);
+})();
 </script>
-{% endblock %}
+</body>
+</html>

@@ -2,6 +2,9 @@ from celery import shared_task
 from django.conf import settings
 from django.utils import timezone
 import logging
+import qrcode
+from io import BytesIO
+from django.core.files.base import ContentFile
 from .services.hemis_api_service import HemisAPIClient, APIClientException
 from .models import Student
 from .utils import map_api_data_to_student_model_defaults, update_student_instance_with_defaults
@@ -67,3 +70,49 @@ def sync_student_profile_from_api(self, student_id, api_token=None):
         except self.MaxRetriesExceededError:
             logger.error(f"Max retries exceeded for student ID {student_id} (username: {student.username}) in Celery task after unexpected error.")
             return f"Max retries for student {student.username} (unexpected error)."
+
+
+@shared_task(bind=True, name='auth_app.tasks.generate_message_qr_code', max_retries=3, default_retry_delay=30)
+def generate_message_qr_code(self, object_id, object_type):
+    """
+    MessageToResponsible yoki MessageReply uchun QR kod rasmini asinxron yaratadi.
+    object_type: 'message' yoki 'reply'
+    """
+    from .models import MessageToResponsible, MessageReply
+
+    try:
+        if object_type == 'message':
+            obj = MessageToResponsible.objects.get(pk=object_id)
+            code_value = obj.unique_code
+            file_prefix = f"message_{object_id}"
+            field_name = 'qr_code_image'
+        elif object_type == 'reply':
+            obj = MessageReply.objects.get(pk=object_id)
+            code_value = obj.unique_code
+            file_prefix = f"reply_{object_id}"
+            field_name = 'qr_code_image'
+        else:
+            logger.error(f"Unknown object_type '{object_type}' in generate_message_qr_code task.")
+            return f"Unknown object_type: {object_type}"
+
+        if getattr(obj, field_name):
+            return f"QR code already exists for {object_type} ID {object_id}."
+
+        qr = qrcode.make(code_value)
+        buffer = BytesIO()
+        qr.save(buffer, format='PNG')
+        file_name = f"{file_prefix}_qr.png"
+        getattr(obj, field_name).save(file_name, ContentFile(buffer.getvalue()), save=True)
+        logger.info(f"QR code generated for {object_type} ID {object_id}.")
+        return f"QR code generated for {object_type} ID {object_id}."
+
+    except (MessageToResponsible.DoesNotExist, MessageReply.DoesNotExist):
+        logger.error(f"{object_type} ID {object_id} not found for QR code generation.")
+        return f"{object_type} ID {object_id} not found."
+    except Exception as e:
+        logger.error(f"Error generating QR code for {object_type} ID {object_id}: {e}", exc_info=True)
+        try:
+            raise self.retry(exc=e)
+        except self.MaxRetriesExceededError:
+            logger.error(f"Max retries exceeded for QR code generation of {object_type} ID {object_id}.")
+            return f"Max retries for QR code {object_type} ID {object_id}."

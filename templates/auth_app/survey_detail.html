@@ -1,6 +1,6 @@
 {% extends 'auth_app/base.html' %}
-
-{% block page_title %}So'rovnoma: {{ survey.title }}{% endblock %}
+{% load i18n %}
+{% block page_title %}{% trans "So'rovnoma" %}: {{ survey.title }}{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -145,9 +145,9 @@
                 <div id="survey-form-root" class="fade-in-on-scroll">
                     <div class="text-center py-5">
                         <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">Yuklanmoqda...</span>
+                            <span class="visually-hidden">{% trans "Yuklanmoqda..." %}</span>
                         </div>
-                        <p class="mt-3 text-muted">So'rovnoma yuklanmoqda...</p>
+                        <p class="mt-3 text-muted">{% trans "So'rovnoma yuklanmoqda..." %}</p>
                     </div>
                 </div>
             </div>
@@ -171,7 +171,7 @@ document.addEventListener('DOMContentLoaded', function() {
             container.innerHTML = `
                 <div class="alert alert-danger text-center">
                     <i class="fas fa-exclamation-triangle me-2"></i>
-                    So'rovnoma yuklanmadi. Sahifani yangilang.
+                    {% trans "So'rovnoma yuklanmadi. Sahifani yangilang." %}
                 </div>
             `;
         }
