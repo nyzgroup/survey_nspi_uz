@@ -2,11 +2,8 @@
 from django.db import models
 from django.utils import timezone
 from django.conf import settings # Foydalanuvchi modelini olish uchun (agar Student o'rniga standart User ishlatilsa)
-import os # Fayl nomini tozalash uchun
-from uuid import uuid4 # Unikal fayl nomlari uchun
-import qrcode
-from io import BytesIO
-from django.core.files.base import ContentFile
+import os
+from uuid import uuid4
 
 # --- Mavjud Student modeli (o'zgarishsiz qoldiriladi) ---
 class Student(models.Model):
@@ -28,11 +25,6 @@ class Student(models.Model):
     short_name_api = models.CharField(max_length=100, blank=True, null=True, verbose_name="Qisqa F.I.Sh. (API)")
 
     image_url = models.URLField(max_length=500, blank=True, null=True, verbose_name="Talabning surati (URL)")
-    birth_date_timestamp = models.BigIntegerField(null=True, blank=True, verbose_name="Tug'ilgan sana (timestamp)")
-    passport_pin = models.CharField(max_length=50, blank=True, null=True, verbose_name="Pasport PIN")
-    passport_number = models.CharField(max_length=50, blank=True, null=True, verbose_name="Pasport raqami")
-    email = models.EmailField(blank=True, null=True, verbose_name="Email")
-    phone = models.CharField(max_length=30, blank=True, null=True, verbose_name="Telefon raqami")
 
     gender_code = models.CharField(max_length=10, blank=True, null=True, verbose_name="Jinsi kodi")
     gender_name = models.CharField(max_length=50, blank=True, null=True, verbose_name="Jinsi")
@@ -88,10 +80,7 @@ class Student(models.Model):
     semester_education_year_name = models.CharField(max_length=100, blank=True, null=True, verbose_name="Semestr o'quv yili nomi")
     semester_education_year_is_current = models.BooleanField(null=True, blank=True, verbose_name="Joriy o'quv yili (semestr)")
 
-    avg_gpa = models.CharField(max_length=10, blank=True, null=True, verbose_name="O'rtacha ball (GPA)") # String sifatida, chunki '3.50'
-    password_is_valid_api = models.BooleanField(null=True, blank=True, verbose_name="Parol to'g'riligi (API)")
-
-    address_api = models.TextField(blank=True, null=True, verbose_name="Manzil (API)")
+    avg_gpa = models.CharField(max_length=10, blank=True, null=True, verbose_name="O'rtacha ball (GPA)")
 
     # Country
     country_code_api = models.CharField(max_length=10, blank=True, null=True, verbose_name="Davlat kodi (API)")
@@ -104,16 +93,6 @@ class Student(models.Model):
     # District (Tuman)
     district_code_api = models.CharField(max_length=20, blank=True, null=True, verbose_name="Tuman kodi (API)")
     district_name_api = models.CharField(max_length=100, blank=True, null=True, verbose_name="Tuman nomi (API)")
-
-    # Social Category
-    social_category_code = models.CharField(max_length=10, blank=True, null=True, verbose_name="Ijtimoiy toifa kodi")
-    social_category_name = models.CharField(max_length=100, blank=True, null=True, verbose_name="Ijtimoiy toifa nomi")
-
-    # Accommodation (Turar joyi)
-    accommodation_code = models.CharField(max_length=10, blank=True, null=True, verbose_name="Turar joy kodi")
-    accommodation_name = models.CharField(max_length=100, blank=True, null=True, verbose_name="Turar joy nomi")
-
-    validate_url_api = models.URLField(max_length=500, blank=True, null=True, verbose_name="Validatsiya havolasi (API)")
 
     # Tizim uchun ma'lumotlar
     last_login_api = models.DateTimeField(null=True, blank=True, verbose_name="Oxirgi kirish (API)")
@@ -137,15 +116,46 @@ class Student(models.Model):
         full_name = " ".join(filter(None, name_parts))
         return full_name.strip() if full_name.strip() else self.username
 
+class Employee(models.Model):
+    """HEMIS Tutor API orqali login qilgan hodim/o'qituvchilar."""
+    username = models.CharField(
+        max_length=150, unique=True,
+        verbose_name="Login (HEMIS)",
+    )
+    hemis_id = models.CharField(
+        max_length=100, unique=True, null=True, blank=True,
+        verbose_name="HEMIS ID",
+    )
+    first_name = models.CharField(max_length=100, blank=True, null=True, verbose_name="Ismi")
+    last_name = models.CharField(max_length=100, blank=True, null=True, verbose_name="Familiyasi")
+    patronymic = models.CharField(max_length=100, blank=True, null=True, verbose_name="Otasining ismi")
+    full_name_api = models.CharField(max_length=255, blank=True, null=True, verbose_name="To'liq F.I.Sh. (API)")
+    image_url = models.URLField(max_length=500, blank=True, null=True, verbose_name="Surat (URL)")
+    position = models.CharField(max_length=255, blank=True, null=True, verbose_name="Lavozimi")
+    department_name = models.CharField(max_length=255, blank=True, null=True, verbose_name="Bo'lim nomi")
+    department_code = models.CharField(max_length=50, blank=True, null=True, verbose_name="Bo'lim kodi")
+    phone = models.CharField(max_length=50, blank=True, null=True, verbose_name="Telefon")
+    email = models.EmailField(blank=True, null=True, verbose_name="Email")
+    last_login_api = models.DateTimeField(null=True, blank=True, verbose_name="Oxirgi kirish (API)")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Yaratilgan vaqti")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Yangilangan vaqti")
+
+    def __str__(self):
+        return self.full_name_api or f"{self.last_name or ''} {self.first_name or ''}".strip() or self.username
+
+    class Meta:
+        verbose_name = "Hodim (API)"
+        verbose_name_plural = "Hodimlar (API)"
+        ordering = ['-updated_at', 'last_name', 'first_name']
+
     @property
-    def get_birth_date_display(self):
-        if self.birth_date_timestamp:
-            try:
-                dt_object = timezone.datetime.fromtimestamp(self.birth_date_timestamp, tz=timezone.get_current_timezone())
-                return dt_object.strftime('%d-%m-%Y')
-            except (ValueError, TypeError, OSError): # Potensial xatoliklarni ushlash
-                return "Noma'lum sana (xato)"
-        return None
+    def full_name(self):
+        if self.full_name_api:
+            return self.full_name_api
+        parts = [self.last_name, self.first_name, self.patronymic]
+        name = " ".join(filter(None, parts))
+        return name.strip() if name.strip() else self.username
+
 
 # --- So'rovnoma uchun yangi modellar ---
 
@@ -464,14 +474,11 @@ class MessageToResponsible(models.Model):
                     break
             else:
                 raise Exception("Unique 6-digit code generation failed after 10 attempts.")
+        is_new = self.pk is None
         super().save(*args, **kwargs)
-        if self.unique_code and not self.qr_code_image:
-            qr = qrcode.make(self.unique_code)
-            buffer = BytesIO()
-            qr.save(buffer, format='PNG')
-            file_name = f"message_{self.pk}_qr.png"
-            self.qr_code_image.save(file_name, ContentFile(buffer.getvalue()), save=False)
-            super().save(update_fields=["qr_code_image"])
+        if is_new and self.unique_code and not self.qr_code_image:
+            from .tasks import generate_message_qr_code
+            generate_message_qr_code.delay(self.pk, 'message')
 
     @property
     def qr_code_url(self):
@@ -545,14 +552,11 @@ class MessageReply(models.Model):
                     break
             else:
                 raise Exception("Unique 8-digit code generation failed after 10 attempts.")
+        is_new = self.pk is None
         super().save(*args, **kwargs)
-        if self.unique_code and not self.qr_code_image:
-            qr = qrcode.make(self.unique_code)
-            buffer = BytesIO()
-            qr.save(buffer, format='PNG')
-            file_name = f"reply_{self.pk}_qr.png"
-            self.qr_code_image.save(file_name, ContentFile(buffer.getvalue()), save=False)
-            super().save(update_fields=["qr_code_image"])
+        if is_new and self.unique_code and not self.qr_code_image:
+            from .tasks import generate_message_qr_code
+            generate_message_qr_code.delay(self.pk, 'reply')
 
     @property
     def qr_code_url(self):

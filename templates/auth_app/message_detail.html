@@ -1,12 +1,13 @@
 {% extends 'auth_app/base.html' %}
-{% block title %}Murojaat tafsiloti{% endblock %}
+{% load i18n %}
+{% block title %}{% trans "Murojaat tafsiloti" %}{% endblock %}
 {% block content %}
 <div class="message-detail-page">
   <!-- Header Section -->
   <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="h3 mb-0 text-dark">Murojaat tafsiloti</h2>
+    <h2 class="h3 mb-0 text-dark">{% trans "Murojaat tafsiloti" %}</h2>
     <a href="{% url 'message_list' %}" class="btn btn-outline-secondary">
-      <i class="fas fa-arrow-left me-2"></i>Orqaga
+      <i class="fas fa-arrow-left me-2"></i>{% trans "Orqaga" %}
     </a>
   </div>
 
@@ -31,7 +32,7 @@
               {% endif %}
             </div>
             <div>
-              <strong>Yuboruvchi:</strong> 
+              <strong>{% trans "Yuboruvchi:" %}</strong>
               <span class="text-secondary">{{ message.student.full_name_api|default:message.student.username }}</span>
             </div>
           </div>
@@ -44,7 +45,7 @@
               {% endif %}
             </div>
             <div>
-              <strong>Mas'ul shaxs:</strong> 
+              <strong>{% trans "Mas'ul shaxs:" %}</strong>
               <span class="text-secondary">
                 {% if message.responsible_person %}
                   {{ message.responsible_person.full_name|default:message.responsible_person|default:'-' }}
@@ -56,12 +57,12 @@
         <div class="col-md-6">
           <div class="mb-2">
             <i class="fas fa-calendar text-muted me-2"></i>
-            <strong>Yuborilgan:</strong> 
+            <strong>{% trans "Yuborilgan:" %}</strong>
             <span class="text-secondary">{{ message.created_at|date:'d.m.Y H:i' }}</span>
           </div>
           <div class="mb-2">
             <i class="fas fa-info-circle text-muted me-2"></i>
-            <strong>Status:</strong> 
+            <strong>{% trans "Status:" %}</strong>
             <span class="badge bg-primary rounded-pill">{{ message.get_status_display }}</span>
           </div>
         </div>
@@ -72,7 +73,7 @@
       <!-- Message Content -->
       <div class="message-content">
         <h6 class="text-secondary mb-3">
-          <i class="fas fa-comment-alt me-2"></i>Murojaat matni:
+          <i class="fas fa-comment-alt me-2"></i>{% trans "Murojaat matni:" %}
         </h6>
         <div class="border-start border-primary ps-3 mb-3">
           <div class="text-dark">{{ message.content|linebreaks }}</div>
@@ -84,7 +85,7 @@
         <hr class="my-3">
         <div class="attachments-section">
           <h6 class="text-secondary mb-3">
-            <i class="fas fa-paperclip me-2"></i>Biriktirilgan fayllar:
+            <i class="fas fa-paperclip me-2"></i>{% trans "Biriktirilgan fayllar:" %}
           </h6>
           <div class="list-group">
             {% for att in message.attachments.all %}
@@ -97,7 +98,7 @@
                   </div>
                 </div>
                 <a href="{{ att.file.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
-                  <i class="fas fa-download me-1"></i>Yuklab olish
+                  <i class="fas fa-download me-1"></i>{% trans "Yuklab olish" %}
                 </a>
               </div>
             {% endfor %}
@@ -112,7 +113,7 @@
     <div class="card shadow-sm mb-4">
       <div class="card-header bg-success text-white">
         <h5 class="card-title mb-0">
-          <i class="fas fa-reply me-2"></i>Javoblar ({{ message.replies.count }})
+          <i class="fas fa-reply me-2"></i>{% trans "Javoblar" %} ({{ message.replies.count }})
         </h5>
       </div>
       <div class="card-body">
@@ -138,7 +139,7 @@
                     </small>
                   </div>
                 </div>
-                <span class="badge bg-success">Admin javobi</span>
+                <span class="badge bg-success">{% trans "Admin javobi" %}</span>
               </div>
 
               <!-- Reply Content -->
@@ -157,8 +158,8 @@
     <div class="card shadow-sm mb-4">
       <div class="card-body text-center py-4">
         <i class="fas fa-clock text-muted mb-3" style="font-size: 2rem;"></i>
-        <h6 class="text-muted">Javob kutilmoqda</h6>
-        <p class="text-muted small mb-0">Mas'ul shaxs tez orada javob beradi</p>
+        <h6 class="text-muted">{% trans "Javob kutilmoqda" %}</h6>
+        <p class="text-muted small mb-0">{% trans "Mas'ul shaxs tez orada javob beradi" %}</p>
       </div>
     </div>
   {% endif %}
@@ -166,12 +167,12 @@
   <!-- Action Buttons -->
   <div class="d-flex justify-content-between align-items-center">
     <a href="{% url 'message_list' %}" class="btn btn-outline-secondary">
-      <i class="fas fa-list me-2"></i>Barcha murojaatlar
+      <i class="fas fa-list me-2"></i>{% trans "Barcha murojaatlar" %}
     </a>
-    
+
     {% if user.is_staff %}
       <a href="{% url 'message_reply' message.pk %}" class="btn btn-success">
-        <i class="fas fa-reply me-2"></i>Javob yozish
+        <i class="fas fa-reply me-2"></i>{% trans "Javob yozish" %}
       </a>
     {% endif %}
   </div>

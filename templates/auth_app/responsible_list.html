@@ -1,13 +1,14 @@
 {% extends 'auth_app/base.html' %}
-{% block title %}Mas'ul shaxslar{% endblock %}
+{% load i18n %}
+{% block title %}{% trans "Mas'ul shaxslar" %}{% endblock %}
 {% block content %}
 <div class="responsible-list-page">
   <!-- Header Section -->
   <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="h3 mb-0 text-dark">Mas'ul shaxslar</h2>
+    <h2 class="h3 mb-0 text-dark">{% trans "Mas'ul shaxslar" %}</h2>
     <div class="d-flex align-items-center">
       <span class="badge bg-light text-dark border me-3">
-        <i class="fas fa-users me-1"></i>{{ responsibles|length }} ta mas'ul
+        <i class="fas fa-users me-1"></i>{{ responsibles|length }} {% trans "ta mas'ul" %}
       </span>
     </div>
   </div>
@@ -80,7 +81,7 @@
             {% if person.responsibilities_short %}
               <div class="responsibilities mt-3 pt-3 border-top">
                 <h6 class="text-secondary mb-2">
-                  <i class="fas fa-tasks me-1"></i>Mas'uliyat sohalari:
+                  <i class="fas fa-tasks me-1"></i>{% trans "Mas'uliyat sohalari:" %}
                 </h6>
                 <p class="small text-muted mb-0">{{ person.responsibilities_short }}</p>
               </div>
@@ -90,15 +91,15 @@
             <div class="action-buttons mt-3 pt-3 border-top">
               <div class="d-flex gap-2 justify-content-center">
                 {% if person.phone_number %}
-                  <a href="tel:{{ person.phone_number }}" 
+                  <a href="tel:{{ person.phone_number }}"
                      class="btn btn-sm btn-outline-success flex-fill">
-                    <i class="fas fa-phone me-1"></i>Qo'ng'iroq
+                    <i class="fas fa-phone me-1"></i>{% trans "Qo'ng'iroq" %}
                   </a>
                 {% endif %}
-                
-                <a href="{% url 'message_create' %}?responsible={{ person.id }}" 
+
+                <a href="{% url 'message_create' %}?responsible={{ person.id }}"
                    class="btn btn-sm btn-primary flex-fill">
-                  <i class="fas fa-envelope me-1"></i>Murojaat
+                  <i class="fas fa-envelope me-1"></i>{% trans "Murojaat" %}
                 </a>
               </div>
             </div>
@@ -112,8 +113,8 @@
     <div class="text-center py-5">
       <div class="empty-state">
         <i class="fas fa-users text-muted mb-3" style="font-size: 4rem;"></i>
-        <h5 class="text-muted mb-3">Mas'ul shaxslar topilmadi</h5>
-        <p class="text-muted mb-4">Hozircha tizimda mas'ul shaxslar ro'yxati yo'q</p>
+        <h5 class="text-muted mb-3">{% trans "Mas'ul shaxslar topilmadi" %}</h5>
+        <p class="text-muted mb-4">{% trans "Hozircha tizimda mas'ul shaxslar ro'yxati yo'q" %}</p>
       </div>
     </div>
   {% endif %}

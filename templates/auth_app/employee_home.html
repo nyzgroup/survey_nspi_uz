@@ -1,0 +1,82 @@
+{% extends "auth_app/base.html" %}
+{% load static i18n %}
+
+{% block page_title %}Hodim kabineti{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+
+      <!-- Xush kelibsiz card -->
+      <div class="card shadow-sm border-0 mb-4" style="border-radius:16px; background:linear-gradient(135deg,#1e3a5f,#0d1b2e);">
+        <div class="card-body p-4 d-flex align-items-center gap-4">
+          {% if employee.image_url %}
+          <img src="{{ employee.image_url }}" alt="Rasm" class="rounded-circle border border-2 border-primary"
+               style="width:80px;height:80px;object-fit:cover;">
+          {% else %}
+          <div class="rounded-circle d-flex align-items-center justify-content-center bg-primary text-white fw-bold"
+               style="width:80px;height:80px;font-size:2rem;flex-shrink:0;">
+            {{ employee.full_name|first|upper }}
+          </div>
+          {% endif %}
+          <div>
+            <h4 class="text-white mb-1 fw-semibold">{{ employee.full_name }}</h4>
+            {% if employee.position %}
+            <p class="text-info mb-0 small">{{ employee.position }}</p>
+            {% endif %}
+            {% if employee.department_name %}
+            <p class="text-secondary mb-0 small">{{ employee.department_name }}</p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Ma'lumotlar -->
+      <div class="card shadow-sm border-0 mb-4" style="border-radius:16px;">
+        <div class="card-header border-0 bg-transparent pt-4 pb-2 px-4">
+          <h6 class="fw-semibold mb-0">
+            <i class="fas fa-id-card me-2 text-primary"></i>Shaxsiy ma'lumotlar
+          </h6>
+        </div>
+        <div class="card-body px-4 pb-4">
+          <div class="row g-3">
+            {% if employee.phone %}
+            <div class="col-sm-6">
+              <span class="text-muted small">Telefon</span>
+              <p class="mb-0 fw-medium">{{ employee.phone }}</p>
+            </div>
+            {% endif %}
+            {% if employee.email %}
+            <div class="col-sm-6">
+              <span class="text-muted small">Email</span>
+              <p class="mb-0 fw-medium">{{ employee.email }}</p>
+            </div>
+            {% endif %}
+            {% if employee.hemis_id %}
+            <div class="col-sm-6">
+              <span class="text-muted small">HEMIS ID</span>
+              <p class="mb-0 fw-medium font-monospace">{{ employee.hemis_id }}</p>
+            </div>
+            {% endif %}
+            {% if employee.last_login_api %}
+            <div class="col-sm-6">
+              <span class="text-muted small">Oxirgi kirish</span>
+              <p class="mb-0 fw-medium">{{ employee.last_login_api|date:"d.m.Y H:i" }}</p>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Tizimdan chiqish -->
+      <div class="text-center">
+        <a href="{% url 'logout' %}" class="btn btn-outline-danger px-4">
+          <i class="fas fa-sign-out-alt me-2"></i>Tizimdan chiqish
+        </a>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

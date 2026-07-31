@@ -1,0 +1,157 @@
+{
+  "date": "2026-07-31",
+  "target": "http://127.0.0.1:8010",
+  "totals": {
+    "CRITICAL": 2,
+    "HIGH": 5,
+    "MEDIUM": 6,
+    "LOW": 3,
+    "PASS": 2
+  },
+  "findings": [
+    {
+      "id": "FIND-001",
+      "severity": "CRITICAL",
+      "cvss": "9.8",
+      "title": "Default admin credentials (admin / admin123) accepted",
+      "status": "CONFIRMED (dynamic)",
+      "file": "FIND-001_CRITICAL_default_admin_credentials_admin_admin123_accepted.docx"
+    },
+    {
+      "id": "FIND-002",
+      "severity": "CRITICAL",
+      "cvss": "9.1",
+      "title": "Redis without authentication + host port exposed; sessions readable",
+      "status": "CONFIRMED (dynamic)",
+      "file": "FIND-002_CRITICAL_redis_without_authentication_host_port_exposed_ses.docx"
+    },
+    {
+      "id": "FIND-003",
+      "severity": "HIGH",
+      "cvss": "7.4",
+      "title": "Open Redirect via next / login_next_url",
+      "status": "CONFIRMED (code + Django redirect behavior)",
+      "file": "FIND-003_HIGH_open_redirect_via_next_login_next_url.docx"
+    },
+    {
+      "id": "FIND-004",
+      "severity": "HIGH",
+      "cvss": "6.5",
+      "title": "Unauthenticated exposure of ResponsiblePerson PII on /responsibles/",
+      "status": "CONFIRMED (dynamic)",
+      "file": "FIND-004_HIGH_unauthenticated_exposure_of_responsibleperson_pii_.docx"
+    },
+    {
+      "id": "FIND-005",
+      "severity": "HIGH",
+      "cvss": "8.6",
+      "title": "PostgreSQL default password and host port published",
+      "status": "CONFIRMED (dynamic + config)",
+      "file": "FIND-005_HIGH_postgresql_default_password_and_host_port_publishe.docx"
+    },
+    {
+      "id": "FIND-006",
+      "severity": "HIGH",
+      "cvss": "6.5",
+      "title": "Survey submit API missing is_open / is_active server-side checks",
+      "status": "CONFIRMED (code review)",
+      "file": "FIND-006_HIGH_survey_submit_api_missing_is_open_is_active_server.docx"
+    },
+    {
+      "id": "FIND-007",
+      "severity": "HIGH",
+      "cvss": "5.4",
+      "title": "Answer choice IDs not bound to target question/survey",
+      "status": "CONFIRMED (code review)",
+      "file": "FIND-007_HIGH_answer_choice_ids_not_bound_to_target_question_sur.docx"
+    },
+    {
+      "id": "FIND-008",
+      "severity": "MEDIUM",
+      "cvss": "6.3",
+      "title": "MessageReplyView: no object-level auth; uses Django LoginRequiredMixin only",
+      "status": "CONFIRMED (code review)",
+      "file": "FIND-008_MEDIUM_messagereplyview_no_object_level_auth_uses_django_.docx"
+    },
+    {
+      "id": "FIND-009",
+      "severity": "MEDIUM",
+      "cvss": "5.3",
+      "title": "Media files intended to be publicly served; no auth on MEDIA_URL",
+      "status": "CONFIRMED (config) / PARTIAL (runtime DEBUG=False → Django static() no-op → 404)",
+      "file": "FIND-009_MEDIUM_media_files_intended_to_be_publicly_served_no_auth.docx"
+    },
+    {
+      "id": "FIND-010",
+      "severity": "MEDIUM",
+      "cvss": "5.4",
+      "title": "Stored XSS risk via mark_safe(text_answer) in admin",
+      "status": "CONFIRMED (code review)",
+      "file": "FIND-010_MEDIUM_stored_xss_risk_via_mark_safe_text_answer_in_admin.docx"
+    },
+    {
+      "id": "FIND-011",
+      "severity": "MEDIUM",
+      "cvss": "5.3",
+      "title": "No application-level rate limiting on login, submit, messages",
+      "status": "CONFIRMED (code review)",
+      "file": "FIND-011_MEDIUM_no_application_level_rate_limiting_on_login_submit.docx"
+    },
+    {
+      "id": "FIND-012",
+      "severity": "MEDIUM",
+      "cvss": "4.8",
+      "title": "Missing CSP/HSTS; SECURE_SSL_REDIRECT=False in production profile",
+      "status": "CONFIRMED (dynamic headers)",
+      "file": "FIND-012_MEDIUM_missing_csp_hsts_secure_ssl_redirect_false_in_prod.docx"
+    },
+    {
+      "id": "FIND-013",
+      "severity": "MEDIUM",
+      "cvss": "5.0",
+      "title": "Anonymous surveys allow unlimited responses (unique_together gap)",
+      "status": "CONFIRMED (code/model)",
+      "file": "FIND-013_MEDIUM_anonymous_surveys_allow_unlimited_responses_unique.docx"
+    },
+    {
+      "id": "FIND-014",
+      "severity": "LOW",
+      "cvss": "3.7",
+      "title": "JWT refresh rotation/blacklist disabled",
+      "status": "CONFIRMED (config)",
+      "file": "FIND-014_LOW_jwt_refresh_rotation_blacklist_disabled.docx"
+    },
+    {
+      "id": "FIND-015",
+      "severity": "LOW",
+      "cvss": "3.1",
+      "title": "Container runs as root; full project bind-mount in compose",
+      "status": "CONFIRMED (Dockerfile/compose)",
+      "file": "FIND-015_LOW_container_runs_as_root_full_project_bind_mount_in_.docx"
+    },
+    {
+      "id": "FIND-016",
+      "severity": "LOW",
+      "cvss": "2.8",
+      "title": "Duplicate XFrameOptionsMiddleware; API may leak exception text",
+      "status": "CONFIRMED (code)",
+      "file": "FIND-016_LOW_duplicate_xframeoptionsmiddleware_api_may_leak_exc.docx"
+    },
+    {
+      "id": "FIND-017",
+      "severity": "PASS",
+      "cvss": "—",
+      "title": "OAuth state validation works (fail-closed)",
+      "status": "CONFIRMED (dynamic)",
+      "file": "FIND-017_PASS_oauth_state_validation_works_fail_closed.docx"
+    },
+    {
+      "id": "FIND-018",
+      "severity": "PASS",
+      "cvss": "—",
+      "title": "Statistics API denies unauthenticated access",
+      "status": "CONFIRMED (dynamic)",
+      "file": "FIND-018_PASS_statistics_api_denies_unauthenticated_access.docx"
+    }
+  ]
+}

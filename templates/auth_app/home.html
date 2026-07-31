@@ -1,7 +1,6 @@
 {% extends "auth_app/base.html" %}
-
-{% block page_title %}Navoiy Davlat Universiteti - HEMIS Tizimi{% endblock %}
-{% load static %}
+{% load static i18n %}
+{% block page_title %}{% trans "Navoiy Davlat Universiteti - HEMIS Tizimi" %}{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -351,16 +350,15 @@
             <div class="col-lg-6">
                 <div class="text-white">
                     <h1 class="display-4 fw-bold mb-4">
-                        Navoiy Davlat Universiteti
-                        <span class="d-block text-warning">HEMIS Tizimi</span>
+                        {% trans "Navoiy Davlat Universiteti" %}
+                        <span class="d-block text-warning">{% trans "HEMIS Tizimi" %}</span>
                     </h1>
                     <p class="fs-5 mb-4 opacity-90">
-                        Zamonaviy ta'lim boshqaruv tizimi orqali talabalar, o'qituvchilar va administratorlar uchun 
-                        qulay va samarali xizmatlar taqdim etamiz.
+                        {% trans "Zamonaviy ta'lim boshqaruv tizimi orqali talabalar, o'qituvchilar va administratorlar uchun qulay va samarali xizmatlar taqdim etamiz." %}
                     </p>
                     <div class="d-flex flex-wrap gap-3">
                         <a href="{% url 'survey_list' %}" class="btn btn-warning btn-lg px-4 py-3 rounded-pill fw-semibold">
-                            <i class="fas fa-poll me-2"></i>So'rovnomalar
+                            <i class="fas fa-poll me-2"></i>{% trans "So'rovnomalar" %}
                         </a>
                         <a href="{% url 'dashboard' %}" class="btn btn-outline-light btn-lg px-4 py-3 rounded-pill fw-semibold">
                             <i class="fas fa-tachometer-alt me-2"></i>Dashboard
@@ -387,7 +385,7 @@
                         <i class="fas fa-users"></i>
                     </div>
                     <div class="stats-number">1,250</div>
-                    <div class="stats-label">Faol talabalar</div>
+                    <div class="stats-label">{% trans "Faol talabalar" %}</div>
                 </div>
             </div>
             <div class="col-md-3 col-sm-6">
@@ -396,7 +394,7 @@
                         <i class="fas fa-chalkboard-teacher"></i>
                     </div>
                     <div class="stats-number">89</div>
-                    <div class="stats-label">O'qituvchilar</div>
+                    <div class="stats-label">{% trans "O'qituvchilar" %}</div>
                 </div>
             </div>
             <div class="col-md-3 col-sm-6">
@@ -405,7 +403,7 @@
                         <i class="fas fa-poll"></i>
                     </div>
                     <div class="stats-number">45</div>
-                    <div class="stats-label">Faol so'rovnomalar</div>
+                    <div class="stats-label">{% trans "Faol so'rovnomalar" %}</div>
                 </div>
             </div>
             <div class="col-md-3 col-sm-6">
@@ -414,7 +412,7 @@
                         <i class="fas fa-chart-line"></i>
                     </div>
                     <div class="stats-number">98%</div>
-                    <div class="stats-label">Ishtirok foizi</div>
+                    <div class="stats-label">{% trans "Ishtirok foizi" %}</div>
                 </div>
             </div>
         </div>
@@ -426,8 +424,8 @@
     <div class="container">
         <div class="row mb-5">
             <div class="col-12 text-center">
-                <h2 class="display-5 fw-bold text-primary mb-3">Tizim Imkoniyatlari</h2>
-                <p class="fs-5 text-muted">HEMIS tizimi orqali ta'lim jarayonini samarali boshqaring</p>
+                <h2 class="display-5 fw-bold text-primary mb-3">{% trans "Tizim Imkoniyatlari" %}</h2>
+                <p class="fs-5 text-muted">{% trans "HEMIS tizimi orqali ta'lim jarayonini samarali boshqaring" %}</p>
             </div>
         </div>
         
@@ -437,9 +435,9 @@
                     <div class="feature-icon icon-primary mx-auto">
                         <i class="fas fa-poll"></i>
                     </div>
-                    <h3 class="feature-title">So'rovnomalar</h3>
+                    <h3 class="feature-title">{% trans "So'rovnomalar" %}</h3>
                     <p class="feature-description">
-                        Talabalar fikr-mulohazalarini yig'ish va tahlil qilish uchun zamonaviy so'rovnoma tizimi.
+                        {% trans "Talabalar fikr-mulohazalarini yig'ish va tahlil qilish uchun zamonaviy so'rovnoma tizimi." %}
                     </p>
                 </div>
             </div>
@@ -448,9 +446,9 @@
                     <div class="feature-icon icon-success mx-auto">
                         <i class="fas fa-chart-bar"></i>
                     </div>
-                    <h3 class="feature-title">Statistika</h3>
+                    <h3 class="feature-title">{% trans "Statistika" %}</h3>
                     <p class="feature-description">
-                        Real vaqt rejimida statistik ma'lumotlar va batafsil hisobotlar olish imkoniyati.
+                        {% trans "Real vaqt rejimida statistik ma'lumotlar va batafsil hisobotlar olish imkoniyati." %}
                     </p>
                 </div>
             </div>
@@ -459,9 +457,9 @@
                     <div class="feature-icon icon-info mx-auto">
                         <i class="fas fa-comments"></i>
                     </div>
-                    <h3 class="feature-title">Muloqot</h3>
+                    <h3 class="feature-title">{% trans "Muloqot" %}</h3>
                     <p class="feature-description">
-                        Talabalar va o'qituvchilar o'rtasida samarali muloqot va fikr almashish platformasi.
+                        {% trans "Talabalar va o'qituvchilar o'rtasida samarali muloqot va fikr almashish platformasi." %}
                     </p>
                 </div>
             </div>
@@ -470,9 +468,9 @@
                     <div class="feature-icon icon-warning mx-auto">
                         <i class="fas fa-shield-alt"></i>
                     </div>
-                    <h3 class="feature-title">Xavfsizlik</h3>
+                    <h3 class="feature-title">{% trans "Xavfsizlik" %}</h3>
                     <p class="feature-description">
-                        Ma'lumotlar xavfsizligi va foydalanuvchi shaxsini himoya qilish uchun zamonaviy teknologiyalar.
+                        {% trans "Ma'lumotlar xavfsizligi va foydalanuvchi shaxsini himoya qilish uchun zamonaviy teknologiyalar." %}
                     </p>
                 </div>
             </div>
@@ -481,9 +479,9 @@
                     <div class="feature-icon icon-danger mx-auto">
                         <i class="fas fa-mobile-alt"></i>
                     </div>
-                    <h3 class="feature-title">Mobil Qulaylik</h3>
+                    <h3 class="feature-title">{% trans "Mobil Qulaylik" %}</h3>
                     <p class="feature-description">
-                        Barcha qurilmalarda moslashuvchan dizayn va qulay foydalanish tajribasi.
+                        {% trans "Barcha qurilmalarda moslashuvchan dizayn va qulay foydalanish tajribasi." %}
                     </p>
                 </div>
             </div>
@@ -492,9 +490,9 @@
                     <div class="feature-icon icon-primary mx-auto">
                         <i class="fas fa-cloud"></i>
                     </div>
-                    <h3 class="feature-title">Bulutli Tizim</h3>
+                    <h3 class="feature-title">{% trans "Bulutli Tizim" %}</h3>
                     <p class="feature-description">
-                        Har qanday joydan va vaqtda tizimga kirish va ma'lumotlarni boshqarish imkoniyati.
+                        {% trans "Har qanday joydan va vaqtda tizimga kirish va ma'lumotlarni boshqarish imkoniyati." %}
                     </p>
                 </div>
             </div>
@@ -507,8 +505,8 @@
     <div class="container">
         <div class="row mb-4">
             <div class="col-12 text-center">
-                <h2 class="display-6 fw-bold text-primary mb-3">Tezkor Amallar</h2>
-                <p class="text-muted">Eng ko'p ishlatiladigan funksiyalar</p>
+                <h2 class="display-6 fw-bold text-primary mb-3">{% trans "Tezkor Amallar" %}</h2>
+                <p class="text-muted">{% trans "Eng ko'p ishlatiladigan funksiyalar" %}</p>
             </div>
         </div>
         
@@ -518,7 +516,7 @@
                     <span class="quick-action-icon">
                         <i class="fas fa-list-alt"></i>
                     </span>
-                    <strong>So'rovnomalar ro'yxati</strong>
+                    <strong>{% trans "So'rovnomalar ro'yxati" %}</strong>
                 </a>
             </div>
             <div class="col-lg-3 col-md-6">
@@ -526,7 +524,7 @@
                     <span class="quick-action-icon">
                         <i class="fas fa-envelope"></i>
                     </span>
-                    <strong>Murojaatlar</strong>
+                    <strong>{% trans "Murojaatlar" %}</strong>
                 </a>
             </div>
             <div class="col-lg-3 col-md-6">
@@ -534,7 +532,7 @@
                     <span class="quick-action-icon">
                         <i class="fas fa-user-tie"></i>
                     </span>
-                    <strong>Mas'ul shaxslar</strong>
+                    <strong>{% trans "Mas'ul shaxslar" %}</strong>
                 </a>
             </div>
             <div class="col-lg-3 col-md-6">
@@ -542,7 +540,7 @@
                     <span class="quick-action-icon">
                         <i class="fas fa-chart-pie"></i>
                     </span>
-                    <strong>Statistika</strong>
+                    <strong>{% trans "Statistika" %}</strong>
                 </a>
             </div>
         </div>
@@ -556,28 +554,27 @@
             <div class="university-content">
                 <div class="row align-items-center">
                     <div class="col-lg-8">
-                        <h2 class="display-6 fw-bold mb-3">Navoiy Davlat Universiteti</h2>
+                        <h2 class="display-6 fw-bold mb-3">{% trans "Navoiy Davlat Universiteti" %}</h2>
                         <p class="fs-5 mb-4 opacity-90">
-                            Zamonaviy ta'lim standartlari asosida malakali mutaxassislar tayyorlash va 
-                            ilmiy tadqiqotlar olib borish sohasida yetakchi oliy ta'lim muassasasi.
+                            {% trans "Zamonaviy ta'lim standartlari asosida malakali mutaxassislar tayyorlash va ilmiy tadqiqotlar olib borish sohasida yetakchi oliy ta'lim muassasasi." %}
                         </p>
                         <div class="row g-4">
                             <div class="col-md-4">
                                 <div class="text-center">
                                     <h3 class="fw-bold">15+</h3>
-                                    <p class="mb-0 opacity-75">Ta'lim yo'nalishlari</p>
+                                    <p class="mb-0 opacity-75">{% trans "Ta'lim yo'nalishlari" %}</p>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="text-center">
                                     <h3 class="fw-bold">1000+</h3>
-                                    <p class="mb-0 opacity-75">Talabalar</p>
+                                    <p class="mb-0 opacity-75">{% trans "Talabalar" %}</p>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="text-center">
                                     <h3 class="fw-bold">50+</h3>
-                                    <p class="mb-0 opacity-75">O'qituvchilar</p>
+                                    <p class="mb-0 opacity-75">{% trans "O'qituvchilar" %}</p>
                                 </div>
                             </div>
                         </div>
@@ -596,8 +593,8 @@
     <div class="container">
         <div class="row mb-4">
             <div class="col-12 text-center">
-                <h2 class="display-6 fw-bold text-primary mb-3">So'nggi Yangiliklar</h2>
-                <p class="text-muted">Universitetdagi eng muhim voqealar</p>
+                <h2 class="display-6 fw-bold text-primary mb-3">{% trans "So'nggi Yangiliklar" %}</h2>
+                <p class="text-muted">{% trans "Universitetdagi eng muhim voqealar" %}</p>
             </div>
         </div>
         

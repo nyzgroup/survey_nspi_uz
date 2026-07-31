@@ -25,10 +25,10 @@ class BaseAPIClient:
         
         # Qayta urinishlar strategiyasi (Retry strategy)
         retry_strategy = Retry(
-            total=3, # Umumiy qayta urinishlar soni
-            backoff_factor=1, # Qayta urinishlar orasidagi kutish vaqti (1s, 2s, 4s)
-            status_forcelist=[429, 500, 502, 503, 504], # Qaysi status kodlarda qayta urinish
-            allowed_methods=["HEAD", "GET", "OPTIONS", "POST"] # POST ni ham qo'shdik, ehtiyotkorlik bilan
+            total=3,
+            backoff_factor=1,
+            status_forcelist=[500, 502, 503, 504],
+            allowed_methods=["HEAD", "GET", "OPTIONS"],
         )
         adapter = HTTPAdapter(max_retries=retry_strategy)
         self.session.mount("https://", adapter)

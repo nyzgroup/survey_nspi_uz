@@ -1,0 +1,497 @@
+# Uzbek translations for Survey NSPI UZ
+# Copyright (C) 2026
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: uz\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgid "Bosh sahifa"
+msgstr "Bosh sahifa"
+
+msgid "Profilim"
+msgstr "Profilim"
+
+msgid "So'rovnomalar"
+msgstr "So'rovnomalar"
+
+msgid "Mas'ul shaxslar"
+msgstr "Mas'ul shaxslar"
+
+msgid "Murojaatlarim"
+msgstr "Murojaatlarim"
+
+msgid "Yangi murojaat"
+msgstr "Yangi murojaat"
+
+msgid "Boshqaruv paneli"
+msgstr "Boshqaruv paneli"
+
+msgid "Chiqish"
+msgstr "Chiqish"
+
+msgid "Kirish"
+msgstr "Kirish"
+
+msgid "Foydalanuvchi"
+msgstr "Foydalanuvchi"
+
+msgid "Navoiy Davlat Universiteti. Barcha huquqlar himoyalangan."
+msgstr "Navoiy Davlat Universiteti. Barcha huquqlar himoyalangan."
+
+msgid "Tizimga Kirish - NSPI"
+msgstr "Tizimga Kirish - NSPI"
+
+msgid "Xush kelibsiz"
+msgstr "Xush kelibsiz"
+
+msgid "Tizimga kirish uchun ma'lumotlaringizni kiriting"
+msgstr "Tizimga kirish uchun ma'lumotlaringizni kiriting"
+
+msgid "Talaba ID raqami"
+msgstr "Talaba ID raqami"
+
+msgid "ID raqamingizni kiriting"
+msgstr "ID raqamingizni kiriting"
+
+msgid "Parol"
+msgstr "Parol"
+
+msgid "Parolingizni kiriting"
+msgstr "Parolingizni kiriting"
+
+msgid "Eslab qolish"
+msgstr "Eslab qolish"
+
+msgid "Parolni unutdingizmi?"
+msgstr "Parolni unutdingizmi?"
+
+msgid "Tizimga kirish"
+msgstr "Tizimga kirish"
+
+msgid "Hisobingiz yo'qmi?"
+msgstr "Hisobingiz yo'qmi?"
+
+msgid "Ro'yxatdan o'tish"
+msgstr "Ro'yxatdan o'tish"
+
+msgid "Login (ID Raqam)"
+msgstr "Login (ID Raqam)"
+
+msgid "Talaba ID raqamingizni kiriting"
+msgstr "Talaba ID raqamingizni kiriting"
+
+msgid "Parolingiz"
+msgstr "Parolingiz"
+
+msgid "Bu majburiy savolga javob yozilmagan."
+msgstr "Bu majburiy savolga javob yozilmagan."
+
+msgid "Bu majburiy savol uchun variant tanlanmagan."
+msgstr "Bu majburiy savol uchun variant tanlanmagan."
+
+msgid "Bu majburiy savol uchun kamida bitta variant tanlanishi kerak."
+msgstr "Bu majburiy savol uchun kamida bitta variant tanlanishi kerak."
+
+msgid "Ruxsat etilmagan fayl turi."
+msgstr "Ruxsat etilmagan fayl turi."
+
+msgid "Fayl hajmi 10MB dan oshmasligi kerak."
+msgstr "Fayl hajmi 10MB dan oshmasligi kerak."
+
+msgid "Navoiy Davlat Universiteti - HEMIS Tizimi"
+msgstr "Navoiy Davlat Universiteti - HEMIS Tizimi"
+
+msgid "Navoiy Davlat Universiteti"
+msgstr "Navoiy Davlat Universiteti"
+
+msgid "HEMIS Tizimi"
+msgstr "HEMIS Tizimi"
+
+msgid "Zamonaviy ta'lim boshqaruv tizimi orqali talabalar, o'qituvchilar va administratorlar uchun qulay va samarali xizmatlar taqdim etamiz."
+msgstr "Zamonaviy ta'lim boshqaruv tizimi orqali talabalar, o'qituvchilar va administratorlar uchun qulay va samarali xizmatlar taqdim etamiz."
+
+msgid "Faol talabalar"
+msgstr "Faol talabalar"
+
+msgid "O'qituvchilar"
+msgstr "O'qituvchilar"
+
+msgid "Faol so'rovnomalar"
+msgstr "Faol so'rovnomalar"
+
+msgid "Ishtirok foizi"
+msgstr "Ishtirok foizi"
+
+msgid "Tizim Imkoniyatlari"
+msgstr "Tizim Imkoniyatlari"
+
+msgid "HEMIS tizimi orqali ta'lim jarayonini samarali boshqaring"
+msgstr "HEMIS tizimi orqali ta'lim jarayonini samarali boshqaring"
+
+msgid "Talabalar fikr-mulohazalarini yig'ish va tahlil qilish uchun zamonaviy so'rovnoma tizimi."
+msgstr "Talabalar fikr-mulohazalarini yig'ish va tahlil qilish uchun zamonaviy so'rovnoma tizimi."
+
+msgid "Statistika"
+msgstr "Statistika"
+
+msgid "Real vaqt rejimida statistik ma'lumotlar va batafsil hisobotlar olish imkoniyati."
+msgstr "Real vaqt rejimida statistik ma'lumotlar va batafsil hisobotlar olish imkoniyati."
+
+msgid "Muloqot"
+msgstr "Muloqot"
+
+msgid "Talabalar va o'qituvchilar o'rtasida samarali muloqot va fikr almashish platformasi."
+msgstr "Talabalar va o'qituvchilar o'rtasida samarali muloqot va fikr almashish platformasi."
+
+msgid "Xavfsizlik"
+msgstr "Xavfsizlik"
+
+msgid "Ma'lumotlar xavfsizligi va foydalanuvchi shaxsini himoya qilish uchun zamonaviy teknologiyalar."
+msgstr "Ma'lumotlar xavfsizligi va foydalanuvchi shaxsini himoya qilish uchun zamonaviy teknologiyalar."
+
+msgid "Mobil Qulaylik"
+msgstr "Mobil Qulaylik"
+
+msgid "Barcha qurilmalarda moslashuvchan dizayn va qulay foydalanish tajribasi."
+msgstr "Barcha qurilmalarda moslashuvchan dizayn va qulay foydalanish tajribasi."
+
+msgid "Bulutli Tizim"
+msgstr "Bulutli Tizim"
+
+msgid "Har qanday joydan va vaqtda tizimga kirish va ma'lumotlarni boshqarish imkoniyati."
+msgstr "Har qanday joydan va vaqtda tizimga kirish va ma'lumotlarni boshqarish imkoniyati."
+
+msgid "Tezkor Amallar"
+msgstr "Tezkor Amallar"
+
+msgid "Eng ko'p ishlatiladigan funksiyalar"
+msgstr "Eng ko'p ishlatiladigan funksiyalar"
+
+msgid "So'rovnomalar ro'yxati"
+msgstr "So'rovnomalar ro'yxati"
+
+msgid "Murojaatlar"
+msgstr "Murojaatlar"
+
+msgid "Ta'lim yo'nalishlari"
+msgstr "Ta'lim yo'nalishlari"
+
+msgid "Talabalar"
+msgstr "Talabalar"
+
+msgid "Zamonaviy ta'lim standartlari asosida malakali mutaxassislar tayyorlash va ilmiy tadqiqotlar olib borish sohasida yetakchi oliy ta'lim muassasasi."
+msgstr "Zamonaviy ta'lim standartlari asosida malakali mutaxassislar tayyorlash va ilmiy tadqiqotlar olib borish sohasida yetakchi oliy ta'lim muassasasi."
+
+msgid "So'nggi Yangiliklar"
+msgstr "So'nggi Yangiliklar"
+
+msgid "Universitetdagi eng muhim voqealar"
+msgstr "Universitetdagi eng muhim voqealar"
+
+msgid "Xush kelibsiz, Dashboard!"
+msgstr "Xush kelibsiz, Dashboard!"
+
+msgid "Barcha ma'lumotlaringiz va faoliyatingiz bir joyda"
+msgstr "Barcha ma'lumotlaringiz va faoliyatingiz bir joyda"
+
+msgid "Jami So'rovnomalar"
+msgstr "Jami So'rovnomalar"
+
+msgid "Tugatilgan"
+msgstr "Tugatilgan"
+
+msgid "Kutilmoqda"
+msgstr "Kutilmoqda"
+
+msgid "Ishtirok Darajasi"
+msgstr "Ishtirok Darajasi"
+
+msgid "Profil Ma'lumotlari"
+msgstr "Profil Ma'lumotlari"
+
+msgid "Xabarlar"
+msgstr "Xabarlar"
+
+msgid "savol"
+msgstr "savol"
+
+msgid "Tugallangan"
+msgstr "Tugallangan"
+
+msgid "Boshlash"
+msgstr "Boshlash"
+
+msgid "Hozircha so'rovnomalar yo'q"
+msgstr "Hozircha so'rovnomalar yo'q"
+
+msgid "Yangi so'rovnomalar paydo bo'lganda bu yerda ko'rasiz"
+msgstr "Yangi so'rovnomalar paydo bo'lganda bu yerda ko'rasiz"
+
+msgid "Shaxsiy Ma'lumotlar"
+msgstr "Shaxsiy Ma'lumotlar"
+
+msgid "To'liq ism"
+msgstr "To'liq ism"
+
+msgid "Login"
+msgstr "Login"
+
+msgid "Talaba ID"
+msgstr "Talaba ID"
+
+msgid "Ta'lim Ma'lumotlari"
+msgstr "Ta'lim Ma'lumotlari"
+
+msgid "Guruh"
+msgstr "Guruh"
+
+msgid "Fakultet"
+msgstr "Fakultet"
+
+msgid "O'qish turi"
+msgstr "O'qish turi"
+
+msgid "Ma'lumot yo'q"
+msgstr "Ma'lumot yo'q"
+
+msgid "Ko'rish"
+msgstr "Ko'rish"
+
+msgid "Xabarlar yo'q"
+msgstr "Xabarlar yo'q"
+
+msgid "Sizga yuborilgan xabarlar bu yerda ko'rsatiladi"
+msgstr "Sizga yuborilgan xabarlar bu yerda ko'rsatiladi"
+
+msgid "Talaba"
+msgstr "Talaba"
+
+msgid "Faol So'rovnomalar"
+msgstr "Faol So'rovnomalar"
+
+msgid "Sizga tayinlangan so'rovnomalarda qatnashing"
+msgstr "Sizga tayinlangan so'rovnomalarda qatnashing"
+
+msgid "daqiqa"
+msgstr "daqiqa"
+
+msgid "Javob berilgan"
+msgstr "Javob berilgan"
+
+msgid "Javob berish"
+msgstr "Javob berish"
+
+msgid "Statistika ko'rish"
+msgstr "Statistika ko'rish"
+
+msgid "Faol so'rovnomalar topilmadi"
+msgstr "Faol so'rovnomalar topilmadi"
+
+msgid "Hozircha sizga tayinlangan so'rovnomalar yo'q."
+msgstr "Hozircha sizga tayinlangan so'rovnomalar yo'q."
+
+msgid "Yangi so'rovnomalar paydo bo'lganda bu yerda ko'rasiz."
+msgstr "Yangi so'rovnomalar paydo bo'lganda bu yerda ko'rasiz."
+
+msgid "Bosh sahifaga qaytish"
+msgstr "Bosh sahifaga qaytish"
+
+msgid "Ma'lumot"
+msgstr "Ma'lumot"
+
+msgid "So'rovnomalarga javob bergandan so'ng, natijalar administratorlar tomonidan tahlil qilinadi. Sizning javoblaringiz anonim va maxfiy saqlanadi."
+msgstr "So'rovnomalarga javob bergandan so'ng, natijalar administratorlar tomonidan tahlil qilinadi. Sizning javoblaringiz anonim va maxfiy saqlanadi."
+
+msgid "Mening murojaatlarim"
+msgstr "Mening murojaatlarim"
+
+msgid "Jami:"
+msgstr "Jami:"
+
+msgid "ta murojaat"
+msgstr "ta murojaat"
+
+msgid "Yangi murojaat yozing"
+msgstr "Yangi murojaat yozing"
+
+msgid "Mavzu"
+msgstr "Mavzu"
+
+msgid "Mas'ul shaxs"
+msgstr "Mas'ul shaxs"
+
+msgid "Holat"
+msgstr "Holat"
+
+msgid "Yuborilgan"
+msgstr "Yuborilgan"
+
+msgid "So'nggi javob"
+msgstr "So'nggi javob"
+
+msgid "Javob yo'q"
+msgstr "Javob yo'q"
+
+msgid "So'nggi javob:"
+msgstr "So'nggi javob:"
+
+msgid "Javob kutilmoqda"
+msgstr "Javob kutilmoqda"
+
+msgid "Batafsil"
+msgstr "Batafsil"
+
+msgid "Hali murojaatlar yo'q"
+msgstr "Hali murojaatlar yo'q"
+
+msgid "Birinchi murojaatingizni yozing"
+msgstr "Birinchi murojaatingizni yozing"
+
+msgid "Murojaat yozish"
+msgstr "Murojaat yozish"
+
+msgid "Orqaga"
+msgstr "Orqaga"
+
+msgid "Murojaat matni"
+msgstr "Murojaat matni"
+
+msgid "Murojaatingizni batafsil yozing..."
+msgstr "Murojaatingizni batafsil yozing..."
+
+msgid "Muammongizni batafsil tushuntiring"
+msgstr "Muammongizni batafsil tushuntiring"
+
+msgid "Fayllar biriktirish"
+msgstr "Fayllar biriktirish"
+
+msgid "PDF, Word, rasm yoki matn fayllarini biriktirish mumkin (maksimal 5MB)"
+msgstr "PDF, Word, rasm yoki matn fayllarini biriktirish mumkin (maksimal 5MB)"
+
+msgid "Murojaatni yuborish"
+msgstr "Murojaatni yuborish"
+
+msgid "Bekor qilish"
+msgstr "Bekor qilish"
+
+msgid "Foydali maslahatlar:"
+msgstr "Foydali maslahatlar:"
+
+msgid "Aniq va tushunarli mavzu yozing"
+msgstr "Aniq va tushunarli mavzu yozing"
+
+msgid "Muammoni batafsil tushuntiring"
+msgstr "Muammoni batafsil tushuntiring"
+
+msgid "Kerakli hujjatlarni biriktiring"
+msgstr "Kerakli hujjatlarni biriktiring"
+
+msgid "Hurmatli murojaat qiling"
+msgstr "Hurmatli murojaat qiling"
+
+msgid "Mas'ul shaxsni tanlang"
+msgstr "Mas'ul shaxsni tanlang"
+
+msgid "Qisqa va aniq mavzu kiriting"
+msgstr "Qisqa va aniq mavzu kiriting"
+
+msgid "Murojaatingiz mavzusini kiriting"
+msgstr "Murojaatingiz mavzusini kiriting"
+
+msgid "ta mas'ul"
+msgstr "ta mas'ul"
+
+msgid "Mas'uliyat sohalari:"
+msgstr "Mas'uliyat sohalari:"
+
+msgid "Qo'ng'iroq"
+msgstr "Qo'ng'iroq"
+
+msgid "Murojaat"
+msgstr "Murojaat"
+
+msgid "Mas'ul shaxslar topilmadi"
+msgstr "Mas'ul shaxslar topilmadi"
+
+msgid "Hozircha tizimda mas'ul shaxslar ro'yxati yo'q"
+msgstr "Hozircha tizimda mas'ul shaxslar ro'yxati yo'q"
+
+msgid "Murojaat tafsiloti"
+msgstr "Murojaat tafsiloti"
+
+msgid "Yuboruvchi:"
+msgstr "Yuboruvchi:"
+
+msgid "Mas'ul shaxs:"
+msgstr "Mas'ul shaxs:"
+
+msgid "Yuborilgan:"
+msgstr "Yuborilgan:"
+
+msgid "Status:"
+msgstr "Status:"
+
+msgid "Murojaat matni:"
+msgstr "Murojaat matni:"
+
+msgid "Biriktirilgan fayllar:"
+msgstr "Biriktirilgan fayllar:"
+
+msgid "Yuklab olish"
+msgstr "Yuklab olish"
+
+msgid "Javoblar"
+msgstr "Javoblar"
+
+msgid "Admin javobi"
+msgstr "Admin javobi"
+
+msgid "Mas'ul shaxs tez orada javob beradi"
+msgstr "Mas'ul shaxs tez orada javob beradi"
+
+msgid "Barcha murojaatlar"
+msgstr "Barcha murojaatlar"
+
+msgid "Javob yozish"
+msgstr "Javob yozish"
+
+msgid "Murojaatga javobingizni yozing..."
+msgstr "Murojaatga javobingizni yozing..."
+
+msgid "To'liq va tushunarli javob bering"
+msgstr "To'liq va tushunarli javob bering"
+
+msgid "belgi yozildi"
+msgstr "belgi yozildi"
+
+msgid "Javobni yuborish"
+msgstr "Javobni yuborish"
+
+msgid "Javob yozishda e'tibor bering:"
+msgstr "Javob yozishda e'tibor bering:"
+
+msgid "Hurmatli va professional uslubda yozing"
+msgstr "Hurmatli va professional uslubda yozing"
+
+msgid "Aniq va tushunarli javob bering"
+msgstr "Aniq va tushunarli javob bering"
+
+msgid "Agar kerak bo'lsa, qo'shimcha ko'rsatmalar bering"
+msgstr "Agar kerak bo'lsa, qo'shimcha ko'rsatmalar bering"
+
+msgid "Tez orada javob berishga harakat qiling"
+msgstr "Tez orada javob berishga harakat qiling"
+
+msgid "So'rovnoma"
+msgstr "So'rovnoma"
+
+msgid "Yuklanmoqda..."
+msgstr "Yuklanmoqda..."
+
+msgid "So'rovnoma yuklanmoqda..."
+msgstr "So'rovnoma yuklanmoqda..."
+
+msgid "So'rovnoma yuklanmadi. Sahifani yangilang."
+msgstr "So'rovnoma yuklanmadi. Sahifani yangilang."

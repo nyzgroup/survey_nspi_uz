@@ -1,0 +1,497 @@
+# Karakalpak translations for Survey NSPI UZ
+# Copyright (C) 2026
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: kaa\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgid "Bosh sahifa"
+msgstr "Bas bet"
+
+msgid "Profilim"
+msgstr "Profilim"
+
+msgid "So'rovnomalar"
+msgstr "Sorawnamalar"
+
+msgid "Mas'ul shaxslar"
+msgstr "Juwapker adamlar"
+
+msgid "Murojaatlarim"
+msgstr "Menim murajatlarım"
+
+msgid "Yangi murojaat"
+msgstr "Jańa murajat"
+
+msgid "Boshqaruv paneli"
+msgstr "Basqarıw paneli"
+
+msgid "Chiqish"
+msgstr "Shıǵıw"
+
+msgid "Kirish"
+msgstr "Kiriwi"
+
+msgid "Foydalanuvchi"
+msgstr "Paydalanıwshı"
+
+msgid "Navoiy Davlat Universiteti. Barcha huquqlar himoyalangan."
+msgstr "Nawayı Mámleket Universiteti. Barlıq huqıqlar qorǵalǵan."
+
+msgid "Tizimga Kirish - NSPI"
+msgstr "Sistemaga Kiriwi - NSPI"
+
+msgid "Xush kelibsiz"
+msgstr "Xosh keldiñiz"
+
+msgid "Tizimga kirish uchun ma'lumotlaringizni kiriting"
+msgstr "Sistemaga kiriwi ushın maǵlıwmatlarıńızdı kiritiń"
+
+msgid "Talaba ID raqami"
+msgstr "Student ID nomeri"
+
+msgid "ID raqamingizni kiriting"
+msgstr "ID nomerıńızdı kiritiń"
+
+msgid "Parol"
+msgstr "Parol"
+
+msgid "Parolingizni kiriting"
+msgstr "Parolıńızdı kiritiń"
+
+msgid "Eslab qolish"
+msgstr "Esinde saqlawı"
+
+msgid "Parolni unutdingizmi?"
+msgstr "Paroldi umitiñizba?"
+
+msgid "Tizimga kirish"
+msgstr "Sistemaga kiriwi"
+
+msgid "Hisobingiz yo'qmi?"
+msgstr "Hesabıńız joqpa?"
+
+msgid "Ro'yxatdan o'tish"
+msgstr "Dizimge alıw"
+
+msgid "Login (ID Raqam)"
+msgstr "Login (ID Nomer)"
+
+msgid "Talaba ID raqamingizni kiriting"
+msgstr "Student ID nomerıńızdı kiritiń"
+
+msgid "Parolingiz"
+msgstr "Parolıńız"
+
+msgid "Bu majburiy savolga javob yozilmagan."
+msgstr "Bul mıjbüriy sorawǵa jawap jazılmaǵan."
+
+msgid "Bu majburiy savol uchun variant tanlanmagan."
+msgstr "Bul mıjbüriy soraw ushın variant tanlanbaǵan."
+
+msgid "Bu majburiy savol uchun kamida bitta variant tanlanishi kerak."
+msgstr "Bul mıjbüriy soraw ushın kem degende bir variant tańlanıwı kerek."
+
+msgid "Ruxsat etilmagan fayl turi."
+msgstr "Ruxsat etilmegen fayl türi."
+
+msgid "Fayl hajmi 10MB dan oshmasligi kerak."
+msgstr "Fayl kólemi 10MB den aspawı kerek."
+
+msgid "Navoiy Davlat Universiteti - HEMIS Tizimi"
+msgstr "Nawayı Mámleket Universiteti - HEMIS Sisteması"
+
+msgid "Navoiy Davlat Universiteti"
+msgstr "Nawayı Mámleket Universiteti"
+
+msgid "HEMIS Tizimi"
+msgstr "HEMIS Sisteması"
+
+msgid "Zamonaviy ta'lim boshqaruv tizimi orqali talabalar, o'qituvchilar va administratorlar uchun qulay va samarali xizmatlar taqdim etamiz."
+msgstr "Zamanagóy bilim basqarıw sisteması arqalı studentler, oqıtıwshılar hám adminstratorlar ushın qolaylı hám nátiyjeli xızmetler usınamız."
+
+msgid "Faol talabalar"
+msgstr "Aktiv studentler"
+
+msgid "O'qituvchilar"
+msgstr "Oqıtıwshılar"
+
+msgid "Faol so'rovnomalar"
+msgstr "Aktiv sorawnamalar"
+
+msgid "Ishtirok foizi"
+msgstr "Qatnasıw protsenti"
+
+msgid "Tizim Imkoniyatlari"
+msgstr "Sistema imkaniyatları"
+
+msgid "HEMIS tizimi orqali ta'lim jarayonini samarali boshqaring"
+msgstr "HEMIS sisteması arqalı oqıw processin nátiyjeli basqarıń"
+
+msgid "Talabalar fikr-mulohazalarini yig'ish va tahlil qilish uchun zamonaviy so'rovnoma tizimi."
+msgstr "Studentlerdiń pikir-múlazelerın jıyıw hám tallaw ushın zamanagóy soawnama sisteması."
+
+msgid "Statistika"
+msgstr "Statistika"
+
+msgid "Real vaqt rejimida statistik ma'lumotlar va batafsil hisobotlar olish imkoniyati."
+msgstr "Náq waqıt rejiminde statistikalıq maǵlıwmatlar hám tolıq esabatlar alıw imkaniyatı."
+
+msgid "Muloqot"
+msgstr "Baylanıs"
+
+msgid "Talabalar va o'qituvchilar o'rtasida samarali muloqot va fikr almashish platformasi."
+msgstr "Studentler hám oqıtıwshılar arasında nátiyjeli baylanıs hám pikir almasıw platforması."
+
+msgid "Xavfsizlik"
+msgstr "Xawıpsızlıq"
+
+msgid "Ma'lumotlar xavfsizligi va foydalanuvchi shaxsini himoya qilish uchun zamonaviy teknologiyalar."
+msgstr "Maǵlıwmatlar xawıpsızlıǵı hám paydalanıwshı shaxsın qorǵaw ushın zamanagóy texnologiyalar."
+
+msgid "Mobil Qulaylik"
+msgstr "Mobil qolaylıq"
+
+msgid "Barcha qurilmalarda moslashuvchan dizayn va qulay foydalanish tajribasi."
+msgstr "Barlıq qurallar ushın moslasıwlı dizayn hám qolaylı paydalanıw tajriybesi."
+
+msgid "Bulutli Tizim"
+msgstr "Bulutlı sistema"
+
+msgid "Har qanday joydan va vaqtda tizimga kirish va ma'lumotlarni boshqarish imkoniyati."
+msgstr "Hár qanday jerden hám waqıtta sistemaga kiriwi hám maǵlıwmatlar basqarıw imkaniyatı."
+
+msgid "Tezkor Amallar"
+msgstr "Tez amallar"
+
+msgid "Eng ko'p ishlatiladigan funksiyalar"
+msgstr "Eń kóp qollanılatıǵın funktsiyalar"
+
+msgid "So'rovnomalar ro'yxati"
+msgstr "Sorawnamalar dizimi"
+
+msgid "Murojaatlar"
+msgstr "Murajatlar"
+
+msgid "Ta'lim yo'nalishlari"
+msgstr "Oqıw baǵdarları"
+
+msgid "Talabalar"
+msgstr "Studentler"
+
+msgid "Zamonaviy ta'lim standartlari asosida malakali mutaxassislar tayyorlash va ilmiy tadqiqotlar olib borish sohasida yetakchi oliy ta'lim muassasasi."
+msgstr "Zamanagóy bilim standartları tiykarında málimlı qánigelerdi tayarlawda hám ilimiy izertlewler júrgiziwde jetekshi joqarı oqıw orını."
+
+msgid "So'nggi Yangiliklar"
+msgstr "Soñǵı jańalıqlar"
+
+msgid "Universitetdagi eng muhim voqealar"
+msgstr "Universitetteǵi eń áhmijetli waqıyalar"
+
+msgid "Xush kelibsiz, Dashboard!"
+msgstr "Xosh keldiñiz, Dashboard!"
+
+msgid "Barcha ma'lumotlaringiz va faoliyatingiz bir joyda"
+msgstr "Barlıq maǵlıwmatlarıńız hám faallıǵıńız bir jerde"
+
+msgid "Jami So'rovnomalar"
+msgstr "Jámi sorawnamalar"
+
+msgid "Tugatilgan"
+msgstr "Tamamlanǵan"
+
+msgid "Kutilmoqda"
+msgstr "Kútilmekte"
+
+msgid "Ishtirok Darajasi"
+msgstr "Qatnasıw dárejesi"
+
+msgid "Profil Ma'lumotlari"
+msgstr "Profil Maǵlıwmatları"
+
+msgid "Xabarlar"
+msgstr "Xabarlar"
+
+msgid "savol"
+msgstr "soraw"
+
+msgid "Tugallangan"
+msgstr "Tamamlanǵan"
+
+msgid "Boshlash"
+msgstr "Bastaw"
+
+msgid "Hozircha so'rovnomalar yo'q"
+msgstr "Házirge sorawnamalar joq"
+
+msgid "Yangi so'rovnomalar paydo bo'lganda bu yerda ko'rasiz"
+msgstr "Jańa sorawnamalar payda bolǵanda bul jerde kóresiz"
+
+msgid "Shaxsiy Ma'lumotlar"
+msgstr "Shaxsiy Maǵlıwmatlar"
+
+msgid "To'liq ism"
+msgstr "Tolıq atı"
+
+msgid "Login"
+msgstr "Login"
+
+msgid "Talaba ID"
+msgstr "Student ID"
+
+msgid "Ta'lim Ma'lumotlari"
+msgstr "Oqıw Maǵlıwmatları"
+
+msgid "Guruh"
+msgstr "Topar"
+
+msgid "Fakultet"
+msgstr "Fakulitet"
+
+msgid "O'qish turi"
+msgstr "Oqıw türi"
+
+msgid "Ma'lumot yo'q"
+msgstr "Maǵlıwmat joq"
+
+msgid "Ko'rish"
+msgstr "Kóriw"
+
+msgid "Xabarlar yo'q"
+msgstr "Xabarlar joq"
+
+msgid "Sizga yuborilgan xabarlar bu yerda ko'rsatiladi"
+msgstr "Sizge jiberilgen xabarlar bul jerde kórsetiledi"
+
+msgid "Talaba"
+msgstr "Student"
+
+msgid "Faol So'rovnomalar"
+msgstr "Aktiv sorawnamalar"
+
+msgid "Sizga tayinlangan so'rovnomalarda qatnashing"
+msgstr "Sizge tayınlanǵan sorawnamalarda qatnasıń"
+
+msgid "daqiqa"
+msgstr "min"
+
+msgid "Javob berilgan"
+msgstr "Jawap berilgen"
+
+msgid "Javob berish"
+msgstr "Jawap beriw"
+
+msgid "Statistika ko'rish"
+msgstr "Statistikanı kóriw"
+
+msgid "Faol so'rovnomalar topilmadi"
+msgstr "Aktiv sorawnamalar tabılmadı"
+
+msgid "Hozircha sizga tayinlangan so'rovnomalar yo'q."
+msgstr "Házirge sizge tayınlanǵan sorawnamalar joq."
+
+msgid "Yangi so'rovnomalar paydo bo'lganda bu yerda ko'rasiz."
+msgstr "Jańa sorawnamalar payda bolǵanda bul jerde kóresiz."
+
+msgid "Bosh sahifaga qaytish"
+msgstr "Bas betke qaytıw"
+
+msgid "Ma'lumot"
+msgstr "Maǵlıwmat"
+
+msgid "So'rovnomalarga javob bergandan so'ng, natijalar administratorlar tomonidan tahlil qilinadi. Sizning javoblaringiz anonim va maxfiy saqlanadi."
+msgstr "Sorawnamalarga jawap bergennen keyin, nátiyjeler adminstratorlar tárepinen tallanedı. Sizdıń jawaplarıńız anonim hám maxpiy saqlanadı."
+
+msgid "Mening murojaatlarim"
+msgstr "Menim murajatlarım"
+
+msgid "Jami:"
+msgstr "Jámi:"
+
+msgid "ta murojaat"
+msgstr "murajat"
+
+msgid "Yangi murojaat yozing"
+msgstr "Jańa murajat jazıń"
+
+msgid "Mavzu"
+msgstr "Tema"
+
+msgid "Mas'ul shaxs"
+msgstr "Juwapker adam"
+
+msgid "Holat"
+msgstr "Jaǵday"
+
+msgid "Yuborilgan"
+msgstr "Jiberilgen"
+
+msgid "So'nggi javob"
+msgstr "Soñǵı jawap"
+
+msgid "Javob yo'q"
+msgstr "Jawap joq"
+
+msgid "So'nggi javob:"
+msgstr "Soñǵı jawap:"
+
+msgid "Javob kutilmoqda"
+msgstr "Jawap kútilmekte"
+
+msgid "Batafsil"
+msgstr "Tolıǵıraq"
+
+msgid "Hali murojaatlar yo'q"
+msgstr "Házir murajatlar joq"
+
+msgid "Birinchi murojaatingizni yozing"
+msgstr "Birinshi murajatıńızdı jazıń"
+
+msgid "Murojaat yozish"
+msgstr "Murajat jazıw"
+
+msgid "Orqaga"
+msgstr "Artqa"
+
+msgid "Murojaat matni"
+msgstr "Murajat teksti"
+
+msgid "Murojaatingizni batafsil yozing..."
+msgstr "Murajatıńızdı tolıǵıraq jazıń..."
+
+msgid "Muammongizni batafsil tushuntiring"
+msgstr "Máseleñizdi tolıǵıraq túsindiriń"
+
+msgid "Fayllar biriktirish"
+msgstr "Fayllar biriktiw"
+
+msgid "PDF, Word, rasm yoki matn fayllarini biriktirish mumkin (maksimal 5MB)"
+msgstr "PDF, Word, suwret yaki tekst faylların biriktiw múmkin (maksimum 5MB)"
+
+msgid "Murojaatni yuborish"
+msgstr "Murajat jiberiw"
+
+msgid "Bekor qilish"
+msgstr "Toqtatıw"
+
+msgid "Foydali maslahatlar:"
+msgstr "Paydalı keneswler:"
+
+msgid "Aniq va tushunarli mavzu yozing"
+msgstr "Anıq hám túsinirikli tema jazıń"
+
+msgid "Muammoni batafsil tushuntiring"
+msgstr "Máselerdi tolıǵıraq túsindiriń"
+
+msgid "Kerakli hujjatlarni biriktiring"
+msgstr "Kerekli hújjetlerdi biriktiń"
+
+msgid "Hurmatli murojaat qiling"
+msgstr "Hurmetli murajat qılıń"
+
+msgid "Mas'ul shaxsni tanlang"
+msgstr "Juwapker adamnı tańlań"
+
+msgid "Qisqa va aniq mavzu kiriting"
+msgstr "Qısqa hám anıq tema kiritiń"
+
+msgid "Murojaatingiz mavzusini kiriting"
+msgstr "Murajatıńız temasın kiritiń"
+
+msgid "ta mas'ul"
+msgstr "juwapker"
+
+msgid "Mas'uliyat sohalari:"
+msgstr "Juwapkershilik sahaları:"
+
+msgid "Qo'ng'iroq"
+msgstr "Shaqırıw"
+
+msgid "Murojaat"
+msgstr "Murajat"
+
+msgid "Mas'ul shaxslar topilmadi"
+msgstr "Juwapker adamlar tabılmadı"
+
+msgid "Hozircha tizimda mas'ul shaxslar ro'yxati yo'q"
+msgstr "Házirge sistemada juwapker adamlar dizimi joq"
+
+msgid "Murojaat tafsiloti"
+msgstr "Murajat málimlikleri"
+
+msgid "Yuboruvchi:"
+msgstr "Jiberiwshi:"
+
+msgid "Mas'ul shaxs:"
+msgstr "Juwapker adam:"
+
+msgid "Yuborilgan:"
+msgstr "Jiberilgen:"
+
+msgid "Status:"
+msgstr "Status:"
+
+msgid "Murojaat matni:"
+msgstr "Murajat teksti:"
+
+msgid "Biriktirilgan fayllar:"
+msgstr "Biriktirilgen fayllar:"
+
+msgid "Yuklab olish"
+msgstr "Júklep alıw"
+
+msgid "Javoblar"
+msgstr "Jawaplar"
+
+msgid "Admin javobi"
+msgstr "Admin jawabı"
+
+msgid "Mas'ul shaxs tez orada javob beradi"
+msgstr "Juwapker adam tez arada jawap beredi"
+
+msgid "Barcha murojaatlar"
+msgstr "Barlıq murajatlar"
+
+msgid "Javob yozish"
+msgstr "Jawap jazıw"
+
+msgid "Murojaatga javobingizni yozing..."
+msgstr "Murajatqa jawabıńızdı jazıń..."
+
+msgid "To'liq va tushunarli javob bering"
+msgstr "Tolıq hám túsinirikli jawap beriń"
+
+msgid "belgi yozildi"
+msgstr "belgi jazıldı"
+
+msgid "Javobni yuborish"
+msgstr "Jawap jiberiw"
+
+msgid "Javob yozishda e'tibor bering:"
+msgstr "Jawap jazaǵanda itibar beriń:"
+
+msgid "Hurmatli va professional uslubda yozing"
+msgstr "Hurmetli hám kásiplik usılda jazıń"
+
+msgid "Aniq va tushunarli javob bering"
+msgstr "Anıq hám túsinirikli jawap beriń"
+
+msgid "Agar kerak bo'lsa, qo'shimcha ko'rsatmalar bering"
+msgstr "Kerek bolsa, qosımsha kórsetpeler beriń"
+
+msgid "Tez orada javob berishga harakat qiling"
+msgstr "Tez arada jawap beriwge urınıń"
+
+msgid "So'rovnoma"
+msgstr "Soawnama"
+
+msgid "Yuklanmoqda..."
+msgstr "Júkleniwde..."
+
+msgid "So'rovnoma yuklanmoqda..."
+msgstr "Soawnama júkleniwde..."
+
+msgid "So'rovnoma yuklanmadi. Sahifani yangilang."
+msgstr "Soawnama júklenilmedi. Betdi jańalań."

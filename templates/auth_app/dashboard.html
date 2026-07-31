@@ -1,6 +1,6 @@
 {% extends "auth_app/base.html" %}
-
-{% block page_title %}Dashboard - {{ student.short_name_api|default:student.username|default:"Talaba" }}{% endblock %}
+{% load i18n %}
+{% block page_title %}Dashboard - {{ student.short_name_api|default:student.username|default:_("Talaba") }}{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -506,10 +506,10 @@
             <div class="col-lg-8 text-center text-white">
                 <h1 class="display-5 fw-bold mb-3">
                     <i class="fas fa-sparkles me-3"></i>
-                    Xush kelibsiz, Dashboard!
+                    {% trans "Xush kelibsiz, Dashboard!" %}
                 </h1>
                 <p class="lead opacity-90 mb-0">
-                    Barcha ma'lumotlaringiz va faoliyatingiz bir joyda
+                    {% trans "Barcha ma'lumotlaringiz va faoliyatingiz bir joyda" %}
                 </p>
             </div>
         </div>
@@ -548,7 +548,7 @@
                     <i class="fas fa-poll-h"></i>
                 </div>
                 <h3 class="fw-bold mb-1">{{ total_surveys|default:0 }}</h3>
-                <p class="text-muted mb-0">Jami So'rovnomalar</p>
+                <p class="text-muted mb-0">{% trans "Jami So'rovnomalar" %}</p>
             </div>
         </div>
         <div class="col-6 col-lg-3">
@@ -557,7 +557,7 @@
                     <i class="fas fa-check-circle"></i>
                 </div>
                 <h3 class="fw-bold mb-1">{{ completed_surveys|default:0 }}</h3>
-                <p class="text-muted mb-0">Tugatilgan</p>
+                <p class="text-muted mb-0">{% trans "Tugatilgan" %}</p>
             </div>
         </div>
         <div class="col-6 col-lg-3">
@@ -566,7 +566,7 @@
                     <i class="fas fa-clock"></i>
                 </div>
                 <h3 class="fw-bold mb-1">{{ pending_surveys|default:0 }}</h3>
-                <p class="text-muted mb-0">Kutilmoqda</p>
+                <p class="text-muted mb-0">{% trans "Kutilmoqda" %}</p>
             </div>
         </div>
         <div class="col-6 col-lg-3">
@@ -575,7 +575,7 @@
                     <i class="fas fa-chart-line"></i>
                 </div>
                 <h3 class="fw-bold mb-1">{{ participation_rate|default:0 }}%</h3>
-                <p class="text-muted mb-0">Ishtirok Darajasi</p>
+                <p class="text-muted mb-0">{% trans "Ishtirok Darajasi" %}</p>
             </div>
         </div>
     </div>
@@ -588,24 +588,24 @@
                 <div class="nav-tabs-custom">
                     <ul class="nav nav-tabs" id="dashboardTabs" role="tablist">
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="surveys-tab" data-bs-toggle="tab" 
-                                    data-bs-target="#surveys" type="button" role="tab" 
+                            <button class="nav-link active" id="surveys-tab" data-bs-toggle="tab"
+                                    data-bs-target="#surveys" type="button" role="tab"
                                     aria-controls="surveys" aria-selected="true">
-                                <i class="fas fa-list me-2"></i>So'rovnomalar
+                                <i class="fas fa-list me-2"></i>{% trans "So'rovnomalar" %}
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="profile-info-tab" data-bs-toggle="tab" 
-                                    data-bs-target="#profile-info" type="button" role="tab" 
+                            <button class="nav-link" id="profile-info-tab" data-bs-toggle="tab"
+                                    data-bs-target="#profile-info" type="button" role="tab"
                                     aria-controls="profile-info" aria-selected="false">
-                                <i class="fas fa-user me-2"></i>Profil Ma'lumotlari
+                                <i class="fas fa-user me-2"></i>{% trans "Profil Ma'lumotlari" %}
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="messages-tab" data-bs-toggle="tab" 
-                                    data-bs-target="#messages" type="button" role="tab" 
+                            <button class="nav-link" id="messages-tab" data-bs-toggle="tab"
+                                    data-bs-target="#messages" type="button" role="tab"
                                     aria-controls="messages" aria-selected="false">
-                                <i class="fas fa-envelope me-2"></i>Xabarlar
+                                <i class="fas fa-envelope me-2"></i>{% trans "Xabarlar" %}
                             </button>
                         </li>
                     </ul>
@@ -632,21 +632,21 @@
                                                             </small>
                                                             <small class="text-muted">
                                                                 <i class="fas fa-question-circle me-1"></i>
-                                                                {{ survey.questions.count }} savol
+                                                                {{ survey.questions.count }} {% trans "savol" %}
                                                             </small>
                                                         </div>
                                                     </div>
                                                     <div class="d-flex flex-column align-items-end gap-3">
                                                         {% if survey.id in completed_survey_ids %}
                                                             <span class="survey-status status-completed">
-                                                                <i class="fas fa-check me-1"></i>Tugallangan
+                                                                <i class="fas fa-check me-1"></i>{% trans "Tugallangan" %}
                                                             </span>
                                                         {% else %}
                                                             <span class="survey-status status-pending">
-                                                                <i class="fas fa-clock me-1"></i>Kutilmoqda
+                                                                <i class="fas fa-clock me-1"></i>{% trans "Kutilmoqda" %}
                                                             </span>
                                                             <a href="{% url 'survey_detail' survey.id %}" class="btn btn-gradient">
-                                                                <i class="fas fa-play me-1"></i>Boshlash
+                                                                <i class="fas fa-play me-1"></i>{% trans "Boshlash" %}
                                                             </a>
                                                         {% endif %}
                                                     </div>
@@ -661,8 +661,8 @@
                                 <div class="empty-state-icon">
                                     <i class="fas fa-poll-h"></i>
                                 </div>
-                                <h4 class="fw-bold mb-3">Hozircha so'rovnomalar yo'q</h4>
-                                <p class="text-muted">Yangi so'rovnomalar paydo bo'lganda bu yerda ko'rasiz</p>
+                                <h4 class="fw-bold mb-3">{% trans "Hozircha so'rovnomalar yo'q" %}</h4>
+                                <p class="text-muted">{% trans "Yangi so'rovnomalar paydo bo'lganda bu yerda ko'rasiz" %}</p>
                             </div>
                         {% endif %}
                     </div>
@@ -674,19 +674,19 @@
                                 <div class="info-detail-card p-4">
                                     <h5 class="fw-bold mb-4">
                                         <i class="fas fa-user-circle me-2" style="color: #667eea;"></i>
-                                        Shaxsiy Ma'lumotlar
+                                        {% trans "Shaxsiy Ma'lumotlar" %}
                                     </h5>
                                     <div class="mb-4">
-                                        <div class="info-label">To'liq ism</div>
-                                        <div class="info-value">{{ student.short_name_api|default:student.username|default:"Ma'lumot yo'q" }}</div>
+                                        <div class="info-label">{% trans "To'liq ism" %}</div>
+                                        <div class="info-value">{{ student.short_name_api|default:student.username|default:_("Ma'lumot yo'q") }}</div>
                                     </div>
                                     <div class="mb-4">
-                                        <div class="info-label">Login</div>
-                                        <div class="info-value">{{ student.username|default:"Ma'lumot yo'q" }}</div>
+                                        <div class="info-label">{% trans "Login" %}</div>
+                                        <div class="info-value">{{ student.username|default:_("Ma'lumot yo'q") }}</div>
                                     </div>
                                     <div class="mb-0">
-                                        <div class="info-label">Talaba ID</div>
-                                        <div class="info-value">{{ student.student_id_number|default:"Ma'lumot yo'q" }}</div>
+                                        <div class="info-label">{% trans "Talaba ID" %}</div>
+                                        <div class="info-value">{{ student.student_id_number|default:_("Ma'lumot yo'q") }}</div>
                                     </div>
                                 </div>
                             </div>
@@ -694,19 +694,19 @@
                                 <div class="info-detail-card p-4">
                                     <h5 class="fw-bold mb-4">
                                         <i class="fas fa-graduation-cap me-2" style="color: #11998e;"></i>
-                                        Ta'lim Ma'lumotlari
+                                        {% trans "Ta'lim Ma'lumotlari" %}
                                     </h5>
                                     <div class="mb-4">
-                                        <div class="info-label">Guruh</div>
-                                        <div class="info-value">{{ student.group_name|default:"Ma'lumot yo'q" }}</div>
+                                        <div class="info-label">{% trans "Guruh" %}</div>
+                                        <div class="info-value">{{ student.group_name|default:_("Ma'lumot yo'q") }}</div>
                                     </div>
                                     <div class="mb-4">
-                                        <div class="info-label">Fakultet</div>
-                                        <div class="info-value">{{ student.faculty_name|default:"Ma'lumot yo'q" }}</div>
+                                        <div class="info-label">{% trans "Fakultet" %}</div>
+                                        <div class="info-value">{{ student.faculty_name|default:_("Ma'lumot yo'q") }}</div>
                                     </div>
                                     <div class="mb-0">
-                                        <div class="info-label">O'qish turi</div>
-                                        <div class="info-value">{{ student.education_type_name|default:"Ma'lumot yo'q" }}</div>
+                                        <div class="info-label">{% trans "O'qish turi" %}</div>
+                                        <div class="info-value">{{ student.education_type_name|default:_("Ma'lumot yo'q") }}</div>
                                     </div>
                                 </div>
                             </div>
@@ -732,7 +732,7 @@
                                                     </div>
                                                     <div>
                                                         <a href="{% url 'message_detail' message.id %}" class="btn btn-outline-gradient">
-                                                            <i class="fas fa-eye me-1"></i>Ko'rish
+                                                            <i class="fas fa-eye me-1"></i>{% trans "Ko'rish" %}
                                                         </a>
                                                     </div>
                                                 </div>
@@ -746,8 +746,8 @@
                                 <div class="empty-state-icon">
                                     <i class="fas fa-envelope"></i>
                                 </div>
-                                <h4 class="fw-bold mb-3">Xabarlar yo'q</h4>
-                                <p class="text-muted">Sizga yuborilgan xabarlar bu yerda ko'rsatiladi</p>
+                                <h4 class="fw-bold mb-3">{% trans "Xabarlar yo'q" %}</h4>
+                                <p class="text-muted">{% trans "Sizga yuborilgan xabarlar bu yerda ko'rsatiladi" %}</p>
                             </div>
                         {% endif %}
                     </div>

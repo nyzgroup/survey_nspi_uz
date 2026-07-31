@@ -1,7 +1,6 @@
-
 {% extends 'auth_app/base.html' %}
-
-{% block page_title %}So'rovnomalar{% endblock %}
+{% load i18n %}
+{% block page_title %}{% trans "So'rovnomalar" %}{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -115,8 +114,8 @@
 <div class="container-fluid py-4">
     <!-- Page Header -->
     <div class="page-header">
-        <h1 class="h2 fw-bold mb-2">Faol So'rovnomalar</h1>
-        <p class="lead mb-0 opacity-90">Sizga tayinlangan so'rovnomalarda qatnashing</p>
+        <h1 class="h2 fw-bold mb-2">{% trans "Faol So'rovnomalar" %}</h1>
+        <p class="lead mb-0 opacity-90">{% trans "Sizga tayinlangan so'rovnomalarda qatnashing" %}</p>
     </div>
     
     <!-- Survey Grid -->
@@ -141,11 +140,11 @@
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <small class="text-muted">
                                     <i class="fas fa-question-circle me-1"></i>
-                                    {{ item.survey.questions.count }} savol
+                                    {{ item.survey.questions.count }} {% trans "savol" %}
                                 </small>
                                 <small class="text-muted">
                                     <i class="fas fa-clock me-1"></i>
-                                    ~{{ item.survey.questions.count|default:5 }} daqiqa
+                                    ~{{ item.survey.questions.count|default:5 }} {% trans "daqiqa" %}
                                 </small>
                             </div>
                         </div>
@@ -155,23 +154,23 @@
                             {% if item.has_responded %}
                                 <div class="survey-status-completed text-center w-100 mb-2">
                                     <i class="fas fa-check-circle"></i>
-                                    <span>Javob berilgan</span>
+                                    <span>{% trans "Javob berilgan" %}</span>
                                 </div>
                                 {% if user.is_staff %}
-                                    <a href="{% url 'survey_statistics' item.survey.id %}" 
+                                    <a href="{% url 'survey_statistics' item.survey.id %}"
                                        class="btn btn-outline-info btn-sm w-100">
-                                        <i class="fas fa-chart-bar me-2"></i>Statistika
+                                        <i class="fas fa-chart-bar me-2"></i>{% trans "Statistika" %}
                                     </a>
                                 {% endif %}
                             {% else %}
-                                <a href="{% url 'survey_detail' item.survey.id %}" 
+                                <a href="{% url 'survey_detail' item.survey.id %}"
                                    class="btn btn-survey text-white w-100 mb-2">
-                                    <i class="fas fa-play me-2"></i>Javob berish
+                                    <i class="fas fa-play me-2"></i>{% trans "Javob berish" %}
                                 </a>
                                 {% if user.is_staff %}
-                                    <a href="{% url 'survey_statistics' item.survey.id %}" 
+                                    <a href="{% url 'survey_statistics' item.survey.id %}"
                                        class="btn btn-outline-secondary btn-sm w-100">
-                                        <i class="fas fa-chart-line me-2"></i>Statistika ko'rish
+                                        <i class="fas fa-chart-line me-2"></i>{% trans "Statistika ko'rish" %}
                                     </a>
                                 {% endif %}
                             {% endif %}
@@ -185,13 +184,13 @@
                     <div class="mb-4">
                         <i class="fas fa-poll-h fa-4x text-muted opacity-50"></i>
                     </div>
-                    <h4 class="text-muted mb-3">Faol so'rovnomalar topilmadi</h4>
+                    <h4 class="text-muted mb-3">{% trans "Faol so'rovnomalar topilmadi" %}</h4>
                     <p class="text-muted mb-4">
-                        Hozircha sizga tayinlangan so'rovnomalar yo'q. <br>
-                        Yangi so'rovnomalar paydo bo'lganda bu yerda ko'rasiz.
+                        {% trans "Hozircha sizga tayinlangan so'rovnomalar yo'q." %} <br>
+                        {% trans "Yangi so'rovnomalar paydo bo'lganda bu yerda ko'rasiz." %}
                     </p>
                     <a href="/" class="btn btn-primary">
-                        <i class="fas fa-home me-2"></i>Bosh sahifaga qaytish
+                        <i class="fas fa-home me-2"></i>{% trans "Bosh sahifaga qaytish" %}
                     </a>
                 </div>
             </div>
@@ -206,11 +205,10 @@
                     <div class="card-body text-center">
                         <h6 class="fw-bold mb-3">
                             <i class="fas fa-info-circle me-2 text-primary"></i>
-                            Ma'lumot
+                            {% trans "Ma'lumot" %}
                         </h6>
                         <p class="text-muted mb-0 small">
-                            So'rovnomalarga javob bergandan so'ng, natijalar administratorlar tomonidan tahlil qilinadi. 
-                            Sizning javoblaringiz anonim va maxfiy saqlanadi.
+                            {% trans "So'rovnomalarga javob bergandan so'ng, natijalar administratorlar tomonidan tahlil qilinadi. Sizning javoblaringiz anonim va maxfiy saqlanadi." %}
                         </p>
                     </div>
                 </div>

@@ -1,0 +1,497 @@
+# Russian translations for Survey NSPI UZ
+# Copyright (C) 2026
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ru\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+msgid "Bosh sahifa"
+msgstr "Главная"
+
+msgid "Profilim"
+msgstr "Мой профиль"
+
+msgid "So'rovnomalar"
+msgstr "Опросы"
+
+msgid "Mas'ul shaxslar"
+msgstr "Ответственные лица"
+
+msgid "Murojaatlarim"
+msgstr "Мои обращения"
+
+msgid "Yangi murojaat"
+msgstr "Новое обращение"
+
+msgid "Boshqaruv paneli"
+msgstr "Личный кабинет"
+
+msgid "Chiqish"
+msgstr "Выход"
+
+msgid "Kirish"
+msgstr "Войти"
+
+msgid "Foydalanuvchi"
+msgstr "Пользователь"
+
+msgid "Navoiy Davlat Universiteti. Barcha huquqlar himoyalangan."
+msgstr "Навоийский государственный университет. Все права защищены."
+
+msgid "Tizimga Kirish - NSPI"
+msgstr "Вход в систему - NSPI"
+
+msgid "Xush kelibsiz"
+msgstr "Добро пожаловать"
+
+msgid "Tizimga kirish uchun ma'lumotlaringizni kiriting"
+msgstr "Введите данные для входа в систему"
+
+msgid "Talaba ID raqami"
+msgstr "ID студента"
+
+msgid "ID raqamingizni kiriting"
+msgstr "Введите ваш ID"
+
+msgid "Parol"
+msgstr "Пароль"
+
+msgid "Parolingizni kiriting"
+msgstr "Введите пароль"
+
+msgid "Eslab qolish"
+msgstr "Запомнить меня"
+
+msgid "Parolni unutdingizmi?"
+msgstr "Забыли пароль?"
+
+msgid "Tizimga kirish"
+msgstr "Войти"
+
+msgid "Hisobingiz yo'qmi?"
+msgstr "Нет аккаунта?"
+
+msgid "Ro'yxatdan o'tish"
+msgstr "Регистрация"
+
+msgid "Login (ID Raqam)"
+msgstr "Логин (ID номер)"
+
+msgid "Talaba ID raqamingizni kiriting"
+msgstr "Введите ID студента"
+
+msgid "Parolingiz"
+msgstr "Ваш пароль"
+
+msgid "Bu majburiy savolga javob yozilmagan."
+msgstr "Ответ на обязательный вопрос не заполнен."
+
+msgid "Bu majburiy savol uchun variant tanlanmagan."
+msgstr "Вариант для обязательного вопроса не выбран."
+
+msgid "Bu majburiy savol uchun kamida bitta variant tanlanishi kerak."
+msgstr "Для обязательного вопроса необходимо выбрать хотя бы один вариант."
+
+msgid "Ruxsat etilmagan fayl turi."
+msgstr "Недопустимый тип файла."
+
+msgid "Fayl hajmi 10MB dan oshmasligi kerak."
+msgstr "Размер файла не должен превышать 10 МБ."
+
+msgid "Navoiy Davlat Universiteti - HEMIS Tizimi"
+msgstr "Навоийский государственный университет - Система HEMIS"
+
+msgid "Navoiy Davlat Universiteti"
+msgstr "Навоийский государственный университет"
+
+msgid "HEMIS Tizimi"
+msgstr "Система HEMIS"
+
+msgid "Zamonaviy ta'lim boshqaruv tizimi orqali talabalar, o'qituvchilar va administratorlar uchun qulay va samarali xizmatlar taqdim etamiz."
+msgstr "Мы предоставляем удобные и эффективные услуги для студентов, преподавателей и администраторов через современную систему управления образованием."
+
+msgid "Faol talabalar"
+msgstr "Активные студенты"
+
+msgid "O'qituvchilar"
+msgstr "Преподаватели"
+
+msgid "Faol so'rovnomalar"
+msgstr "Активные опросы"
+
+msgid "Ishtirok foizi"
+msgstr "Процент участия"
+
+msgid "Tizim Imkoniyatlari"
+msgstr "Возможности системы"
+
+msgid "HEMIS tizimi orqali ta'lim jarayonini samarali boshqaring"
+msgstr "Эффективно управляйте учебным процессом через систему HEMIS"
+
+msgid "Talabalar fikr-mulohazalarini yig'ish va tahlil qilish uchun zamonaviy so'rovnoma tizimi."
+msgstr "Современная система опросов для сбора и анализа мнений студентов."
+
+msgid "Statistika"
+msgstr "Статистика"
+
+msgid "Real vaqt rejimida statistik ma'lumotlar va batafsil hisobotlar olish imkoniyati."
+msgstr "Возможность получения статистических данных в реальном времени и подробных отчётов."
+
+msgid "Muloqot"
+msgstr "Общение"
+
+msgid "Talabalar va o'qituvchilar o'rtasida samarali muloqot va fikr almashish platformasi."
+msgstr "Платформа для эффективного общения и обмена мнениями между студентами и преподавателями."
+
+msgid "Xavfsizlik"
+msgstr "Безопасность"
+
+msgid "Ma'lumotlar xavfsizligi va foydalanuvchi shaxsini himoya qilish uchun zamonaviy teknologiyalar."
+msgstr "Современные технологии для защиты данных и личности пользователя."
+
+msgid "Mobil Qulaylik"
+msgstr "Мобильное удобство"
+
+msgid "Barcha qurilmalarda moslashuvchan dizayn va qulay foydalanish tajribasi."
+msgstr "Адаптивный дизайн и удобный пользовательский опыт на всех устройствах."
+
+msgid "Bulutli Tizim"
+msgstr "Облачная система"
+
+msgid "Har qanday joydan va vaqtda tizimga kirish va ma'lumotlarni boshqarish imkoniyati."
+msgstr "Возможность доступа к системе и управления данными из любого места и в любое время."
+
+msgid "Tezkor Amallar"
+msgstr "Быстрые действия"
+
+msgid "Eng ko'p ishlatiladigan funksiyalar"
+msgstr "Наиболее часто используемые функции"
+
+msgid "So'rovnomalar ro'yxati"
+msgstr "Список опросов"
+
+msgid "Murojaatlar"
+msgstr "Обращения"
+
+msgid "Ta'lim yo'nalishlari"
+msgstr "Направления обучения"
+
+msgid "Talabalar"
+msgstr "Студенты"
+
+msgid "Zamonaviy ta'lim standartlari asosida malakali mutaxassislar tayyorlash va ilmiy tadqiqotlar olib borish sohasida yetakchi oliy ta'lim muassasasi."
+msgstr "Ведущее высшее учебное заведение по подготовке квалифицированных специалистов и проведению научных исследований на основе современных образовательных стандартов."
+
+msgid "So'nggi Yangiliklar"
+msgstr "Последние новости"
+
+msgid "Universitetdagi eng muhim voqealar"
+msgstr "Самые важные события в университете"
+
+msgid "Xush kelibsiz, Dashboard!"
+msgstr "Добро пожаловать, Личный кабинет!"
+
+msgid "Barcha ma'lumotlaringiz va faoliyatingiz bir joyda"
+msgstr "Все ваши данные и активность в одном месте"
+
+msgid "Jami So'rovnomalar"
+msgstr "Всего опросов"
+
+msgid "Tugatilgan"
+msgstr "Завершено"
+
+msgid "Kutilmoqda"
+msgstr "Ожидается"
+
+msgid "Ishtirok Darajasi"
+msgstr "Уровень участия"
+
+msgid "Profil Ma'lumotlari"
+msgstr "Данные профиля"
+
+msgid "Xabarlar"
+msgstr "Сообщения"
+
+msgid "savol"
+msgstr "вопрос"
+
+msgid "Tugallangan"
+msgstr "Завершено"
+
+msgid "Boshlash"
+msgstr "Начать"
+
+msgid "Hozircha so'rovnomalar yo'q"
+msgstr "Опросов пока нет"
+
+msgid "Yangi so'rovnomalar paydo bo'lganda bu yerda ko'rasiz"
+msgstr "Здесь будут отображаться новые опросы"
+
+msgid "Shaxsiy Ma'lumotlar"
+msgstr "Личные данные"
+
+msgid "To'liq ism"
+msgstr "Полное имя"
+
+msgid "Login"
+msgstr "Логин"
+
+msgid "Talaba ID"
+msgstr "ID студента"
+
+msgid "Ta'lim Ma'lumotlari"
+msgstr "Учебные данные"
+
+msgid "Guruh"
+msgstr "Группа"
+
+msgid "Fakultet"
+msgstr "Факультет"
+
+msgid "O'qish turi"
+msgstr "Тип обучения"
+
+msgid "Ma'lumot yo'q"
+msgstr "Данных нет"
+
+msgid "Ko'rish"
+msgstr "Просмотр"
+
+msgid "Xabarlar yo'q"
+msgstr "Сообщений нет"
+
+msgid "Sizga yuborilgan xabarlar bu yerda ko'rsatiladi"
+msgstr "Здесь будут отображаться отправленные вам сообщения"
+
+msgid "Talaba"
+msgstr "Студент"
+
+msgid "Faol So'rovnomalar"
+msgstr "Активные опросы"
+
+msgid "Sizga tayinlangan so'rovnomalarda qatnashing"
+msgstr "Участвуйте в опросах, назначенных вам"
+
+msgid "daqiqa"
+msgstr "мин"
+
+msgid "Javob berilgan"
+msgstr "Отвечено"
+
+msgid "Javob berish"
+msgstr "Ответить"
+
+msgid "Statistika ko'rish"
+msgstr "Просмотр статистики"
+
+msgid "Faol so'rovnomalar topilmadi"
+msgstr "Активные опросы не найдены"
+
+msgid "Hozircha sizga tayinlangan so'rovnomalar yo'q."
+msgstr "Пока нет опросов, назначенных вам."
+
+msgid "Yangi so'rovnomalar paydo bo'lganda bu yerda ko'rasiz."
+msgstr "Здесь появятся новые опросы."
+
+msgid "Bosh sahifaga qaytish"
+msgstr "На главную"
+
+msgid "Ma'lumot"
+msgstr "Информация"
+
+msgid "So'rovnomalarga javob bergandan so'ng, natijalar administratorlar tomonidan tahlil qilinadi. Sizning javoblaringiz anonim va maxfiy saqlanadi."
+msgstr "После ответа на опросы результаты будут проанализированы администраторами. Ваши ответы хранятся анонимно и конфиденциально."
+
+msgid "Mening murojaatlarim"
+msgstr "Мои обращения"
+
+msgid "Jami:"
+msgstr "Всего:"
+
+msgid "ta murojaat"
+msgstr "обращений"
+
+msgid "Yangi murojaat yozing"
+msgstr "Написать новое обращение"
+
+msgid "Mavzu"
+msgstr "Тема"
+
+msgid "Mas'ul shaxs"
+msgstr "Ответственное лицо"
+
+msgid "Holat"
+msgstr "Статус"
+
+msgid "Yuborilgan"
+msgstr "Отправлено"
+
+msgid "So'nggi javob"
+msgstr "Последний ответ"
+
+msgid "Javob yo'q"
+msgstr "Нет ответа"
+
+msgid "So'nggi javob:"
+msgstr "Последний ответ:"
+
+msgid "Javob kutilmoqda"
+msgstr "Ожидание ответа"
+
+msgid "Batafsil"
+msgstr "Подробнее"
+
+msgid "Hali murojaatlar yo'q"
+msgstr "Обращений пока нет"
+
+msgid "Birinchi murojaatingizni yozing"
+msgstr "Напишите ваше первое обращение"
+
+msgid "Murojaat yozish"
+msgstr "Написать обращение"
+
+msgid "Orqaga"
+msgstr "Назад"
+
+msgid "Murojaat matni"
+msgstr "Текст обращения"
+
+msgid "Murojaatingizni batafsil yozing..."
+msgstr "Напишите ваше обращение подробно..."
+
+msgid "Muammongizni batafsil tushuntiring"
+msgstr "Подробно объясните вашу проблему"
+
+msgid "Fayllar biriktirish"
+msgstr "Прикрепить файлы"
+
+msgid "PDF, Word, rasm yoki matn fayllarini biriktirish mumkin (maksimal 5MB)"
+msgstr "Можно прикрепить PDF, Word, изображения или текстовые файлы (максимум 5МБ)"
+
+msgid "Murojaatni yuborish"
+msgstr "Отправить обращение"
+
+msgid "Bekor qilish"
+msgstr "Отмена"
+
+msgid "Foydali maslahatlar:"
+msgstr "Полезные советы:"
+
+msgid "Aniq va tushunarli mavzu yozing"
+msgstr "Пишите чёткую и понятную тему"
+
+msgid "Muammoni batafsil tushuntiring"
+msgstr "Подробно опишите проблему"
+
+msgid "Kerakli hujjatlarni biriktiring"
+msgstr "Приложите необходимые документы"
+
+msgid "Hurmatli murojaat qiling"
+msgstr "Обращайтесь уважительно"
+
+msgid "Mas'ul shaxsni tanlang"
+msgstr "Выберите ответственное лицо"
+
+msgid "Qisqa va aniq mavzu kiriting"
+msgstr "Введите краткую и чёткую тему"
+
+msgid "Murojaatingiz mavzusini kiriting"
+msgstr "Введите тему вашего обращения"
+
+msgid "ta mas'ul"
+msgstr "ответственных"
+
+msgid "Mas'uliyat sohalari:"
+msgstr "Области ответственности:"
+
+msgid "Qo'ng'iroq"
+msgstr "Позвонить"
+
+msgid "Murojaat"
+msgstr "Обращение"
+
+msgid "Mas'ul shaxslar topilmadi"
+msgstr "Ответственные лица не найдены"
+
+msgid "Hozircha tizimda mas'ul shaxslar ro'yxati yo'q"
+msgstr "Список ответственных лиц в системе пока пуст"
+
+msgid "Murojaat tafsiloti"
+msgstr "Подробности обращения"
+
+msgid "Yuboruvchi:"
+msgstr "Отправитель:"
+
+msgid "Mas'ul shaxs:"
+msgstr "Ответственное лицо:"
+
+msgid "Yuborilgan:"
+msgstr "Отправлено:"
+
+msgid "Status:"
+msgstr "Статус:"
+
+msgid "Murojaat matni:"
+msgstr "Текст обращения:"
+
+msgid "Biriktirilgan fayllar:"
+msgstr "Прикреплённые файлы:"
+
+msgid "Yuklab olish"
+msgstr "Скачать"
+
+msgid "Javoblar"
+msgstr "Ответы"
+
+msgid "Admin javobi"
+msgstr "Ответ администратора"
+
+msgid "Mas'ul shaxs tez orada javob beradi"
+msgstr "Ответственное лицо ответит в ближайшее время"
+
+msgid "Barcha murojaatlar"
+msgstr "Все обращения"
+
+msgid "Javob yozish"
+msgstr "Написать ответ"
+
+msgid "Murojaatga javobingizni yozing..."
+msgstr "Напишите ваш ответ на обращение..."
+
+msgid "To'liq va tushunarli javob bering"
+msgstr "Дайте полный и понятный ответ"
+
+msgid "belgi yozildi"
+msgstr "символов написано"
+
+msgid "Javobni yuborish"
+msgstr "Отправить ответ"
+
+msgid "Javob yozishda e'tibor bering:"
+msgstr "Обратите внимание при написании ответа:"
+
+msgid "Hurmatli va professional uslubda yozing"
+msgstr "Пишите в уважительном и профессиональном стиле"
+
+msgid "Aniq va tushunarli javob bering"
+msgstr "Давайте чёткие и понятные ответы"
+
+msgid "Agar kerak bo'lsa, qo'shimcha ko'rsatmalar bering"
+msgstr "При необходимости дайте дополнительные инструкции"
+
+msgid "Tez orada javob berishga harakat qiling"
+msgstr "Постарайтесь ответить как можно скорее"
+
+msgid "So'rovnoma"
+msgstr "Опрос"
+
+msgid "Yuklanmoqda..."
+msgstr "Загрузка..."
+
+msgid "So'rovnoma yuklanmoqda..."
+msgstr "Опрос загружается..."
+
+msgid "So'rovnoma yuklanmadi. Sahifani yangilang."
+msgstr "Опрос не загружен. Обновите страницу."

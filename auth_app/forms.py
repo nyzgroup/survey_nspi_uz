@@ -3,6 +3,7 @@
 import logging
 from django import forms
 from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 from .models import Student, Survey, Question, Choice, SurveyResponse, Answer, MessageToResponsible, MessageAttachment, MessageReply
 
 logger = logging.getLogger(__name__)
@@ -11,20 +12,19 @@ logger = logging.getLogger(__name__)
 # --- Foydalanuvchi autentifikatsiyasi uchun forma ---
 
 class LoginForm(forms.Form):
-    """Foydalanuvchidan login va parol olish uchun standart forma."""
     username = forms.CharField(
-        label="Login (ID Raqam)",
+        label=_("Login (ID Raqam)"),
         max_length=100,
         widget=forms.TextInput(attrs={
-            'class': 'form-input', # HTMLga stil berish uchun
-            'placeholder': 'Talaba ID raqamingizni kiriting'
+            'class': 'form-input',
+            'placeholder': _('Talaba ID raqamingizni kiriting'),
         })
     )
     password = forms.CharField(
-        label="Parol",
+        label=_("Parol"),
         widget=forms.PasswordInput(attrs={
             'class': 'form-input',
-            'placeholder': 'Parolingiz'
+            'placeholder': _('Parolingiz'),
         })
     )
 
@@ -103,11 +103,11 @@ class BaseAnswerForm(forms.ModelForm):
         has_multiple_choices = bool(cleaned_data.get('selected_choices'))
 
         if q_type == 'text' and not has_text:
-            self.add_error('text_answer', "Bu majburiy savolga javob yozilmagan.")
+            self.add_error('text_answer', _("Bu majburiy savolga javob yozilmagan."))
         elif q_type == 'single_choice' and not has_single_choice:
-            self.add_error('selected_choice', "Bu majburiy savol uchun variant tanlanmagan.")
+            self.add_error('selected_choice', _("Bu majburiy savol uchun variant tanlanmagan."))
         elif q_type == 'multiple_choice' and not has_multiple_choices:
-            self.add_error('selected_choices', "Bu majburiy savol uchun kamida bitta variant tanlanishi kerak.")
+            self.add_error('selected_choices', _("Bu majburiy savol uchun kamida bitta variant tanlanishi kerak."))
             
         return cleaned_data
 
@@ -159,9 +159,9 @@ class MessageAttachmentForm(forms.ModelForm):
         allowed_types = ["pdf", "doc", "docx", "xls", "xlsx", "jpg", "jpeg", "png", "mp3", "wav", "ogg", "mp4", "mov", "avi"]
         ext = file.name.split(".")[-1].lower()
         if ext not in allowed_types:
-            raise forms.ValidationError("Ruxsat etilmagan fayl turi.")
+            raise forms.ValidationError(_("Ruxsat etilmagan fayl turi."))
         if file.size > 10 * 1024 * 1024:
-            raise forms.ValidationError("Fayl hajmi 10MB dan oshmasligi kerak.")
+            raise forms.ValidationError(_("Fayl hajmi 10MB dan oshmasligi kerak."))
         return file
 
 class MessageReplyForm(forms.ModelForm):

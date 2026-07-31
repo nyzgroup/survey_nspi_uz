@@ -1,12 +1,13 @@
 {% extends 'auth_app/base.html' %}
-{% block title %}Mening murojaatlarim{% endblock %}
+{% load i18n %}
+{% block title %}{% trans "Mening murojaatlarim" %}{% endblock %}
 {% block content %}
 <div class="messages-page">
   <!-- Header Section -->
   <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="h3 mb-0 text-dark">Mening murojaatlarim</h2>
+    <h2 class="h3 mb-0 text-dark">{% trans "Mening murojaatlarim" %}</h2>
     <a href="{% url 'message_create' %}" class="btn btn-primary d-none d-md-inline-block">
-      <i class="fas fa-plus me-2"></i>Yangi murojaat
+      <i class="fas fa-plus me-2"></i>{% trans "Yangi murojaat" %}
     </a>
   </div>
 
@@ -14,7 +15,7 @@
   <div class="mb-3">
     <span class="badge bg-light text-dark border">
       <i class="fas fa-envelope me-1"></i>
-      Jami: {{ messages|length }} ta murojaat
+      {% trans "Jami:" %} {{ messages|length }} {% trans "ta murojaat" %}
     </span>
   </div>
 
@@ -28,7 +29,7 @@
   <!-- Mobile Add Button -->
   <div class="d-md-none mb-3">
     <a href="{% url 'message_create' %}" class="btn btn-primary w-100">
-      <i class="fas fa-plus me-2"></i>Yangi murojaat yozing
+      <i class="fas fa-plus me-2"></i>{% trans "Yangi murojaat yozing" %}
     </a>
   </div>
 
@@ -39,11 +40,11 @@
         <table class="table table-hover bg-white rounded shadow-sm">
           <thead class="table-primary">
             <tr>
-              <th class="py-3">Mavzu</th>
-              <th class="py-3">Mas'ul shaxs</th>
-              <th class="py-3">Holat</th>
-              <th class="py-3">Yuborilgan</th>
-              <th class="py-3">So'nggi javob</th>
+              <th class="py-3">{% trans "Mavzu" %}</th>
+              <th class="py-3">{% trans "Mas'ul shaxs" %}</th>
+              <th class="py-3">{% trans "Holat" %}</th>
+              <th class="py-3">{% trans "Yuborilgan" %}</th>
+              <th class="py-3">{% trans "So'nggi javob" %}</th>
               <th class="py-3"></th>
             </tr>
           </thead>
@@ -73,12 +74,12 @@
                   <div class="text-success small">{{ message.replies.last.content|truncatewords:10 }}</div>
                   <small class="text-muted">{{ message.replies.last.created_at|date:'d.m.Y H:i' }}</small>
                 {% else %}
-                  <small class="text-muted">Javob yo'q</small>
+                  <small class="text-muted">{% trans "Javob yo'q" %}</small>
                 {% endif %}
               </td>
               <td class="py-3">
                 <a href="{% url 'message_detail' message.pk %}" class="btn btn-sm btn-outline-primary">
-                  <i class="fas fa-eye me-1"></i>Ko'rish
+                  <i class="fas fa-eye me-1"></i>{% trans "Ko'rish" %}
                 </a>
               </td>
             </tr>
@@ -122,20 +123,20 @@
               <!-- Last Reply -->
               {% if message.replies.last %}
                 <div class="border-start border-success ps-3 mb-3">
-                  <div class="text-success small mb-1">So'nggi javob:</div>
+                  <div class="text-success small mb-1">{% trans "So'nggi javob:" %}</div>
                   <div class="small text-dark">{{ message.replies.last.content|truncatewords:8 }}</div>
                   <small class="text-muted">{{ message.replies.last.created_at|date:'d.m.Y H:i' }}</small>
                 </div>
               {% else %}
                 <div class="border-start border-warning ps-3 mb-3">
-                  <small class="text-warning">Javob kutilmoqda</small>
+                  <small class="text-warning">{% trans "Javob kutilmoqda" %}</small>
                 </div>
               {% endif %}
 
               <!-- Action Button -->
               <div class="text-end">
                 <a href="{% url 'message_detail' message.pk %}" class="btn btn-sm btn-primary">
-                  <i class="fas fa-eye me-1"></i>Batafsil
+                  <i class="fas fa-eye me-1"></i>{% trans "Batafsil" %}
                 </a>
               </div>
             </div>
@@ -149,10 +150,10 @@
     <div class="text-center py-5">
       <div class="empty-state">
         <i class="fas fa-envelope-open text-muted mb-3" style="font-size: 4rem;"></i>
-        <h5 class="text-muted mb-3">Hali murojaatlar yo'q</h5>
-        <p class="text-muted mb-4">Birinchi murojaatingizni yozing</p>
+        <h5 class="text-muted mb-3">{% trans "Hali murojaatlar yo'q" %}</h5>
+        <p class="text-muted mb-4">{% trans "Birinchi murojaatingizni yozing" %}</p>
         <a href="{% url 'message_create' %}" class="btn btn-primary">
-          <i class="fas fa-plus me-2"></i>Murojaat yozish
+          <i class="fas fa-plus me-2"></i>{% trans "Murojaat yozish" %}
         </a>
       </div>
     </div>

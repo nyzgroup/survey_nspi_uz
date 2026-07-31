@@ -11,8 +11,8 @@ env = environ.Env(
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 SECRET_KEY = env('DJANGO_SECRET_KEY')
-DEBUG = env('DEBUG')
-ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS', default=['localhost', '127.0.0.1','*'])
+DEBUG = env.bool('DEBUG', default=False)
+ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS', default=['localhost', '127.0.0.1'])
 
 INSTALLED_APPS = [
     'jazzmin',
@@ -26,18 +26,20 @@ INSTALLED_APPS = [
     'auth_app',
     'rest_framework',
     'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'auth_app.middleware.SecurityHeadersMiddleware',
 ]
 
 from datetime import timedelta
@@ -45,8 +47,8 @@ from datetime import timedelta
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
-    'ROTATE_REFRESH_TOKENS': False,
-    'BLACKLIST_AFTER_ROTATION': False,
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 STATIC_URL = '/static/' 
@@ -65,15 +67,36 @@ STATICFILES_DIRS = [
 MEDIA_DIR = BASE_DIR / 'media'
 MEDIA_ROOT = MEDIA_DIR
 MEDIA_URL = '/media/'
-X_FRAME_OPTIONS = 'DENY' 
-CSRF_COOKIE_HTTPONLY = True  
-CSRF_COOKIE_AGE = 60 * 60 * 24  
-CSRF_COOKIE_PATH = '/'  
-CSRF_COOKIE_DOMAIN = None  
-CSRF_COOKIE_NAME = 'hemis_csrf_token'  
-CSRF_USE_SESSIONS = False  
-CSRF_COOKIE_SECURE = True  
-CSRF_COOKIE_SAMESITE = 'Lax' 
+X_FRAME_OPTIONS = 'DENY'
+CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_AGE = 60 * 60 * 24
+CSRF_COOKIE_PATH = '/'
+CSRF_COOKIE_DOMAIN = None
+CSRF_COOKIE_NAME = 'hemis_csrf_token'
+CSRF_USE_SESSIONS = False
+CSRF_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SAMESITE = 'Lax'
+
+SESSION_COOKIE_SECURE = not DEBUG
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'
+
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+# Production (HTTPS + nginx) da .env orqali yoqing:
+# SECURE_SSL_REDIRECT=True, SECURE_HSTS_SECONDS=31536000
+SECURE_HSTS_SECONDS = env.int('SECURE_HSTS_SECONDS', default=0)
+SECURE_HSTS_INCLUDE_SUBDOMAINS = env.bool('SECURE_HSTS_INCLUDE_SUBDOMAINS', default=False)
+SECURE_HSTS_PRELOAD = env.bool('SECURE_HSTS_PRELOAD', default=False)
+SECURE_SSL_REDIRECT = env.bool('SECURE_SSL_REDIRECT', default=False)
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_REFERRER_POLICY = 'same-origin'
+
+# Rate limit (login / submit / messages)
+RATE_LIMIT_LOGIN = env.int('RATE_LIMIT_LOGIN', default=8)
+RATE_LIMIT_LOGIN_WINDOW = env.int('RATE_LIMIT_LOGIN_WINDOW', default=60)
+RATE_LIMIT_SURVEY_SUBMIT = env.int('RATE_LIMIT_SURVEY_SUBMIT', default=20)
+RATE_LIMIT_MESSAGE = env.int('RATE_LIMIT_MESSAGE', default=15)
 ROOT_URLCONF = 'external_auth_project.urls'
 
 TEMPLATES = [
@@ -114,10 +137,30 @@ REQUESTS_VERIFY_SSL = env.bool('REQUESTS_VERIFY_SSL', default=True)
 
 API_TOKEN_REFRESH_THRESHOLD_SECONDS = 10 * 60 
 
-HEMIS_ADMIN_API_TOKEN = env('b1scfqAQKK2PjRvll0MTAbFOQ1yumi4b', default=None) 
+HEMIS_ADMIN_API_TOKEN  = env('HEMIS_ADMIN_API_TOKEN',  default=None)
 HEMIS_SYSTEM_API_TOKEN = env('HEMIS_SYSTEM_API_TOKEN', default=None)
 
-EXTERNAL_API_LOGOUT_ENDPOINT = env('EXTERNAL_API_LOGOUT_ENDPOINT', default=None) 
+EXTERNAL_API_LOGOUT_ENDPOINT = env('EXTERNAL_API_LOGOUT_ENDPOINT', default=None)
+
+# ── HEMIS OAuth2 ──────────────────────────────────────────────────────────────
+# Talaba portali:  https://student.nspi.uz
+# Hodim portali:   https://hemis.nspi.uz
+HEMIS_STUDENT_OAUTH_BASE_URL  = env('HEMIS_STUDENT_OAUTH_BASE_URL',  default='https://student.nspi.uz')
+HEMIS_EMPLOYEE_OAUTH_BASE_URL = env('HEMIS_EMPLOYEE_OAUTH_BASE_URL', default='https://hemis.nspi.uz')
+
+# Yagona client (ikkala portal uchun bir xil bo'lsa)
+HEMIS_OAUTH_CLIENT_ID     = env('HEMIS_OAUTH_CLIENT_ID',     default='')
+HEMIS_OAUTH_CLIENT_SECRET = env('HEMIS_OAUTH_CLIENT_SECRET', default='')
+
+# Alohida talaba client (bo'lsa — ustunlik beradi)
+HEMIS_STUDENT_OAUTH_CLIENT_ID     = env('HEMIS_STUDENT_OAUTH_CLIENT_ID',     default='')
+HEMIS_STUDENT_OAUTH_CLIENT_SECRET = env('HEMIS_STUDENT_OAUTH_CLIENT_SECRET', default='')
+
+# Callback URL — production da to'liq domen (masalan: https://survey.nspi.uz/oauth/callback/)
+HEMIS_OAUTH_REDIRECT_URI = env('HEMIS_OAUTH_REDIRECT_URI', default='http://localhost:8000/oauth/callback/')
+
+# OAuth scope (bo'sh = default)
+HEMIS_OAUTH_SCOPE = env('HEMIS_OAUTH_SCOPE', default='')
 
 WSGI_APPLICATION = 'external_auth_project.wsgi.application'
 
@@ -128,7 +171,8 @@ DATABASES = {
         'ENGINE': env('DB_ENGINE', default='django.db.backends.postgresql'),
         'NAME': env('DB_NAME', default='survey_prod_db'),
         'USER': env('DB_USER', default='survey_user'),
-        'PASSWORD': env('DB_PASSWORD', default='super_secret_password'),
+        # Default zaif parol olib tashlandi — majburiy env
+        'PASSWORD': env('DB_PASSWORD'),
         'HOST': env('DB_HOST', default='db'),
         'PORT': env('DB_PORT', default='5432'),
     }
@@ -175,7 +219,16 @@ WHITENOISE_SKIP_COMPRESS_EXTENSIONS = ['js', 'css']
 WHITENOISE_USE_FINDERS = True
 WHITENOISE_MANIFEST_STRICT = False
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'uz'
+
+LANGUAGES = [
+    ('uz', "O'zbek"),
+    ('ru', 'Русский'),
+    ('en', 'English'),
+    ('kaa', 'Qaraqalpaq'),
+]
+
+LOCALE_PATHS = [BASE_DIR / 'locale']
 
 TIME_ZONE = 'Asia/Tashkent'
 
@@ -209,7 +262,8 @@ LOGGING = {
         'file': {
             'level': 'INFO',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': BASE_DIR / 'django_app.log',
+            # Non-root konteynerda yozish uchun /tmp (FIND-015)
+            'filename': env('DJANGO_LOG_FILE', default='/tmp/django_app.log'),
             'maxBytes': 1024*1024*5,
             'backupCount': 2,
             'formatter': 'verbose',

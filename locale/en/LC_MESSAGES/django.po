@@ -1,0 +1,497 @@
+# English translations for Survey NSPI UZ
+# Copyright (C) 2026
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: en\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Bosh sahifa"
+msgstr "Home"
+
+msgid "Profilim"
+msgstr "My Profile"
+
+msgid "So'rovnomalar"
+msgstr "Surveys"
+
+msgid "Mas'ul shaxslar"
+msgstr "Responsible Persons"
+
+msgid "Murojaatlarim"
+msgstr "My Requests"
+
+msgid "Yangi murojaat"
+msgstr "New Request"
+
+msgid "Boshqaruv paneli"
+msgstr "Dashboard"
+
+msgid "Chiqish"
+msgstr "Logout"
+
+msgid "Kirish"
+msgstr "Sign In"
+
+msgid "Foydalanuvchi"
+msgstr "User"
+
+msgid "Navoiy Davlat Universiteti. Barcha huquqlar himoyalangan."
+msgstr "Navoi State University. All rights reserved."
+
+msgid "Tizimga Kirish - NSPI"
+msgstr "Sign In - NSPI"
+
+msgid "Xush kelibsiz"
+msgstr "Welcome"
+
+msgid "Tizimga kirish uchun ma'lumotlaringizni kiriting"
+msgstr "Enter your credentials to sign in"
+
+msgid "Talaba ID raqami"
+msgstr "Student ID"
+
+msgid "ID raqamingizni kiriting"
+msgstr "Enter your ID"
+
+msgid "Parol"
+msgstr "Password"
+
+msgid "Parolingizni kiriting"
+msgstr "Enter your password"
+
+msgid "Eslab qolish"
+msgstr "Remember me"
+
+msgid "Parolni unutdingizmi?"
+msgstr "Forgot password?"
+
+msgid "Tizimga kirish"
+msgstr "Sign In"
+
+msgid "Hisobingiz yo'qmi?"
+msgstr "Don't have an account?"
+
+msgid "Ro'yxatdan o'tish"
+msgstr "Register"
+
+msgid "Login (ID Raqam)"
+msgstr "Login (ID Number)"
+
+msgid "Talaba ID raqamingizni kiriting"
+msgstr "Enter your student ID"
+
+msgid "Parolingiz"
+msgstr "Your password"
+
+msgid "Bu majburiy savolga javob yozilmagan."
+msgstr "This required question was not answered."
+
+msgid "Bu majburiy savol uchun variant tanlanmagan."
+msgstr "A variant for this required question is not selected."
+
+msgid "Bu majburiy savol uchun kamida bitta variant tanlanishi kerak."
+msgstr "At least one option must be selected for this required question."
+
+msgid "Ruxsat etilmagan fayl turi."
+msgstr "File type not allowed."
+
+msgid "Fayl hajmi 10MB dan oshmasligi kerak."
+msgstr "File size must not exceed 10MB."
+
+msgid "Navoiy Davlat Universiteti - HEMIS Tizimi"
+msgstr "Navoi State University - HEMIS System"
+
+msgid "Navoiy Davlat Universiteti"
+msgstr "Navoi State University"
+
+msgid "HEMIS Tizimi"
+msgstr "HEMIS System"
+
+msgid "Zamonaviy ta'lim boshqaruv tizimi orqali talabalar, o'qituvchilar va administratorlar uchun qulay va samarali xizmatlar taqdim etamiz."
+msgstr "We provide convenient and efficient services for students, teachers and administrators through a modern education management system."
+
+msgid "Faol talabalar"
+msgstr "Active Students"
+
+msgid "O'qituvchilar"
+msgstr "Teachers"
+
+msgid "Faol so'rovnomalar"
+msgstr "Active Surveys"
+
+msgid "Ishtirok foizi"
+msgstr "Participation Rate"
+
+msgid "Tizim Imkoniyatlari"
+msgstr "System Features"
+
+msgid "HEMIS tizimi orqali ta'lim jarayonini samarali boshqaring"
+msgstr "Effectively manage the educational process through HEMIS"
+
+msgid "Talabalar fikr-mulohazalarini yig'ish va tahlil qilish uchun zamonaviy so'rovnoma tizimi."
+msgstr "A modern survey system for collecting and analyzing student feedback."
+
+msgid "Statistika"
+msgstr "Statistics"
+
+msgid "Real vaqt rejimida statistik ma'lumotlar va batafsil hisobotlar olish imkoniyati."
+msgstr "Get statistical data in real time and detailed reports."
+
+msgid "Muloqot"
+msgstr "Communication"
+
+msgid "Talabalar va o'qituvchilar o'rtasida samarali muloqot va fikr almashish platformasi."
+msgstr "An effective communication and idea exchange platform between students and teachers."
+
+msgid "Xavfsizlik"
+msgstr "Security"
+
+msgid "Ma'lumotlar xavfsizligi va foydalanuvchi shaxsini himoya qilish uchun zamonaviy teknologiyalar."
+msgstr "Modern technologies to protect data security and user identity."
+
+msgid "Mobil Qulaylik"
+msgstr "Mobile Convenience"
+
+msgid "Barcha qurilmalarda moslashuvchan dizayn va qulay foydalanish tajribasi."
+msgstr "Responsive design and convenient user experience on all devices."
+
+msgid "Bulutli Tizim"
+msgstr "Cloud System"
+
+msgid "Har qanday joydan va vaqtda tizimga kirish va ma'lumotlarni boshqarish imkoniyati."
+msgstr "Access the system and manage data from anywhere at any time."
+
+msgid "Tezkor Amallar"
+msgstr "Quick Actions"
+
+msgid "Eng ko'p ishlatiladigan funksiyalar"
+msgstr "Most frequently used features"
+
+msgid "So'rovnomalar ro'yxati"
+msgstr "Survey List"
+
+msgid "Murojaatlar"
+msgstr "Requests"
+
+msgid "Ta'lim yo'nalishlari"
+msgstr "Study Programs"
+
+msgid "Talabalar"
+msgstr "Students"
+
+msgid "Zamonaviy ta'lim standartlari asosida malakali mutaxassislar tayyorlash va ilmiy tadqiqotlar olib borish sohasida yetakchi oliy ta'lim muassasasi."
+msgstr "A leading higher education institution in training qualified specialists and conducting scientific research based on modern educational standards."
+
+msgid "So'nggi Yangiliklar"
+msgstr "Latest News"
+
+msgid "Universitetdagi eng muhim voqealar"
+msgstr "Most important events at the university"
+
+msgid "Xush kelibsiz, Dashboard!"
+msgstr "Welcome, Dashboard!"
+
+msgid "Barcha ma'lumotlaringiz va faoliyatingiz bir joyda"
+msgstr "All your data and activity in one place"
+
+msgid "Jami So'rovnomalar"
+msgstr "Total Surveys"
+
+msgid "Tugatilgan"
+msgstr "Completed"
+
+msgid "Kutilmoqda"
+msgstr "Pending"
+
+msgid "Ishtirok Darajasi"
+msgstr "Participation Level"
+
+msgid "Profil Ma'lumotlari"
+msgstr "Profile Information"
+
+msgid "Xabarlar"
+msgstr "Messages"
+
+msgid "savol"
+msgstr "question"
+
+msgid "Tugallangan"
+msgstr "Completed"
+
+msgid "Boshlash"
+msgstr "Start"
+
+msgid "Hozircha so'rovnomalar yo'q"
+msgstr "No surveys yet"
+
+msgid "Yangi so'rovnomalar paydo bo'lganda bu yerda ko'rasiz"
+msgstr "New surveys will appear here"
+
+msgid "Shaxsiy Ma'lumotlar"
+msgstr "Personal Information"
+
+msgid "To'liq ism"
+msgstr "Full name"
+
+msgid "Login"
+msgstr "Login"
+
+msgid "Talaba ID"
+msgstr "Student ID"
+
+msgid "Ta'lim Ma'lumotlari"
+msgstr "Academic Information"
+
+msgid "Guruh"
+msgstr "Group"
+
+msgid "Fakultet"
+msgstr "Faculty"
+
+msgid "O'qish turi"
+msgstr "Education Type"
+
+msgid "Ma'lumot yo'q"
+msgstr "No data"
+
+msgid "Ko'rish"
+msgstr "View"
+
+msgid "Xabarlar yo'q"
+msgstr "No messages"
+
+msgid "Sizga yuborilgan xabarlar bu yerda ko'rsatiladi"
+msgstr "Messages sent to you will appear here"
+
+msgid "Talaba"
+msgstr "Student"
+
+msgid "Faol So'rovnomalar"
+msgstr "Active Surveys"
+
+msgid "Sizga tayinlangan so'rovnomalarda qatnashing"
+msgstr "Participate in surveys assigned to you"
+
+msgid "daqiqa"
+msgstr "min"
+
+msgid "Javob berilgan"
+msgstr "Answered"
+
+msgid "Javob berish"
+msgstr "Answer"
+
+msgid "Statistika ko'rish"
+msgstr "View Statistics"
+
+msgid "Faol so'rovnomalar topilmadi"
+msgstr "No active surveys found"
+
+msgid "Hozircha sizga tayinlangan so'rovnomalar yo'q."
+msgstr "No surveys assigned to you yet."
+
+msgid "Yangi so'rovnomalar paydo bo'lganda bu yerda ko'rasiz."
+msgstr "New surveys will appear here when available."
+
+msgid "Bosh sahifaga qaytish"
+msgstr "Back to Home"
+
+msgid "Ma'lumot"
+msgstr "Information"
+
+msgid "So'rovnomalarga javob bergandan so'ng, natijalar administratorlar tomonidan tahlil qilinadi. Sizning javoblaringiz anonim va maxfiy saqlanadi."
+msgstr "After answering surveys, the results will be analyzed by administrators. Your answers are stored anonymously and confidentially."
+
+msgid "Mening murojaatlarim"
+msgstr "My Requests"
+
+msgid "Jami:"
+msgstr "Total:"
+
+msgid "ta murojaat"
+msgstr "requests"
+
+msgid "Yangi murojaat yozing"
+msgstr "Write new request"
+
+msgid "Mavzu"
+msgstr "Subject"
+
+msgid "Mas'ul shaxs"
+msgstr "Responsible Person"
+
+msgid "Holat"
+msgstr "Status"
+
+msgid "Yuborilgan"
+msgstr "Sent"
+
+msgid "So'nggi javob"
+msgstr "Last Reply"
+
+msgid "Javob yo'q"
+msgstr "No reply"
+
+msgid "So'nggi javob:"
+msgstr "Last reply:"
+
+msgid "Javob kutilmoqda"
+msgstr "Awaiting reply"
+
+msgid "Batafsil"
+msgstr "Details"
+
+msgid "Hali murojaatlar yo'q"
+msgstr "No requests yet"
+
+msgid "Birinchi murojaatingizni yozing"
+msgstr "Write your first request"
+
+msgid "Murojaat yozish"
+msgstr "Write request"
+
+msgid "Orqaga"
+msgstr "Back"
+
+msgid "Murojaat matni"
+msgstr "Request text"
+
+msgid "Murojaatingizni batafsil yozing..."
+msgstr "Write your request in detail..."
+
+msgid "Muammongizni batafsil tushuntiring"
+msgstr "Explain your problem in detail"
+
+msgid "Fayllar biriktirish"
+msgstr "Attach files"
+
+msgid "PDF, Word, rasm yoki matn fayllarini biriktirish mumkin (maksimal 5MB)"
+msgstr "You can attach PDF, Word, image or text files (max 5MB)"
+
+msgid "Murojaatni yuborish"
+msgstr "Submit request"
+
+msgid "Bekor qilish"
+msgstr "Cancel"
+
+msgid "Foydali maslahatlar:"
+msgstr "Helpful tips:"
+
+msgid "Aniq va tushunarli mavzu yozing"
+msgstr "Write a clear and concise subject"
+
+msgid "Muammoni batafsil tushuntiring"
+msgstr "Describe the problem in detail"
+
+msgid "Kerakli hujjatlarni biriktiring"
+msgstr "Attach the necessary documents"
+
+msgid "Hurmatli murojaat qiling"
+msgstr "Address respectfully"
+
+msgid "Mas'ul shaxsni tanlang"
+msgstr "Select responsible person"
+
+msgid "Qisqa va aniq mavzu kiriting"
+msgstr "Enter a short and clear subject"
+
+msgid "Murojaatingiz mavzusini kiriting"
+msgstr "Enter your request subject"
+
+msgid "ta mas'ul"
+msgstr "responsible"
+
+msgid "Mas'uliyat sohalari:"
+msgstr "Areas of responsibility:"
+
+msgid "Qo'ng'iroq"
+msgstr "Call"
+
+msgid "Murojaat"
+msgstr "Request"
+
+msgid "Mas'ul shaxslar topilmadi"
+msgstr "No responsible persons found"
+
+msgid "Hozircha tizimda mas'ul shaxslar ro'yxati yo'q"
+msgstr "The list of responsible persons is currently empty"
+
+msgid "Murojaat tafsiloti"
+msgstr "Request Details"
+
+msgid "Yuboruvchi:"
+msgstr "Sender:"
+
+msgid "Mas'ul shaxs:"
+msgstr "Responsible person:"
+
+msgid "Yuborilgan:"
+msgstr "Sent:"
+
+msgid "Status:"
+msgstr "Status:"
+
+msgid "Murojaat matni:"
+msgstr "Request text:"
+
+msgid "Biriktirilgan fayllar:"
+msgstr "Attached files:"
+
+msgid "Yuklab olish"
+msgstr "Download"
+
+msgid "Javoblar"
+msgstr "Replies"
+
+msgid "Admin javobi"
+msgstr "Admin reply"
+
+msgid "Mas'ul shaxs tez orada javob beradi"
+msgstr "The responsible person will reply soon"
+
+msgid "Barcha murojaatlar"
+msgstr "All requests"
+
+msgid "Javob yozish"
+msgstr "Write reply"
+
+msgid "Murojaatga javobingizni yozing..."
+msgstr "Write your reply to the request..."
+
+msgid "To'liq va tushunarli javob bering"
+msgstr "Give a full and clear answer"
+
+msgid "belgi yozildi"
+msgstr "characters typed"
+
+msgid "Javobni yuborish"
+msgstr "Send reply"
+
+msgid "Javob yozishda e'tibor bering:"
+msgstr "Note when writing reply:"
+
+msgid "Hurmatli va professional uslubda yozing"
+msgstr "Write in a respectful and professional manner"
+
+msgid "Aniq va tushunarli javob bering"
+msgstr "Give clear and understandable answers"
+
+msgid "Agar kerak bo'lsa, qo'shimcha ko'rsatmalar bering"
+msgstr "If necessary, provide additional instructions"
+
+msgid "Tez orada javob berishga harakat qiling"
+msgstr "Try to reply as soon as possible"
+
+msgid "So'rovnoma"
+msgstr "Survey"
+
+msgid "Yuklanmoqda..."
+msgstr "Loading..."
+
+msgid "So'rovnoma yuklanmoqda..."
+msgstr "Survey loading..."
+
+msgid "So'rovnoma yuklanmadi. Sahifani yangilang."
+msgstr "Survey not loaded. Please refresh the page."

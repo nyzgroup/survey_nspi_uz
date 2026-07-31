@@ -129,6 +129,13 @@ celerybeat.pid
 
 # Environments
 .env
+.env.prod
+cyber_test/CREDENTIALS_ROTATED.txt
+cyber_test/node_modules/
+cyber_test/evidence/
+cyber_test/*.txt
+cyber_test/*.html
+cyber_test/*.json
 .venv
 env/
 venv/

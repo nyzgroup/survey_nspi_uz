@@ -74,26 +74,47 @@ class SurveySubmitView(APIView):
         validated_data = serializer.validated_data['answers']
         student = request.current_student
 
+        if not survey.is_active or not survey.is_open:
+            return Response(
+                {"error": "Bu so'rovnoma hozirda mavjud emas yoki muddati tugagan."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
         try:
             with transaction.atomic():
                 response = SurveyResponse.objects.create(survey=survey, student=student)
 
                 for answer_data in validated_data:
-                    question = Question.objects.get(id=answer_data['question_id'])
+                    question = Question.objects.get(id=answer_data['question_id'], survey=survey)
                     answer = Answer.objects.create(
                         survey_response=response,
                         question=question,
                         text_answer=answer_data.get('text_answer')
                     )
                     if question.question_type == 'single_choice' and answer_data.get('selected_choice_id'):
-                        choice = Choice.objects.get(id=answer_data['selected_choice_id'])
+                        choice = Choice.objects.get(
+                            id=answer_data['selected_choice_id'],
+                            question=question,
+                        )
                         answer.selected_choice = choice
                         answer.save()
                     elif question.question_type == 'multiple_choice' and answer_data.get('selected_choices_ids'):
-                        choices = Choice.objects.filter(id__in=answer_data['selected_choices_ids'])
+                        choices = list(question.choices.filter(id__in=answer_data['selected_choices_ids']))
+                        if len(choices) != len(set(answer_data['selected_choices_ids'])):
+                            raise ValueError("Noto'g'ri tanlov variantlari")
                         answer.selected_choices.set(choices)
-            
+
             return Response({"message": "Javoblaringiz muvaffaqiyatli qabul qilindi."}, status=status.HTTP_201_CREATED)
-        
-        except Exception as e:
-            return Response({"error": f"Javoblarni saqlashda xatolik yuz berdi: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        except (Question.DoesNotExist, Choice.DoesNotExist, ValueError, TypeError):
+            return Response(
+                {"error": "Yuborilgan ma'lumotlar formati noto'g'ri."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        except Exception:
+            import logging
+            logging.getLogger(__name__).exception("SurveySubmitView error")
+            return Response(
+                {"error": "Javoblarni saqlashda xatolik yuz berdi."},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
